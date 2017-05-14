@@ -1,0 +1,12 @@
+@import utils.admin._
+@(msg:String)(implicit request:PageRequest[AnyContent])
+
+@main("Page not found") {
+    <div style="text-align: center">
+    <h1>Error 404: Page not found</h1>
+    <p>@msg</p>
+    <p>You might want to check out the <a href="/">homepage</a> if you're lost.</p>
+
+    <img src="/assets/images/404.jpg" alt="" />
+    </div>
+}

@@ -1,0 +1,15 @@
+logs
+target
+bin
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+conf/application.conf
+node_modules
+modules/admin/app/assets/javascript
+modules/admin/target
+modules/website/target
+modules/admin/node_modules

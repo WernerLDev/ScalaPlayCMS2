@@ -1,0 +1,13 @@
+@import helper._
+@(title: String)(content: Html)
+<html lang="en">
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/4.1.0/css/fabric.min.css">
+        <link rel="stylesheet" media="screen" href="@controllers.admin.routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="stylesheet" media="screen" href="@controllers.admin.routes.Assets.versioned("font-awesome/scss/font-awesome.css")">
+    </head>
+    <body>
+        @content
+    </body>
+</html>

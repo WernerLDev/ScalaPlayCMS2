@@ -1,0 +1,41 @@
+{
+  "devDependencies": {
+    "@types/react": "^15.0.24",
+    "@types/react-dom": "^15.5.0",
+    "@types/react-split-pane": "^0.1.7",
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-plugin-react-require": "^3.0.0",
+    "babel-plugin-transform-react-jsx": "^6.22.0",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "ts-loader": "^2.0.3",
+    "typescript": "^2.4.0-dev.20170505",
+    "webpack": "^1.14.0"
+  },
+  "name": "elsticspider",
+  "description": "This is your new Play application =================================",
+  "version": "1.0.0",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1",
+    "office-ui-fabric-react": "^2.25.1",
+    "prop-types": "^15.5.8",
+    "react": "^15.4.2",
+    "react-contextmenu": "^2.2.3",
+    "react-dom": "^15.5.4",
+    "react-split-pane": "^0.1.59",
+    "react-tap-event-plugin": "^2.0.1",
+    "webpack": "^1.14.0",
+    "wolfy87-eventemitter": "^5.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Werner Langenhuisen",
+  "license": "ISC"
+}

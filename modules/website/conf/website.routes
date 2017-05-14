@@ -1,0 +1,5 @@
+ 
+GET     /                           controllers.website.MainController.index
+
+
+GET     /assets/*file               controllers.website.Assets.versioned(path="/public/lib/playcmswebsite", file:Asset)

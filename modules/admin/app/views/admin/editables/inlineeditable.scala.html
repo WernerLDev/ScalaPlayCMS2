@@ -1,0 +1,21 @@
+@import utils.admin._
+@(name:String, node:String, multiline:Boolean)(implicit request:PageRequest[AnyContent])
+
+@editable = @{
+    val es = request.editables.filter(_.name == name)
+    if(es.length > 0) es.head.value
+    else ""
+}
+@classname = @{ if(multiline) "multiline" else "singleline" }
+
+@if(request.editmode) {
+    <@node id="@name" class="editable editabletextarea @classname">
+        @if(editable == "") {
+            Click to edit text
+        } else {
+            @Html(editable)
+        }
+    </@node>
+} else {
+    <@node>@Html(editable)</@node>
+}

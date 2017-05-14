@@ -1,0 +1,51 @@
+@import controllers.admin.UserData
+@import helper._
+@(loginForm: Form[UserData])(implicit messages: Messages, flash:Flash, request:Request[AnyContent])
+
+@views.html.admin.main("Login"){
+
+<div class="login-wrapper">
+
+    <div class="login-page" style="opacity: 0;">
+    <div class="form">
+        @helper.form(action = controllers.admin.routes.AdminController.retrievePassword, args = 'class -> "register-form") {
+            <input type="text" name="email" placeholder="email address"/>
+            <button>Retrieve password</button>
+            @CSRF.formField
+            <p class="message"><a href="#">Sign In</a></p>
+        }
+        @helper.form(action = controllers.admin.routes.AdminController.doLogin()) {
+            @for(error <- flash.get("loginfailed")) {
+                <div class="errormsg"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> @error</div>
+            }
+            @helper.input(loginForm("username")) { (id, name, value, args) =>
+                <input autofocus type="text" name="@name" id="@id" value="@value" placeholder="Username" @toHtmlArgs(args)>
+                <span class="fa fa-exclamation-circle errspan"></span>
+            }
+            @helper.input(loginForm("password")) { (id, name, value, args) =>
+                <input type="password" name="@name" id="@id" placeholder="Password" @toHtmlArgs(args)>
+                <span class="fa fa-exclamation-circle errspan"></span>
+            }
+            <button>login</button>
+            <p class="message">Forgot password? <a href="#">Retrieve password</a></p>
+            @CSRF.formField
+        }
+    </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+
+$(document).ready(function(){
+    $(".login-page").animate({opacity: 1}, "slow");
+    addAnimation();
+});
+
+function addAnimation() {
+    $('.message a').click(function(){
+       $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+    });
+}
+
+</script>
+}

@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "sourceMap": true,
+        "inlineSources": true,
+        "pretty": true,
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "target": "es6",
+        "jsx": "react",
+        "outDir": "tsout"
+    },
+    "paths": {
+        "*" : ["*", "../../"]
+    },
+    "include": [
+        "typescripts/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}

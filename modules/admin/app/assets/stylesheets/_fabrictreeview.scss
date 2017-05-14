@@ -1,0 +1,93 @@
+$nodeheight: 28px;
+
+.treeContainer {
+    padding: 0 15px;
+    overflow: auto;
+}
+
+.treeContainer > ul.navItems {
+    padding: 0;
+    margin-left: 13px;
+}
+
+ul.navItems {
+    list-style-type: none;
+    padding: 0 0 0 0px;
+    user-select: none;
+    -moz-user-select: none;
+    border-left: 1px dotted #e2e2e2;
+    margin-left: 30px;
+ 
+    li.navItem {
+        padding: 0;
+        margin-left: -13px;
+        .compositeLink {
+            display: block;
+            position: relative;
+            -moz-user-select: none;
+                user-select: none;
+            height: $nodeheight; 
+            color: #333;
+
+            .emptyPlaceHolder {
+                width: 26px;
+                display: inline-block;
+                margin: 15px 0 0 0;
+            }
+
+            .link {
+                display: inline-block;
+                position: absolute; left: 26px; right: 0; top: 0; bottom: 0;
+                height: $nodeheight; line-height: $nodeheight;
+                font-size: 13px;
+                cursor: pointer; white-space: nowrap; 
+            }
+
+            .beforeLabel {
+                position: absolute; left: 0; 
+            }
+
+            .collapseButton {
+                display: inline-block; width: 26px; height: $nodeheight;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                margin: 0; padding: 0;
+                text-align: center;
+
+                cursor: pointer;
+                outline: none; border: none;
+                background: none;
+                font-weight: 400;
+                font-size: 12px; line-height: $nodeheight;
+                .rotateIcon {
+                    transform: rotate(-90deg);
+                }
+
+                .chevronIcon {
+                    outline: none; width: 26px;
+                    transition: transform .1s linear,-webkit-transform .1s linear;
+                }
+
+                .arrow {
+                    font-size: 16px;
+                    line-height: 27px;
+                }
+                
+            }
+            .collapseButton:focus { outline: none }
+        }
+        .compositeLink:hover {
+            background: #f3f3f3;
+        }
+
+        .selected, .selected:hover {
+            box-sizing: border-box;
+            background: #d9e7ec;
+            color: #333;
+            border-radius: 4px;
+        }
+
+        ul.hidden { display: none; }
+    }
+}

@@ -1,0 +1,36 @@
+
+GET     /                           controllers.admin.MainController.index
+
+
+GET     /login                      controllers.admin.AdminController.login
+POST    /login                      controllers.admin.AdminController.doLogin
+GET     /logout                     controllers.admin.AdminController.logout
+GET     /login/retrievePassword     controllers.admin.AdminController.retrievePasswordForm
+POST    /login/retrievePassword     controllers.admin.AdminController.retrievePassword
+GET     /login/resetpassword/:token  controllers.admin.AdminController.resetPassword(token:String)
+
+GET     /api/v1/pagetypes                   controllers.admin.api.DocumentsController.getPageTypes
+GET     /api/v1/documents                  controllers.admin.api.DocumentsController.listDocuments
+GET     /api/v1/documents/:id              controllers.admin.api.DocumentsController.getDocument(id:Long)
+DELETE  /api/v1/documents/:id              controllers.admin.api.DocumentsController.deleteDocument(id:Long)
+POST    /api/v1/documents                  controllers.admin.api.DocumentsController.addDocument
+PUT     /api/v1/documents                  controllers.admin.api.DocumentsController.updateDocument
+PUT     /api/v1/documents/:id/collapse     controllers.admin.api.DocumentsController.collapseDocument(id:Long)
+PUT     /api/v1/documents/:id/rename       controllers.admin.api.DocumentsController.renameDocument(id:Long)
+PUT     /api/v1/documents/:id/updateparent controllers.admin.api.DocumentsController.updateParentDocument(id:Long)
+PUT     /api/v1/documents/:id/editables    controllers.admin.api.EditablesController.saveEditables(id:Long)
+PUT     /api/v1/documents/:id/publishdate  controllers.admin.api.DocumentsController.setDocumentPublishDate(id:Long)
+
+GET     /api/v1/assets              controllers.admin.api.AssetsController.all
+GET     /api/v1/assets/:id          controllers.admin.api.AssetsController.getById(id:Long)
+POST    /api/v1/assets              controllers.admin.api.AssetsController.create
+POST    /api/v1/assets/upload       controllers.admin.api.AssetsController.upload
+PUT     /api/v1/assets/:id/rename   controllers.admin.api.AssetsController.rename(id:Long)
+DELETE  /api/v1/assets/:id          controllers.admin.api.AssetsController.delete(id:Long)
+PUT     /api/v1/assets/:id/updateparent     controllers.admin.api.AssetsController.updateParent(id:Long)
+PUT     /api/v1/assets/:id/collapse controllers.admin.api.AssetsController.collapse(id:Long)
+GET     /uploads/*name              controllers.admin.api.AssetsController.getUpload(name:String)
+
+
+
+GET     /assets/*file               controllers.admin.Assets.versioned(path="/public/lib/playcmsadmin", file:Asset)

@@ -1,0 +1,698 @@
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ReactDOM = __webpack_require__(3);
+	const Main_1 = __webpack_require__(4);
+	ReactDOM.render(React.createElement(Main_1.default, null), document.getElementById('react-app'));
+	//# sourceMappingURL=app.js.map
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(1);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+	module.exports = react_lib;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(36);
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const SplitPane = __webpack_require__(5);
+	const LargeView_1 = __webpack_require__(6);
+	const SideMenu_1 = __webpack_require__(10);
+	const Utilities_1 = __webpack_require__(11);
+	const CommandBar_1 = __webpack_require__(7);
+	const PagesPanel_1 = __webpack_require__(12);
+	const AssetsPanel_1 = __webpack_require__(19);
+	class Main extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.itemsNonFocusable = [
+	            { key: "new", name: "New", iconProps: { iconName: "add" } }
+	        ];
+	        this.farItemsNonFocusable = [
+	            { key: "test", name: "Test", iconProps: { iconName: "add" } }
+	        ];
+	        this.state = { section: "pages", selected: "" };
+	    }
+	    switchSection(s) {
+	    }
+	    render() {
+	        return (React.createElement("div", null,
+	            React.createElement(SideMenu_1.SideMenu, null,
+	                React.createElement(SideMenu_1.SideMenuItem, { active: this.state.section == "home", icon: "home", onClick: () => this.switchSection("home") }, "DashBoard"),
+	                React.createElement(SideMenu_1.SideMenuItem, { active: this.state.section == "pages", icon: "files-o", onClick: () => this.switchSection("pages") }, "Pages"),
+	                React.createElement(SideMenu_1.SideMenuItem, { active: this.state.section == "entities", icon: "cubes", onClick: () => this.switchSection("entities") }, "Entities"),
+	                React.createElement(SideMenu_1.SideMenuItem, { active: this.state.section == "assets", icon: "picture-o", onClick: () => this.switchSection("assets") }, "Assets"),
+	                React.createElement(SideMenu_1.SideMenuItem, { active: this.state.section == "settings", icon: "gears", onClick: () => this.switchSection("settings") }, "Settings")),
+	            React.createElement("div", { className: "splitpane-container" },
+	                React.createElement(SplitPane, { split: "vertical", defaultSize: 400, minSize: 100 },
+	                    React.createElement("div", null,
+	                        React.createElement(CommandBar_1.CommandBar, { isSearchBoxVisible: true, items: this.itemsNonFocusable, farItems: this.farItemsNonFocusable }),
+	                        React.createElement("nav", { role: "navigation", className: Utilities_1.css('ms-Nav', {
+	                                'is-onTop ms-u-slideRightIn40': true
+	                            }) },
+	                            React.createElement(PagesPanel_1.default, null),
+	                            React.createElement(AssetsPanel_1.default, null))),
+	                    React.createElement("div", null,
+	                        React.createElement(LargeView_1.default, null))))));
+	    }
+	}
+	exports.default = Main;
+	//# sourceMappingURL=Main.js.map
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(182);
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const CommandBar_1 = __webpack_require__(7);
+	const Label_1 = __webpack_require__(8);
+	const Pivot_1 = __webpack_require__(9);
+	class LargeView extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.itemsNonFocusable = [
+	            { key: "new", name: "New", iconProps: { iconName: "add" } }
+	        ];
+	        this.farItemsNonFocusable = [
+	            { key: "test", name: "Test", iconProps: { iconName: "add" } }
+	        ];
+	    }
+	    render() {
+	        return (React.createElement("div", null,
+	            React.createElement(Pivot_1.Pivot, { linkSize: Pivot_1.PivotLinkSize.large },
+	                React.createElement(Pivot_1.PivotItem, { linkText: 'My Files' },
+	                    React.createElement(Label_1.Label, null, "Pivot #1")),
+	                React.createElement(Pivot_1.PivotItem, { linkText: 'Recent' },
+	                    React.createElement(Label_1.Label, null, "Pivot #2")),
+	                React.createElement(Pivot_1.PivotItem, { linkText: 'Shared with me' },
+	                    React.createElement(Label_1.Label, null, "Pivot #3"))),
+	            React.createElement(CommandBar_1.CommandBar, { isSearchBoxVisible: false, items: this.itemsNonFocusable, farItems: this.farItemsNonFocusable })));
+	    }
+	}
+	exports.default = LargeView;
+	//# sourceMappingURL=LargeView.js.map
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(353);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(336);
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(481);
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	function SideMenuItem(props) {
+	    return (React.createElement("li", { className: props.active ? "active" : "", onClick: props.onClick },
+	        React.createElement("i", { className: "fa fa-" + props.icon, "aria-hidden": "true" }),
+	        React.createElement("p", null, props.children)));
+	}
+	exports.SideMenuItem = SideMenuItem;
+	class SideMenu extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	    }
+	    render() {
+	        return (React.createElement("div", { className: "menuleft" },
+	            React.createElement("ul", null,
+	                this.props.children,
+	                React.createElement("li", { className: "signoutbtn" },
+	                    React.createElement("a", { href: "/admin/logout" },
+	                        React.createElement("i", { className: "fa fa-sign-out", "aria-hidden": "true" }),
+	                        React.createElement("p", null, "Logout"))))));
+	    }
+	}
+	exports.SideMenu = SideMenu;
+	//# sourceMappingURL=SideMenu.js.map
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(233);
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const TreeView_1 = __webpack_require__(13);
+	const Api = __webpack_require__(14);
+	const PageTreeLabel_1 = __webpack_require__(17);
+	class PagesPanel extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = {
+	            documents: [], treeItems: []
+	        };
+	    }
+	    toTreeItems(docs) {
+	        return docs.map(doc => {
+	            return {
+	                key: doc.id.toString(),
+	                name: doc.label,
+	                collapsed: doc.collapsed,
+	                children: this.toTreeItems(doc.children),
+	                item: doc
+	            };
+	        });
+	    }
+	    componentDidMount() {
+	        Api.getDocuments().then(documents => {
+	            var items = this.toTreeItems(documents);
+	            this.setState({ documents: documents, treeItems: items });
+	        });
+	    }
+	    onContextTriggered(n) {
+	        console.log("asdfasdf");
+	    }
+	    renderLabel(n) {
+	        return (React.createElement(PageTreeLabel_1.default, { item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
+	    }
+	    render() {
+	        if (this.state.treeItems.length == 0) {
+	            return (React.createElement("div", null, "Loading..."));
+	        }
+	        return (React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }));
+	    }
+	}
+	exports.default = PagesPanel;
+	//# sourceMappingURL=PagesPanel.js.map
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ReactDOM = __webpack_require__(3);
+	class TreeView extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this._emptySelection = {
+	            key: "",
+	            name: "",
+	            collapsed: false,
+	            children: [],
+	            item: {}
+	        };
+	        this.state = { selected: this._emptySelection };
+	    }
+	    componentDidMount() {
+	        document.addEventListener('mousedown', function (e) {
+	            let treeNode = ReactDOM.findDOMNode(this.refs.tree);
+	            let containsElement = treeNode.contains(e.target);
+	            let contextOpen = treeNode.getElementsByClassName("ms-Layer").length > 0;
+	            if (!containsElement && !contextOpen) {
+	                this.setState({ selected: this._emptySelection });
+	            }
+	        }.bind(this));
+	    }
+	    onClick(n) {
+	        this.setState({ selected: n });
+	        this.props.onClick(n);
+	    }
+	    render() {
+	        return (React.createElement("div", { ref: 'tree', className: "TreeContainer" },
+	            React.createElement(SubTreeView, { visible: true, items: this.props.items, onClick: this.onClick.bind(this), selected: this.state.selected, onRenderLabel: this.props.onRenderLabel })));
+	    }
+	}
+	exports.default = TreeView;
+	class SubTreeView extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	    }
+	    renderTreeNode(n) {
+	        return (React.createElement(SubTreeViewNode, { key: n.key, onRenderLabel: this.props.onRenderLabel, selected: this.props.selected, onclick: this.props.onClick, item: n }));
+	    }
+	    render() {
+	        let visibleClass = this.props.visible ? "" : " hidden";
+	        return (React.createElement("ul", { className: "navItems" + visibleClass }, this.props.items.map(node => this.renderTreeNode(node))));
+	    }
+	}
+	SubTreeView.defaultProps = {
+	    selected: null,
+	    onRenderLabel: (n) => {
+	        return (React.createElement("span", null,
+	            React.createElement("i", { className: "fa fa-file-text", "aria-hidden": "true" }),
+	            " ",
+	            n.name));
+	    }
+	};
+	class SubTreeViewNode extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = {
+	            collapsed: props.item.collapsed
+	        };
+	    }
+	    switchCollapseState() {
+	        this.setState(Object.assign({}, this.state, { collapsed: !this.state.collapsed }));
+	    }
+	    renderCollapseBtn() {
+	        let icon = this.state.collapsed ? "ChevronDown" : "ChevronDown rotateIcon";
+	        return (React.createElement("span", { onClick: this.switchCollapseState.bind(this), className: "beforeLabel collapseButton" },
+	            React.createElement("i", { className: "chevronIcon ms-Nav-chevron ms-Icon ms-Icon--" + icon })));
+	    }
+	    renderEmptyPlaceholder() {
+	        return (React.createElement("span", { className: "beforeLabel emptyPlaceHolder" }));
+	    }
+	    renderChilren(node) {
+	        if (node.children.length == 0)
+	            return null;
+	        else {
+	            return (React.createElement(SubTreeView, { visible: this.state.collapsed, items: node.children, onRenderLabel: this.props.onRenderLabel, onClick: this.props.onclick, selected: this.props.selected }));
+	        }
+	    }
+	    renderTreeItem(node) {
+	        let isSelected = this.props.selected.key == node.key;
+	        return (React.createElement("li", { className: "navItem", key: node.key },
+	            React.createElement("div", { className: isSelected ? "compositeLink selected" : "compositeLink" },
+	                node.children.length > 0 ? this.renderCollapseBtn() : this.renderEmptyPlaceholder(),
+	                React.createElement("span", { onClick: () => this.props.onclick(node), onContextMenu: () => this.props.onclick(node), className: "link" }, this.props.onRenderLabel(node))),
+	            this.renderChilren(node)));
+	    }
+	    render() {
+	        return this.renderTreeItem(this.props.item);
+	    }
+	}
+	//# sourceMappingURL=TreeView.js.map
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	__export(__webpack_require__(15));
+	__export(__webpack_require__(20));
+	//# sourceMappingURL=Api.js.map
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const ApiBase_js_1 = __webpack_require__(16);
+	function getPageTypes() {
+	    return ApiBase_js_1.default("/api/v1/pagetypes", "GET");
+	}
+	exports.getPageTypes = getPageTypes;
+	function getDocuments() {
+	    return ApiBase_js_1.default("/admin/api/v1/documents", "GET").then(r => r);
+	}
+	exports.getDocuments = getDocuments;
+	//# sourceMappingURL=DocumentsApi.js.map
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var csrf = document.getElementById("csrftoken").innerText;
+	function handleErrors(response) {
+	    if (!response.ok) {
+	        response.text().then(r => {
+	            alert(response.status + " - " + response.statusText + "\n" + r);
+	        });
+	    }
+	    else {
+	        return response;
+	    }
+	}
+	function ApiCall(call, method, body, contenttype) {
+	    var headers = {
+	        "Csrf-Token": csrf
+	    };
+	    if (contenttype != null) {
+	        headers["Content-Type"] = contenttype;
+	    }
+	    else if (contenttype == null) {
+	        headers["Content-Type"] = "application/json";
+	    }
+	    var params = {
+	        method: method,
+	        credentials: "include",
+	        headers: headers
+	    };
+	    if ((method != "GET" && method != "HEAD") && body != null) {
+	        params["body"] = body;
+	    }
+	    return fetch(call, params).then(handleErrors).then(r => r.json());
+	}
+	exports.default = ApiCall;
+	//# sourceMappingURL=ApiBase.js.map
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ContextualMenu_1 = __webpack_require__(18);
+	class PageTreeLabel extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = {
+	            contextMenuVisible: false, menutarget: MouseEvent
+	        };
+	    }
+	    toggleContextMenu(e) {
+	        this.props.onContextTriggered(this.props.item);
+	        e.persist();
+	        e.preventDefault();
+	        this.setState({
+	            contextMenuVisible: true, menutarget: e
+	        });
+	    }
+	    render() {
+	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
+	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
+	            " ",
+	            this.props.item.item.label,
+	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
+	    }
+	    _onDismiss() {
+	        this.setState({ contextMenuVisible: false });
+	    }
+	    _onToggleSelect() {
+	        return true;
+	    }
+	    renderContextMenu() {
+	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.state.menutarget, shouldFocusOnMount: true, onDismiss: this._onDismiss.bind(this), directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
+	                {
+	                    key: 'new',
+	                    name: 'New',
+	                    iconProps: { iconName: "Add" },
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'share',
+	                    name: 'Share',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'mobile',
+	                    name: 'Mobile',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'divider_1',
+	                    name: '-',
+	                },
+	                {
+	                    key: 'print',
+	                    name: 'Print',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'music',
+	                    name: 'Music',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'musicsub',
+	                    subMenuProps: {
+	                        items: [
+	                            {
+	                                key: 'emailmsg',
+	                                name: 'Email message',
+	                                onClick: this._onToggleSelect
+	                            },
+	                            {
+	                                key: 'event',
+	                                name: 'Calendar event',
+	                                onClick: this._onToggleSelect
+	                            }
+	                        ],
+	                    },
+	                    name: 'New'
+	                },
+	            ] }));
+	    }
+	}
+	exports.default = PageTreeLabel;
+	//# sourceMappingURL=PageTreeLabel.js.map
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(266);
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const TreeView_1 = __webpack_require__(13);
+	const Api = __webpack_require__(14);
+	const AssetTreeLabel_1 = __webpack_require__(21);
+	class AssetsPanel extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = {
+	            assets: [], treeItems: []
+	        };
+	    }
+	    toTreeItems(assets) {
+	        return assets.map(asset => {
+	            return {
+	                key: asset.id.toString(),
+	                name: asset.label,
+	                collapsed: asset.collapsed,
+	                children: this.toTreeItems(asset.children),
+	                item: asset
+	            };
+	        });
+	    }
+	    componentDidMount() {
+	        Api.getAssets().then(assets => {
+	            var items = this.toTreeItems(assets);
+	            this.setState({ assets: assets, treeItems: items });
+	        });
+	    }
+	    onContextTriggered(n) {
+	        console.log("asdfasdf");
+	    }
+	    renderLabel(n) {
+	        return (React.createElement(AssetTreeLabel_1.default, { item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
+	    }
+	    render() {
+	        if (this.state.treeItems.length == 0) {
+	            return (React.createElement("div", null, "Loading..."));
+	        }
+	        return (React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }));
+	    }
+	}
+	exports.default = AssetsPanel;
+	//# sourceMappingURL=AssetsPanel.js.map
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const ApiBase_js_1 = __webpack_require__(16);
+	function getAssets() {
+	    return ApiBase_js_1.default("/admin/api/v1/assets", "GET").then(r => r);
+	}
+	exports.getAssets = getAssets;
+	//# sourceMappingURL=AssetsApi.js.map
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ContextualMenu_1 = __webpack_require__(18);
+	class AssetTreeLabel extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = {
+	            contextMenuVisible: false, menutarget: MouseEvent
+	        };
+	    }
+	    toggleContextMenu(e) {
+	        this.props.onContextTriggered(this.props.item);
+	        e.persist();
+	        e.preventDefault();
+	        this.setState({
+	            contextMenuVisible: true, menutarget: e
+	        });
+	    }
+	    render() {
+	        let icon = this.props.item.item.mimetype == "home" ? "home" : "file-image-o";
+	        if (this.props.item.item.mimetype == "folder") {
+	            icon = "folder";
+	        }
+	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
+	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
+	            " ",
+	            this.props.item.item.label,
+	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
+	    }
+	    _onDismiss() {
+	        this.setState({ contextMenuVisible: false });
+	    }
+	    _onToggleSelect() {
+	        return true;
+	    }
+	    renderContextMenu() {
+	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.state.menutarget, shouldFocusOnMount: true, onDismiss: this._onDismiss.bind(this), directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
+	                {
+	                    key: 'new',
+	                    name: 'New',
+	                    iconProps: { iconName: "Add" },
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'share',
+	                    name: 'Share',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'mobile',
+	                    name: 'Mobile',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'divider_1',
+	                    name: '-',
+	                },
+	                {
+	                    key: 'print',
+	                    name: 'Print',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'music',
+	                    name: 'Music',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'musicsub',
+	                    subMenuProps: {
+	                        items: [
+	                            {
+	                                key: 'emailmsg',
+	                                name: 'Email message',
+	                                onClick: this._onToggleSelect
+	                            },
+	                            {
+	                                key: 'event',
+	                                name: 'Calendar event',
+	                                onClick: this._onToggleSelect
+	                            }
+	                        ],
+	                    },
+	                    name: 'New'
+	                },
+	            ] }));
+	    }
+	}
+	exports.default = AssetTreeLabel;
+	//# sourceMappingURL=AssetTreeLabel.js.map
+
+/***/ })
+/******/ ]);
