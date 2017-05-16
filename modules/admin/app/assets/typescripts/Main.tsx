@@ -2,8 +2,8 @@ import * as React from 'react'
 import { Button } from 'office-ui-fabric-react/lib/Button';
 import * as SplitPane from 'react-split-pane'
 import LargeView from './LargeView'
-import {SideMenu, SideMenuItem} from './SideMenu'
-import TreeView from './components/treeview/TreeView'
+import {SideMenu, SideMenuItem} from './components/SideMenu/SideMenu'
+import TreeView from './components/TreeView/TreeView'
 import ItemsMenu from './ItemsMenu'
 import TestTreeViewNode from './TestTreeViewNode'
 import { css } from 'office-ui-fabric-react/lib/Utilities';
@@ -35,7 +35,7 @@ class Main extends React.Component<MainProps, MainState> {
     ]
 
     switchSection(s:string) {
-
+        this.setState({ section: s });
     }
 
     render() {
@@ -60,20 +60,18 @@ class Main extends React.Component<MainProps, MainState> {
                     </SideMenu>
                     <div className="splitpane-container">
                         <SplitPane split="vertical" defaultSize={400} minSize={100}>
-                            <div>
-
-                                <CommandBar
-                                isSearchBoxVisible={ true }
-                                items={ this.itemsNonFocusable }
-                                farItems={ this.farItemsNonFocusable }
-                                />
-                                <nav role="navigation"
-                                className={ css('ms-Nav', {
-                                            'is-onTop ms-u-slideRightIn40': true
-                                }) }>
-                                <PagesPanel />
-                                <AssetsPanel />
-                                 </nav>
+                            <div className="leftpanel">
+                                <div className={this.state.section == "pages" ? "show" : "hide"}>
+                                    <CommandBar
+                                    isSearchBoxVisible={ false }
+                                    items={ this.itemsNonFocusable }
+                                    farItems={ this.farItemsNonFocusable }
+                                    />
+                                    <PagesPanel />
+                                </div>
+                                <div className={this.state.section == "assets" ? "show" : "hide"}>
+                                    <AssetsPanel />
+                                </div>
                             </div>
                             <div>
                                 <LargeView />

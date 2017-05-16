@@ -1,4 +1,3 @@
-
 import ApiCall from './ApiBase.js';
 
 export interface Asset {

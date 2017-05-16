@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -80,10 +80,9 @@
 	const SplitPane = __webpack_require__(5);
 	const LargeView_1 = __webpack_require__(6);
 	const SideMenu_1 = __webpack_require__(10);
-	const Utilities_1 = __webpack_require__(11);
 	const CommandBar_1 = __webpack_require__(7);
-	const PagesPanel_1 = __webpack_require__(12);
-	const AssetsPanel_1 = __webpack_require__(19);
+	const PagesPanel_1 = __webpack_require__(11);
+	const AssetsPanel_1 = __webpack_require__(20);
 	class Main extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -96,6 +95,7 @@
 	        this.state = { section: "pages", selected: "" };
 	    }
 	    switchSection(s) {
+	        this.setState({ section: s });
 	    }
 	    render() {
 	        return (React.createElement("div", null,
@@ -107,12 +107,11 @@
 	                React.createElement(SideMenu_1.SideMenuItem, { active: this.state.section == "settings", icon: "gears", onClick: () => this.switchSection("settings") }, "Settings")),
 	            React.createElement("div", { className: "splitpane-container" },
 	                React.createElement(SplitPane, { split: "vertical", defaultSize: 400, minSize: 100 },
-	                    React.createElement("div", null,
-	                        React.createElement(CommandBar_1.CommandBar, { isSearchBoxVisible: true, items: this.itemsNonFocusable, farItems: this.farItemsNonFocusable }),
-	                        React.createElement("nav", { role: "navigation", className: Utilities_1.css('ms-Nav', {
-	                                'is-onTop ms-u-slideRightIn40': true
-	                            }) },
-	                            React.createElement(PagesPanel_1.default, null),
+	                    React.createElement("div", { className: "leftpanel" },
+	                        React.createElement("div", { className: this.state.section == "pages" ? "show" : "hide" },
+	                            React.createElement(CommandBar_1.CommandBar, { isSearchBoxVisible: false, items: this.itemsNonFocusable, farItems: this.farItemsNonFocusable }),
+	                            React.createElement(PagesPanel_1.default, null)),
+	                        React.createElement("div", { className: this.state.section == "assets" ? "show" : "hide" },
 	                            React.createElement(AssetsPanel_1.default, null))),
 	                    React.createElement("div", null,
 	                        React.createElement(LargeView_1.default, null))))));
@@ -214,18 +213,12 @@
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = (__webpack_require__(2))(233);
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const TreeView_1 = __webpack_require__(13);
+	const TreeView_1 = __webpack_require__(12);
 	const Api = __webpack_require__(14);
-	const PageTreeLabel_1 = __webpack_require__(17);
+	const PageTreeLabel_1 = __webpack_require__(18);
 	class PagesPanel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -267,13 +260,14 @@
 	//# sourceMappingURL=PagesPanel.js.map
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
 	const ReactDOM = __webpack_require__(3);
+	const Utilities_1 = __webpack_require__(13);
 	class TreeView extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -302,7 +296,10 @@
 	    }
 	    render() {
 	        return (React.createElement("div", { ref: 'tree', className: "TreeContainer" },
-	            React.createElement(SubTreeView, { visible: true, items: this.props.items, onClick: this.onClick.bind(this), selected: this.state.selected, onRenderLabel: this.props.onRenderLabel })));
+	            React.createElement("nav", { role: "navigation", className: Utilities_1.css('ms-Nav', {
+	                    'is-onTop ms-u-slideRightIn40': true
+	                }) },
+	                React.createElement(SubTreeView, { visible: true, items: this.props.items, onClick: this.onClick.bind(this), selected: this.state.selected, onRenderLabel: this.props.onRenderLabel }))));
 	    }
 	}
 	exports.default = TreeView;
@@ -354,7 +351,7 @@
 	    }
 	    renderTreeItem(node) {
 	        let isSelected = this.props.selected.key == node.key;
-	        return (React.createElement("li", { className: "navItem", key: node.key },
+	        return (React.createElement("li", { ref: "treenode", className: "navItem", key: node.key },
 	            React.createElement("div", { className: isSelected ? "compositeLink selected" : "compositeLink" },
 	                node.children.length > 0 ? this.renderCollapseBtn() : this.renderEmptyPlaceholder(),
 	                React.createElement("span", { onClick: () => this.props.onclick(node), onContextMenu: () => this.props.onclick(node), className: "link" }, this.props.onRenderLabel(node))),
@@ -367,6 +364,12 @@
 	//# sourceMappingURL=TreeView.js.map
 
 /***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(233);
+
+/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -376,7 +379,7 @@
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	__export(__webpack_require__(15));
-	__export(__webpack_require__(20));
+	__export(__webpack_require__(17));
 	//# sourceMappingURL=Api.js.map
 
 /***/ }),
@@ -442,29 +445,51 @@
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
+	const ApiBase_js_1 = __webpack_require__(16);
+	function getAssets() {
+	    return ApiBase_js_1.default("/admin/api/v1/assets", "GET").then(r => r);
+	}
+	exports.getAssets = getAssets;
+	//# sourceMappingURL=AssetsApi.js.map
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ContextualMenu_1 = __webpack_require__(18);
+	const ContextualMenu_1 = __webpack_require__(19);
 	class PageTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            contextMenuVisible: false, menutarget: MouseEvent
+	            editmode: false, contextMenuVisible: false, menutarget: null
 	        };
 	    }
 	    toggleContextMenu(e) {
 	        this.props.onContextTriggered(this.props.item);
 	        e.persist();
 	        e.preventDefault();
-	        this.setState({
-	            contextMenuVisible: true, menutarget: e
-	        });
+	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
 	    }
 	    render() {
+	        if (this.state.editmode)
+	            return this.renderEditMode();
 	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
 	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
 	            this.props.item.item.label,
+	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
+	    }
+	    renderEditMode() {
+	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
+	            React.createElement("div", { className: "treeicon" },
+	                React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" })),
+	            React.createElement("div", { className: "treerename" },
+	                React.createElement("input", { autoFocus: true, type: "text", onBlur: this._onToggleEdit.bind(this), defaultValue: this.props.item.item.label })),
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
 	    }
 	    _onDismiss() {
@@ -473,8 +498,11 @@
 	    _onToggleSelect() {
 	        return true;
 	    }
+	    _onToggleEdit() {
+	        this.setState({ editmode: !this.state.editmode });
+	    }
 	    renderContextMenu() {
-	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.state.menutarget, shouldFocusOnMount: true, onDismiss: this._onDismiss.bind(this), directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
+	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.state.menutarget.nativeEvent, shouldFocusOnMount: true, onDismiss: this._onDismiss.bind(this), directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
 	                {
 	                    key: 'new',
 	                    name: 'New',
@@ -482,9 +510,9 @@
 	                    onClick: this._onToggleSelect
 	                },
 	                {
-	                    key: 'share',
-	                    name: 'Share',
-	                    onClick: this._onToggleSelect
+	                    key: 'rename',
+	                    name: 'Rename',
+	                    onClick: this._onToggleEdit.bind(this)
 	                },
 	                {
 	                    key: 'mobile',
@@ -530,19 +558,19 @@
 	//# sourceMappingURL=PageTreeLabel.js.map
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = (__webpack_require__(2))(266);
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const TreeView_1 = __webpack_require__(13);
+	const TreeView_1 = __webpack_require__(12);
 	const Api = __webpack_require__(14);
 	const AssetTreeLabel_1 = __webpack_require__(21);
 	class AssetsPanel extends React.Component {
@@ -586,26 +614,13 @@
 	//# sourceMappingURL=AssetsPanel.js.map
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	const ApiBase_js_1 = __webpack_require__(16);
-	function getAssets() {
-	    return ApiBase_js_1.default("/admin/api/v1/assets", "GET").then(r => r);
-	}
-	exports.getAssets = getAssets;
-	//# sourceMappingURL=AssetsApi.js.map
-
-/***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ContextualMenu_1 = __webpack_require__(18);
+	const ContextualMenu_1 = __webpack_require__(19);
 	class AssetTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -696,3 +711,4 @@
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=app.bundle.js.map

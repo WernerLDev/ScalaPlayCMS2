@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Tree from './components/treeview/TreeViewTypes'
+import * as Tree from './components/TreeView/TreeViewTypes'
 import { ContextualMenu, IContextualMenuItem, DirectionalHint } from 'office-ui-fabric-react/lib/ContextualMenu';
 
 export interface TestTreeViewNodeProps {

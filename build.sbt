@@ -19,6 +19,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-mailer" % "5.0.0"
 )
 
+PlayKeys.playRunHooks += Webpack(file("modules/admin"))
+
 JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 pipelineStages := Seq(rjs, digest, gzip)

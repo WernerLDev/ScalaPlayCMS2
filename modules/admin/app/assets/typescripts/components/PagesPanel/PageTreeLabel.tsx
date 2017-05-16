@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import * as Tree from '../treeview/TreeViewTypes'
+import * as Tree from '../TreeView/TreeViewTypes'
 import { ContextualMenu, IContextualMenuItem, DirectionalHint } from 'office-ui-fabric-react/lib/ContextualMenu';
 import * as Api from '../../api/Api'
 
@@ -9,12 +9,18 @@ export interface PageTreeLabelProps {
     onContextTriggered: (n:Tree.TreeViewItem<Api.Document>) => void
 }
 
-class PageTreeLabel extends React.Component<PageTreeLabelProps, any> {
+export interface PageTreeLabelState {
+  contextMenuVisible : boolean,
+  menutarget : React.MouseEvent<HTMLElement>,
+  editmode : boolean
+}
+
+class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelState> {
 
     constructor(props:PageTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:MouseEvent
+            editmode: false, contextMenuVisible: false, menutarget:null
         }
     }
 
@@ -22,12 +28,13 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, any> {
         this.props.onContextTriggered(this.props.item);
         e.persist();
         e.preventDefault();
-        this.setState({
+        this.setState({...this.state,
             contextMenuVisible: true, menutarget: e
         })
     }
 
     render() {
+        if(this.state.editmode) return this.renderEditMode();
         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
         return(
             <div onContextMenu={this.toggleContextMenu.bind(this)}>
@@ -35,6 +42,21 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, any> {
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </div>
         )
+    }
+
+    renderEditMode() {
+        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+        return(
+              <div onContextMenu={this.toggleContextMenu.bind(this)}>
+                <div className="treeicon">
+                  <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i>
+                </div>
+                <div className="treerename"> 
+                 <input autoFocus  type="text" onBlur={this._onToggleEdit.bind(this)} defaultValue={this.props.item.item.label} />
+                </div>
+                  {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
+              </div>
+          )
     }
 
     _onDismiss() {
@@ -45,10 +67,14 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, any> {
         return true;
     }
 
+    _onToggleEdit() {
+      this.setState({ editmode: !this.state.editmode });
+    }
+
     renderContextMenu() {
         return(
             <ContextualMenu
-            target={this.state.menutarget}
+            target={this.state.menutarget.nativeEvent}
             shouldFocusOnMount={ true }
             onDismiss={ this._onDismiss.bind(this) }
             directionalHint={ DirectionalHint.bottomLeftEdge }
@@ -61,9 +87,9 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, any> {
                   onClick: this._onToggleSelect
                 },
                 {
-                  key: 'share',
-                  name: 'Share',
-                  onClick: this._onToggleSelect
+                  key: 'rename',
+                  name: 'Rename',
+                  onClick: this._onToggleEdit.bind(this)
                 },
                 {
                   key: 'mobile',

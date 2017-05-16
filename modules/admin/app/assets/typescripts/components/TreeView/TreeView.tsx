@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TreeTypes from './TreeViewTypes'
+import { css } from 'office-ui-fabric-react/lib/Utilities';
 
 class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
     
@@ -36,12 +37,17 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
     render() {
         return (
         <div ref='tree' className="TreeContainer">
-            <SubTreeView 
-                visible={true}
-                items={this.props.items}
-                onClick={this.onClick.bind(this)} 
-                selected={this.state.selected} 
-                onRenderLabel={this.props.onRenderLabel} />
+            <nav role="navigation"
+            className={ css('ms-Nav', {
+                        'is-onTop ms-u-slideRightIn40': true
+            }) }>
+                <SubTreeView 
+                    visible={true}
+                    items={this.props.items}
+                    onClick={this.onClick.bind(this)} 
+                    selected={this.state.selected} 
+                    onRenderLabel={this.props.onRenderLabel} />
+            </nav>
         </div>
         );
     }
@@ -140,7 +146,7 @@ class SubTreeViewNode extends React.Component<TreeTypes.SubTreeViewNodeProps<any
     renderTreeItem(node:TreeTypes.TreeViewItem<any>):JSX.Element {
         let isSelected = this.props.selected.key == node.key;
         return(
-            <li className="navItem" key={node.key}>
+            <li ref="treenode" className="navItem" key={node.key}>
                 <div 
                     className={isSelected ? "compositeLink selected" : "compositeLink"}>
                     {node.children.length > 0 ? this.renderCollapseBtn()  : this.renderEmptyPlaceholder() }

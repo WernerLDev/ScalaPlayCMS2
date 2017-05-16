@@ -1,6 +1,6 @@
 import * as React from 'react';
-import TreeView from '../treeview/TreeView'
-import * as TreeTypes from '../treeview/TreeViewTypes'
+import TreeView from '../TreeView/TreeView'
+import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import PageTreeLabel from './PageTreeLabel'
 
