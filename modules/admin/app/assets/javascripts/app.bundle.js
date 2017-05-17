@@ -219,11 +219,12 @@
 	const TreeView_1 = __webpack_require__(12);
 	const Api = __webpack_require__(14);
 	const PageTreeLabel_1 = __webpack_require__(18);
+	const Loading_1 = __webpack_require__(23);
 	class PagesPanel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            documents: [], treeItems: []
+	            documents: [], treeItems: [], working: true
 	        };
 	    }
 	    toTreeItems(docs) {
@@ -237,23 +238,35 @@
 	            };
 	        });
 	    }
-	    componentDidMount() {
+	    refresh() {
 	        Api.getDocuments().then(documents => {
 	            var items = this.toTreeItems(documents);
-	            this.setState({ documents: documents, treeItems: items });
+	            this.setState({ documents: documents, treeItems: items, working: false });
 	        });
 	    }
+	    componentDidMount() {
+	        this.refresh();
+	    }
 	    onContextTriggered(n) {
-	        console.log("asdfasdf");
+	    }
+	    onRenamed(doc) {
+	        console.log("Got new name" + doc.label);
+	        this.setState({ working: true }, () => {
+	            Api.renameDocument(doc).then(x => {
+	                this.refresh();
+	            });
+	        });
 	    }
 	    renderLabel(n) {
-	        return (React.createElement(PageTreeLabel_1.default, { item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
+	        return (React.createElement(PageTreeLabel_1.default, { onRenamed: this.onRenamed.bind(this), item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
 	    }
 	    render() {
 	        if (this.state.treeItems.length == 0) {
-	            return (React.createElement("div", null, "Loading..."));
+	            return (React.createElement(Loading_1.default, null));
 	        }
-	        return (React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }));
+	        return (React.createElement("div", null,
+	            this.state.working ? (React.createElement(Loading_1.default, null)) : null,
+	            React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) })));
 	    }
 	}
 	exports.default = PagesPanel;
@@ -397,6 +410,13 @@
 	    return ApiBase_js_1.default("/admin/api/v1/documents", "GET").then(r => r);
 	}
 	exports.getDocuments = getDocuments;
+	function renameDocument(doc) {
+	    var body = JSON.stringify({
+	        "name": doc.label
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/documents/" + doc.id + "/rename", "PUT", body);
+	}
+	exports.renameDocument = renameDocument;
 	//# sourceMappingURL=DocumentsApi.js.map
 
 /***/ }),
@@ -459,19 +479,33 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ContextualMenu_1 = __webpack_require__(19);
+	const PageTreeContextMenu_1 = __webpack_require__(22);
 	class PageTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            editmode: false, contextMenuVisible: false, menutarget: null
+	            editmode: false, contextMenuVisible: false, menutarget: null, label: props.item.name
 	        };
+	    }
+	    componentWillReceiveProps(nextProps) {
+	        if (nextProps.item.name != this.props.item.name) {
+	            this.setState({ label: nextProps.item.name });
+	        }
 	    }
 	    toggleContextMenu(e) {
 	        this.props.onContextTriggered(this.props.item);
 	        e.persist();
 	        e.preventDefault();
 	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
+	    }
+	    onKeyPress(e) {
+	        if (e.keyCode == 13) {
+	            var newname = this.refs.editfield.value;
+	            this.setState({ label: newname }, () => {
+	                this._onToggleEdit();
+	                this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
+	            });
+	        }
 	    }
 	    render() {
 	        if (this.state.editmode)
@@ -480,7 +514,7 @@
 	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
-	            this.props.item.item.label,
+	            this.state.label,
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
 	    }
 	    renderEditMode() {
@@ -489,7 +523,7 @@
 	            React.createElement("div", { className: "treeicon" },
 	                React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" })),
 	            React.createElement("div", { className: "treerename" },
-	                React.createElement("input", { autoFocus: true, type: "text", onBlur: this._onToggleEdit.bind(this), defaultValue: this.props.item.item.label })),
+	                React.createElement("input", { autoFocus: true, ref: "editfield", type: "text", onKeyDown: this.onKeyPress.bind(this), onBlur: this._onToggleEdit.bind(this), defaultValue: this.props.item.item.label })),
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
 	    }
 	    _onDismiss() {
@@ -502,56 +536,7 @@
 	        this.setState({ editmode: !this.state.editmode });
 	    }
 	    renderContextMenu() {
-	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.state.menutarget.nativeEvent, shouldFocusOnMount: true, onDismiss: this._onDismiss.bind(this), directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
-	                {
-	                    key: 'new',
-	                    name: 'New',
-	                    iconProps: { iconName: "Add" },
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'rename',
-	                    name: 'Rename',
-	                    onClick: this._onToggleEdit.bind(this)
-	                },
-	                {
-	                    key: 'mobile',
-	                    name: 'Mobile',
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'divider_1',
-	                    name: '-',
-	                },
-	                {
-	                    key: 'print',
-	                    name: 'Print',
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'music',
-	                    name: 'Music',
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'musicsub',
-	                    subMenuProps: {
-	                        items: [
-	                            {
-	                                key: 'emailmsg',
-	                                name: 'Email message',
-	                                onClick: this._onToggleSelect
-	                            },
-	                            {
-	                                key: 'event',
-	                                name: 'Calendar event',
-	                                onClick: this._onToggleSelect
-	                            }
-	                        ],
-	                    },
-	                    name: 'New'
-	                },
-	            ] }));
+	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, onDismiss: this._onDismiss.bind(this), onToggleEdit: this._onToggleEdit.bind(this) }));
 	    }
 	}
 	exports.default = PageTreeLabel;
@@ -708,6 +693,91 @@
 	}
 	exports.default = AssetTreeLabel;
 	//# sourceMappingURL=AssetTreeLabel.js.map
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ContextualMenu_1 = __webpack_require__(19);
+	class PageTreeContextMenu extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	    }
+	    _onToggleSelect() {
+	    }
+	    render() {
+	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.props.target, shouldFocusOnMount: true, onDismiss: this.props.onDismiss, directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
+	                {
+	                    key: 'new',
+	                    name: 'New',
+	                    iconProps: { iconName: "Add" },
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'rename',
+	                    name: 'Rename',
+	                    onClick: this.props.onToggleEdit
+	                },
+	                {
+	                    key: 'mobile',
+	                    name: 'Mobile',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'divider_1',
+	                    name: '-',
+	                },
+	                {
+	                    key: 'print',
+	                    name: 'Print',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'music',
+	                    name: 'Music',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'musicsub',
+	                    subMenuProps: {
+	                        items: [
+	                            {
+	                                key: 'emailmsg',
+	                                name: 'Email message',
+	                                onClick: this._onToggleSelect
+	                            },
+	                            {
+	                                key: 'event',
+	                                name: 'Calendar event',
+	                                onClick: this._onToggleSelect
+	                            }
+	                        ],
+	                    },
+	                    name: 'New'
+	                },
+	            ] }));
+	    }
+	}
+	exports.default = PageTreeContextMenu;
+	//# sourceMappingURL=PageTreeContextMenu.js.map
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	function Loading(props) {
+	    return (React.createElement("div", { className: "loading" },
+	        React.createElement("img", { src: "/assets/images/rolling.svg", alt: "" }),
+	        " "));
+	}
+	exports.default = Loading;
+	//# sourceMappingURL=Loading.js.map
 
 /***/ })
 /******/ ]);

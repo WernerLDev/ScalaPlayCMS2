@@ -3,6 +3,7 @@ import TreeView from '../TreeView/TreeView'
 import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import PageTreeLabel from './PageTreeLabel'
+import Loading from '../common/Loading'
 
 export interface PagesPanelProps {
 
@@ -11,6 +12,7 @@ export interface PagesPanelProps {
 export interface PagesPanelState {
     documents: Api.Document[],
     treeItems : TreeTypes.TreeViewItem<Api.Document>[]
+    working : boolean
 }
 
 class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
@@ -18,7 +20,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
     constructor(props:PagesPanelProps, context:any) {
         super(props, context);
         this.state = {
-            documents: [], treeItems: []
+            documents: [], treeItems: [], working: true
         }
     }
  
@@ -34,31 +36,48 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         })
     }
 
-    componentDidMount() {
+    refresh() {
         Api.getDocuments().then(documents => {
             var items = this.toTreeItems(documents);
-            this.setState({ documents: documents, treeItems: items });
+            this.setState({ documents: documents, treeItems: items, working: false });
         });
     }
 
+    componentDidMount() {
+        this.refresh();
+    }
+
     onContextTriggered(n:TreeTypes.TreeViewItem<Api.Document>) {
-        console.log("asdfasdf");
+    }
+
+    onRenamed(doc:Api.Document) {
+        console.log("Got new name" + doc.label);
+        this.setState({ working: true }, () => {
+            Api.renameDocument(doc).then(x => {
+                this.refresh();
+            });
+        });
     }
 
     renderLabel(n:TreeTypes.TreeViewItem<Api.Document>) {
-        return( <PageTreeLabel item={n} onContextTriggered={this.onContextTriggered.bind(this)} /> )
+        return( <PageTreeLabel onRenamed={this.onRenamed.bind(this)}  item={n} onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
     
+    
+
     render() {
         if(this.state.treeItems.length == 0) {
-            return(<div>Loading...</div>);
+            return(<Loading />);
         }
         return (
-            <TreeView 
-                items={this.state.treeItems} 
-                onClick={() => console.log("clicked")}
-                onRenderLabel={this.renderLabel.bind(this)}
-            />
+            <div>
+                {this.state.working ? (<Loading />) : null}
+                <TreeView 
+                    items={this.state.treeItems} 
+                    onClick={() => console.log("clicked")}
+                    onRenderLabel={this.renderLabel.bind(this)}
+                />
+            </div>
         );
     }
 }

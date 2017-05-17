@@ -11,7 +11,7 @@
     "babel-preset-react": "^6.3.13",
     "ts-loader": "^2.0.3",
     "typescript": "^2.4.0-dev.20170505",
-    "webpack": "^1.14.0"
+    "webpack": "^2.5.1"
   },
   "name": "elsticspider",
   "description": "This is your new Play application =================================",

@@ -3,16 +3,19 @@ import * as React from 'react';
 import * as Tree from '../TreeView/TreeViewTypes'
 import { ContextualMenu, IContextualMenuItem, DirectionalHint } from 'office-ui-fabric-react/lib/ContextualMenu';
 import * as Api from '../../api/Api'
+import PageTreeContextMenu from './PageTreeContextMenu'
 
 export interface PageTreeLabelProps {
     item: Tree.TreeViewItem<Api.Document>,
     onContextTriggered: (n:Tree.TreeViewItem<Api.Document>) => void
+    onRenamed : (doc:Api.Document) => void
 }
 
 export interface PageTreeLabelState {
   contextMenuVisible : boolean,
   menutarget : React.MouseEvent<HTMLElement>,
-  editmode : boolean
+  editmode : boolean,
+  label : string
 }
 
 class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelState> {
@@ -20,7 +23,13 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
     constructor(props:PageTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            editmode: false, contextMenuVisible: false, menutarget:null
+            editmode: false, contextMenuVisible: false, menutarget:null, label: props.item.name
+        }
+    }
+
+    componentWillReceiveProps(nextProps:PageTreeLabelProps) {
+        if(nextProps.item.name != this.props.item.name) {
+          this.setState({ label: nextProps.item.name });
         }
     }
 
@@ -30,7 +39,17 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         e.preventDefault();
         this.setState({...this.state,
             contextMenuVisible: true, menutarget: e
+        });
+    }
+
+    onKeyPress(e:KeyboardEvent) {
+      if(e.keyCode == 13) {
+        var newname = (this.refs.editfield as HTMLInputElement).value;
+        this.setState({ label: newname }, () => {
+          this._onToggleEdit();
+          this.props.onRenamed({...this.props.item.item, label: newname});
         })
+      }
     }
 
     render() {
@@ -38,7 +57,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
         return(
             <div onContextMenu={this.toggleContextMenu.bind(this)}>
-                <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.props.item.item.label}
+                <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </div>
         )
@@ -52,7 +71,13 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
                   <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i>
                 </div>
                 <div className="treerename"> 
-                 <input autoFocus  type="text" onBlur={this._onToggleEdit.bind(this)} defaultValue={this.props.item.item.label} />
+                 <input 
+                    autoFocus 
+                    ref="editfield" 
+                    type="text" 
+                    onKeyDown={this.onKeyPress.bind(this)} 
+                    onBlur={this._onToggleEdit.bind(this)} 
+                    defaultValue={this.props.item.item.label} />
                 </div>
                   {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
               </div>
@@ -73,65 +98,10 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
 
     renderContextMenu() {
         return(
-            <ContextualMenu
-            target={this.state.menutarget.nativeEvent}
-            shouldFocusOnMount={ true }
-            onDismiss={ this._onDismiss.bind(this) }
-            directionalHint={ DirectionalHint.bottomLeftEdge }
-            items={
-              [
-                {
-                  key: 'new',
-                  name: 'New',
-                  iconProps: { iconName: "Add" },
-                  onClick: this._onToggleSelect
-                },
-                {
-                  key: 'rename',
-                  name: 'Rename',
-                  onClick: this._onToggleEdit.bind(this)
-                },
-                {
-                  key: 'mobile',
-                  name: 'Mobile',
-                  onClick: this._onToggleSelect
-                },
-                {
-                  key: 'divider_1',
-                  name: '-',
-                },
-
-                {
-                  key: 'print',
-                  name: 'Print',
-                  onClick: this._onToggleSelect
-                },
-                {
-                  key: 'music',
-                  name: 'Music',
-                  onClick: this._onToggleSelect
-                },
-                {
-                  key: 'musicsub',
-                  subMenuProps: {
-                    items: [
-                      {
-                        key: 'emailmsg',
-                        name: 'Email message',
-                        onClick: this._onToggleSelect
-                      },
-                      {
-                        key: 'event',
-                        name: 'Calendar event',
-                        onClick: this._onToggleSelect
-                      }
-                    ],
-                  },
-                  name: 'New'
-                },
-              ]
-            }
-          />
+            <PageTreeContextMenu 
+              target={this.state.menutarget.nativeEvent}
+              onDismiss={this._onDismiss.bind(this)}
+              onToggleEdit={this._onToggleEdit.bind(this)} />
         )
     }
 }

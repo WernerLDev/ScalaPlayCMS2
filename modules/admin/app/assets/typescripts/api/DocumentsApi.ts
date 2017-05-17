@@ -18,3 +18,10 @@ export function getPageTypes() {
 export function getDocuments():Promise<Document[]> {
     return ApiCall("/admin/api/v1/documents", "GET").then(r => r as Document[]);
 }
+
+export function renameDocument(doc:Document) {
+    var body = JSON.stringify({
+        "name" : doc.label
+    });
+    return ApiCall("/admin/api/v1/documents/" + doc.id + "/rename", "PUT", body);
+}

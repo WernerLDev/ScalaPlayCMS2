@@ -13,3 +13,11 @@
 [2017-05-16 20:17:53,711] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - DocUriAtPointReq future completed: succes? false
 [2017-05-16 20:17:53,801] ERROR langserver.core.Connection - No notification type exists with method=$/cancelRequest
 [2017-05-16 20:17:53,801] ERROR langserver.core.Connection - No notification type exists with method=$/cancelRequest
+[2017-05-16 22:32:50,172] INFO langserver.core.MessageReader - End of stream, terminating thread
+[2017-05-16 22:32:50,172] INFO langserver.core.MessageReader - End of stream, terminating thread
+[2017-05-16 22:32:50,172] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
+[2017-05-16 22:32:50,172] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
+[2017-05-16 22:32:50,173] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
+[2017-05-16 22:32:50,173] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
+[2017-05-16 22:32:50,215] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
+[2017-05-16 22:32:50,215] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
