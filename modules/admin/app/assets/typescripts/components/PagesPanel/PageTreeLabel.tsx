@@ -15,7 +15,8 @@ export interface PageTreeLabelState {
   contextMenuVisible : boolean,
   menutarget : React.MouseEvent<HTMLElement>,
   editmode : boolean,
-  label : string
+  label : string,
+  addingmode: boolean
 }
 
 class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelState> {
@@ -23,7 +24,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
     constructor(props:PageTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            editmode: false, contextMenuVisible: false, menutarget:null, label: props.item.name
+            editmode: false, contextMenuVisible: false, menutarget:null, label: props.item.name, addingmode: false
         }
     }
 
@@ -52,12 +53,21 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
       }
     }
 
+    renderAddForm() {
+        return(
+            <div>
+            <input type="text" name="" />
+            </div>
+        )
+    }
+
     render() {
         if(this.state.editmode) return this.renderEditMode();
         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
         return(
             <div onContextMenu={this.toggleContextMenu.bind(this)}>
                 <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
+                {this.state.addingmode ? this.renderAddForm() : null}
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </div>
         )
@@ -101,6 +111,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
             <PageTreeContextMenu 
               target={this.state.menutarget.nativeEvent}
               onDismiss={this._onDismiss.bind(this)}
+              onToggleAdd={() => this.setState({ addingmode: true })}
               onToggleEdit={this._onToggleEdit.bind(this)} />
         )
     }

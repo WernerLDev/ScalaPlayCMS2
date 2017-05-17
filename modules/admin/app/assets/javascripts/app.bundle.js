@@ -484,7 +484,7 @@
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            editmode: false, contextMenuVisible: false, menutarget: null, label: props.item.name
+	            editmode: false, contextMenuVisible: false, menutarget: null, label: props.item.name, addingmode: false
 	        };
 	    }
 	    componentWillReceiveProps(nextProps) {
@@ -507,6 +507,10 @@
 	            });
 	        }
 	    }
+	    renderAddForm() {
+	        return (React.createElement("div", null,
+	            React.createElement("input", { type: "text", name: "" })));
+	    }
 	    render() {
 	        if (this.state.editmode)
 	            return this.renderEditMode();
@@ -515,6 +519,7 @@
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
 	            this.state.label,
+	            this.state.addingmode ? this.renderAddForm() : null,
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
 	    }
 	    renderEditMode() {
@@ -536,7 +541,7 @@
 	        this.setState({ editmode: !this.state.editmode });
 	    }
 	    renderContextMenu() {
-	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, onDismiss: this._onDismiss.bind(this), onToggleEdit: this._onToggleEdit.bind(this) }));
+	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ addingmode: true }), onToggleEdit: this._onToggleEdit.bind(this) }));
 	    }
 	}
 	exports.default = PageTreeLabel;
@@ -714,7 +719,7 @@
 	                    key: 'new',
 	                    name: 'New',
 	                    iconProps: { iconName: "Add" },
-	                    onClick: this._onToggleSelect
+	                    onClick: this.props.onToggleAdd
 	                },
 	                {
 	                    key: 'rename',

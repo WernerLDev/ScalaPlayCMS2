@@ -6,6 +6,7 @@ import * as Api from '../../api/Api'
 export interface PageTreeContextMenuProps {
     onDismiss: () => void
     onToggleEdit: () => void
+    onToggleAdd: () => void
     target: MouseEvent
 }
 
@@ -32,7 +33,7 @@ class PageTreeContextMenu extends React.Component<PageTreeContextMenuProps, any>
                     key: 'new',
                     name: 'New',
                     iconProps: { iconName: "Add" },
-                    onClick: this._onToggleSelect
+                    onClick: this.props.onToggleAdd
                 },
                 {
                     key: 'rename',
