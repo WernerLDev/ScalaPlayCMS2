@@ -59,8 +59,21 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         });
     }
 
+    onAdded(parent_id:number, name:string, pagetype:string) {
+        this.setState({ working: true }, () => {
+            Api.addDocument(parent_id, name, pagetype).then(x => {
+                this.refresh();
+            });
+        });
+    }
+
     renderLabel(n:TreeTypes.TreeViewItem<Api.Document>) {
-        return( <PageTreeLabel onRenamed={this.onRenamed.bind(this)}  item={n} onContextTriggered={this.onContextTriggered.bind(this)} /> )
+        return( 
+            <PageTreeLabel 
+                onRenamed={this.onRenamed.bind(this)}  
+                onAdded={this.onAdded.bind(this)}
+                item={n} 
+                onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
     
     

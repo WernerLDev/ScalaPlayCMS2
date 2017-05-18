@@ -1,14 +1,17 @@
-
 import * as React from 'react';
 import * as Tree from '../TreeView/TreeViewTypes'
 import { ContextualMenu, IContextualMenuItem, DirectionalHint } from 'office-ui-fabric-react/lib/ContextualMenu';
 import * as Api from '../../api/Api'
 import PageTreeContextMenu from './PageTreeContextMenu'
+import RenameMode from '../TreeView/partials/RenameMode'
+import AddMode from '../TreeView/partials/AddMode'
+
 
 export interface PageTreeLabelProps {
     item: Tree.TreeViewItem<Api.Document>,
     onContextTriggered: (n:Tree.TreeViewItem<Api.Document>) => void
     onRenamed : (doc:Api.Document) => void
+    onAdded : (parent_id:number, name:string, pagetype:string) => void
 }
 
 export interface PageTreeLabelState {
@@ -43,27 +46,49 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         });
     }
 
-    onKeyPress(e:KeyboardEvent) {
-      if(e.keyCode == 13) {
-        var newname = (this.refs.editfield as HTMLInputElement).value;
-        this.setState({ label: newname }, () => {
-          this._onToggleEdit();
-          this.props.onRenamed({...this.props.item.item, label: newname});
-        })
-      }
+    renderContextMenu() {
+        return(
+            <PageTreeContextMenu 
+              target={this.state.menutarget.nativeEvent}
+              onDismiss={this._onDismiss.bind(this)}
+              onToggleAdd={() => this.setState({ addingmode: true })}
+              onToggleEdit={this._onToggleEdit.bind(this)} />
+        )
     }
 
     renderAddForm() {
         return(
-            <div>
-            <input type="text" name="" />
-            </div>
+            <AddMode
+                icon="file-code-o"
+                onBlur={() => this.setState({ addingmode: false })}
+                onSubmit={(val:string) => {
+                    this.setState({ addingmode: false }, () => {
+                        this.props.onAdded(this.props.item.item.id, val, "default");
+                    })
+                }}
+            />
+        )
+    }
+
+    renderEditForm() {
+         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+         return(
+            <RenameMode
+                defaultValue={this.props.item.item.label}
+                icon={icon}
+                onBlur={this._onToggleEdit.bind(this)}
+                onSubmit={(newname:string) => {
+                    this.setState({ label: newname, editmode: false }, () => {
+                        this.props.onRenamed({...this.props.item.item, label: newname});
+                    })
+                }}
+            />
         )
     }
 
     render() {
-        if(this.state.editmode) return this.renderEditMode();
         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+        if(this.state.editmode) return this.renderEditForm();
         return(
             <div onContextMenu={this.toggleContextMenu.bind(this)}>
                 <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
@@ -71,27 +96,6 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </div>
         )
-    }
-
-    renderEditMode() {
-        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
-        return(
-              <div onContextMenu={this.toggleContextMenu.bind(this)}>
-                <div className="treeicon">
-                  <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i>
-                </div>
-                <div className="treerename"> 
-                 <input 
-                    autoFocus 
-                    ref="editfield" 
-                    type="text" 
-                    onKeyDown={this.onKeyPress.bind(this)} 
-                    onBlur={this._onToggleEdit.bind(this)} 
-                    defaultValue={this.props.item.item.label} />
-                </div>
-                  {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
-              </div>
-          )
     }
 
     _onDismiss() {
@@ -106,15 +110,6 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
       this.setState({ editmode: !this.state.editmode });
     }
 
-    renderContextMenu() {
-        return(
-            <PageTreeContextMenu 
-              target={this.state.menutarget.nativeEvent}
-              onDismiss={this._onDismiss.bind(this)}
-              onToggleAdd={() => this.setState({ addingmode: true })}
-              onToggleEdit={this._onToggleEdit.bind(this)} />
-        )
-    }
 }
 
 export default PageTreeLabel;

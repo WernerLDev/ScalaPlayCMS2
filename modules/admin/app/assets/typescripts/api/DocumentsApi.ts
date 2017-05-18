@@ -25,3 +25,14 @@ export function renameDocument(doc:Document) {
     });
     return ApiCall("/admin/api/v1/documents/" + doc.id + "/rename", "PUT", body);
 }
+
+export function addDocument(parent_id:number, name:string, pagetype:string) {
+    var body = JSON.stringify({
+            "document" : {
+            "parent_id" : parent_id,
+            "name" : name,
+            "pagetype": pagetype
+        }
+    })
+    return ApiCall("/admin/api/v1/documents", "POST", body);
+}

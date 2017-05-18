@@ -24,11 +24,11 @@ ul.navItems {
         margin-left: -13px;
         .compositeLink {
             
-            display: block;
+            display: flex;
             position: relative;
             -moz-user-select: none;
                 user-select: none;
-            height: $nodeheight;
+            min-height: $nodeheight;
             color: #333;
 
             .emptyPlaceHolder {
@@ -39,21 +39,32 @@ ul.navItems {
 
             .link {
                 display: inline-block;
-                position: absolute; left: 26px; right: 0; top: 0; bottom: 0;
+                flex-grow: 1;
 
-                height: $nodeheight; line-height: $nodeheight;
+                min-height: $nodeheight; line-height: $nodeheight;
                 font-size: 13px;
                 cursor: pointer; white-space: nowrap; 
 
 
+                .renameContainer {
+                    display: flex; 
+                }
+                .addContainer {
+                    display: flex;
+                    margin-bottom: 3px;
+                    margin-left: 18px;
+                }
                 .treeicon {
-                    position: absolute; top: 0; left: 0; width: 11px; padding-top: 8px;
+                    flex-basis: 11px; padding-top: 8px;
                 }
                 .treerename {
-                    position: absolute; top: 0; left: 14px; right: 3px; bottom: 0;
+                    flex-grow: 1;
+                    margin-left: 1px;
+                    margin-right: 3px;
                     input[type='text'] {
                         border: 0; outline: 0; background: #fff; height: 22px; margin-top: 3px; width: 100%;
                         font-size: 13px;
+                        text-indent: 2px;
                         font-family: 'Varela Round', sans-serif;
                         border-radius: 3px;
                     }
@@ -61,7 +72,7 @@ ul.navItems {
             }
 
             .beforeLabel {
-                position: absolute; left: 0; 
+                flex-basis: 26px;
             }
 
             .collapseButton {
