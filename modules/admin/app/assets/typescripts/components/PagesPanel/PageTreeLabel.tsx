@@ -5,6 +5,7 @@ import * as Api from '../../api/Api'
 import PageTreeContextMenu from './PageTreeContextMenu'
 import RenameMode from '../TreeView/partials/RenameMode'
 import AddMode from '../TreeView/partials/AddMode'
+import Draggable from '../TreeView/partials/draggable'
 
 
 export interface PageTreeLabelProps {
@@ -12,6 +13,8 @@ export interface PageTreeLabelProps {
     onContextTriggered: (n:Tree.TreeViewItem<Api.Document>) => void
     onRenamed : (doc:Api.Document) => void
     onAdded : (parent_id:number, name:string, pagetype:string) => void
+    onDeleted : (item:Api.Document) => void
+    onParentChanged : (sourceid:number, targetid:number) => void
 }
 
 export interface PageTreeLabelState {
@@ -19,7 +22,8 @@ export interface PageTreeLabelState {
   menutarget : React.MouseEvent<HTMLElement>,
   editmode : boolean,
   label : string,
-  addingmode: boolean
+  addingmode: boolean,
+  deleted: boolean
 }
 
 class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelState> {
@@ -27,7 +31,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
     constructor(props:PageTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            editmode: false, contextMenuVisible: false, menutarget:null, label: props.item.name, addingmode: false
+            editmode: false, deleted: false, contextMenuVisible: false, menutarget:null, label: props.item.name, addingmode: false
         }
     }
 
@@ -52,6 +56,11 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
               target={this.state.menutarget.nativeEvent}
               onDismiss={this._onDismiss.bind(this)}
               onToggleAdd={() => this.setState({ addingmode: true })}
+              onToggleDelete={() => {
+                    this.setState({ deleted: true  }, () => {
+                        this.props.onDeleted(this.props.item.item);
+                    })
+                  }}
               onToggleEdit={this._onToggleEdit.bind(this)} />
         )
     }
@@ -90,11 +99,15 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
         if(this.state.editmode) return this.renderEditForm();
         return(
-            <div onContextMenu={this.toggleContextMenu.bind(this)}>
-                <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
-                {this.state.addingmode ? this.renderAddForm() : null}
-                {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
-            </div>
+            <Draggable 
+                onDrop={this.props.onParentChanged.bind(this)}
+                item={this.props.item}
+                className={this.state.deleted ? "deleted dragitem" : "dragitem"} 
+                onContextMenu={this.toggleContextMenu.bind(this)}>
+                    <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
+                    {this.state.addingmode ? this.renderAddForm() : null}
+                    {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
+            </Draggable>
         )
     }
 

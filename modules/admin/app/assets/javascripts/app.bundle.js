@@ -82,7 +82,7 @@
 	const SideMenu_1 = __webpack_require__(10);
 	const CommandBar_1 = __webpack_require__(7);
 	const PagesPanel_1 = __webpack_require__(11);
-	const AssetsPanel_1 = __webpack_require__(20);
+	const AssetsPanel_1 = __webpack_require__(24);
 	class Main extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -257,8 +257,29 @@
 	            });
 	        });
 	    }
+	    onAdded(parent_id, name, pagetype) {
+	        this.setState({ working: true }, () => {
+	            Api.addDocument(parent_id, name, pagetype).then(x => {
+	                this.refresh();
+	            });
+	        });
+	    }
+	    onDeleted(doc) {
+	        this.setState({ working: true }, () => {
+	            Api.deleteDocument(doc).then(x => {
+	                this.refresh();
+	            });
+	        });
+	    }
+	    onParentChanged(sourceid, targetid) {
+	        this.setState({ working: true }, () => {
+	            Api.updateParentDocument(sourceid, targetid).then(x => {
+	                this.refresh();
+	            });
+	        });
+	    }
 	    renderLabel(n) {
-	        return (React.createElement(PageTreeLabel_1.default, { onRenamed: this.onRenamed.bind(this), item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
+	        return (React.createElement(PageTreeLabel_1.default, { onRenamed: this.onRenamed.bind(this), onAdded: this.onAdded.bind(this), onDeleted: this.onDeleted.bind(this), onParentChanged: this.onParentChanged.bind(this), item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
 	    }
 	    render() {
 	        if (this.state.treeItems.length == 0) {
@@ -417,6 +438,28 @@
 	    return ApiBase_js_1.default("/admin/api/v1/documents/" + doc.id + "/rename", "PUT", body);
 	}
 	exports.renameDocument = renameDocument;
+	function addDocument(parent_id, name, pagetype) {
+	    var body = JSON.stringify({
+	        "document": {
+	            "parent_id": parent_id,
+	            "name": name,
+	            "pagetype": pagetype
+	        }
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/documents", "POST", body);
+	}
+	exports.addDocument = addDocument;
+	function deleteDocument(doc) {
+	    return ApiBase_js_1.default("/admin/api/v1/documents/" + doc.id, "DELETE");
+	}
+	exports.deleteDocument = deleteDocument;
+	function updateParentDocument(source_id, parent_id) {
+	    var body = JSON.stringify({
+	        "parent_id": parent_id
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/documents/" + source_id + "/updateparent", "PUT", body);
+	}
+	exports.updateParentDocument = updateParentDocument;
 	//# sourceMappingURL=DocumentsApi.js.map
 
 /***/ }),
@@ -479,12 +522,15 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const PageTreeContextMenu_1 = __webpack_require__(22);
+	const PageTreeContextMenu_1 = __webpack_require__(19);
+	const RenameMode_1 = __webpack_require__(21);
+	const AddMode_1 = __webpack_require__(22);
+	const draggable_1 = __webpack_require__(26);
 	class PageTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            editmode: false, contextMenuVisible: false, menutarget: null, label: props.item.name, addingmode: false
+	            editmode: false, deleted: false, contextMenuVisible: false, menutarget: null, label: props.item.name, addingmode: false
 	        };
 	    }
 	    componentWillReceiveProps(nextProps) {
@@ -498,37 +544,37 @@
 	        e.preventDefault();
 	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
 	    }
-	    onKeyPress(e) {
-	        if (e.keyCode == 13) {
-	            var newname = this.refs.editfield.value;
-	            this.setState({ label: newname }, () => {
-	                this._onToggleEdit();
-	                this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
-	            });
-	        }
+	    renderContextMenu() {
+	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ addingmode: true }), onToggleDelete: () => {
+	                this.setState({ deleted: true }, () => {
+	                    this.props.onDeleted(this.props.item.item);
+	                });
+	            }, onToggleEdit: this._onToggleEdit.bind(this) }));
 	    }
 	    renderAddForm() {
-	        return (React.createElement("div", null,
-	            React.createElement("input", { type: "text", name: "" })));
+	        return (React.createElement(AddMode_1.default, { icon: "file-code-o", onBlur: () => this.setState({ addingmode: false }), onSubmit: (val) => {
+	                this.setState({ addingmode: false }, () => {
+	                    this.props.onAdded(this.props.item.item.id, val, "default");
+	                });
+	            } }));
+	    }
+	    renderEditForm() {
+	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+	        return (React.createElement(RenameMode_1.default, { defaultValue: this.props.item.item.label, icon: icon, onBlur: this._onToggleEdit.bind(this), onSubmit: (newname) => {
+	                this.setState({ label: newname, editmode: false }, () => {
+	                    this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
+	                });
+	            } }));
 	    }
 	    render() {
-	        if (this.state.editmode)
-	            return this.renderEditMode();
 	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
-	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
+	        if (this.state.editmode)
+	            return this.renderEditForm();
+	        return (React.createElement(draggable_1.default, { onDrop: this.props.onParentChanged.bind(this), item: this.props.item, className: this.state.deleted ? "deleted dragitem" : "dragitem", onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
 	            this.state.label,
 	            this.state.addingmode ? this.renderAddForm() : null,
-	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
-	    }
-	    renderEditMode() {
-	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
-	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
-	            React.createElement("div", { className: "treeicon" },
-	                React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" })),
-	            React.createElement("div", { className: "treerename" },
-	                React.createElement("input", { autoFocus: true, ref: "editfield", type: "text", onKeyDown: this.onKeyPress.bind(this), onBlur: this._onToggleEdit.bind(this), defaultValue: this.props.item.item.label })),
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
 	    }
 	    _onDismiss() {
@@ -540,9 +586,6 @@
 	    _onToggleEdit() {
 	        this.setState({ editmode: !this.state.editmode });
 	    }
-	    renderContextMenu() {
-	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ addingmode: true }), onToggleEdit: this._onToggleEdit.bind(this) }));
-	    }
 	}
 	exports.default = PageTreeLabel;
 	//# sourceMappingURL=PageTreeLabel.js.map
@@ -551,10 +594,148 @@
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = (__webpack_require__(2))(266);
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ContextualMenu_1 = __webpack_require__(20);
+	class PageTreeContextMenu extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	    }
+	    _onToggleSelect() {
+	    }
+	    render() {
+	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.props.target, shouldFocusOnMount: true, onDismiss: this.props.onDismiss, directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
+	                {
+	                    key: 'new',
+	                    name: 'New',
+	                    iconProps: { iconName: "Add" },
+	                    onClick: this.props.onToggleAdd
+	                },
+	                {
+	                    key: 'rename',
+	                    name: 'Rename',
+	                    iconProps: { iconName: "Edit" },
+	                    onClick: this.props.onToggleEdit
+	                },
+	                {
+	                    key: 'delete',
+	                    name: 'Delete',
+	                    iconProps: { iconName: "Delete" },
+	                    onClick: this.props.onToggleDelete
+	                },
+	                {
+	                    key: 'divider_1',
+	                    name: '-',
+	                },
+	                {
+	                    key: 'print',
+	                    name: 'Print',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'music',
+	                    name: 'Music',
+	                    onClick: this._onToggleSelect
+	                },
+	                {
+	                    key: 'musicsub',
+	                    subMenuProps: {
+	                        items: [
+	                            {
+	                                key: 'emailmsg',
+	                                name: 'Email message',
+	                                onClick: this._onToggleSelect
+	                            },
+	                            {
+	                                key: 'event',
+	                                name: 'Calendar event',
+	                                onClick: this._onToggleSelect
+	                            }
+	                        ],
+	                    },
+	                    name: 'New'
+	                },
+	            ] }));
+	    }
+	}
+	exports.default = PageTreeContextMenu;
+	//# sourceMappingURL=PageTreeContextMenu.js.map
 
 /***/ }),
 /* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = (__webpack_require__(2))(266);
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	class RenameMode extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	    }
+	    render() {
+	        return (React.createElement("div", { className: "renameContainer" },
+	            React.createElement("div", { className: "treeicon" },
+	                React.createElement("i", { className: "fa fa-" + this.props.icon + " fileicon", "aria-hidden": "true" })),
+	            React.createElement("div", { className: "treerename" },
+	                React.createElement("input", { autoFocus: true, ref: "editfield", type: "text", onKeyDown: (e) => {
+	                        if (e.keyCode == 13)
+	                            this.props.onSubmit(this.refs.editfield.value);
+	                    }, onBlur: this.props.onBlur, defaultValue: this.props.defaultValue }))));
+	    }
+	}
+	exports.default = RenameMode;
+	//# sourceMappingURL=RenameMode.js.map
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	class AddMode extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	    }
+	    render() {
+	        return (React.createElement("div", { className: "addContainer" },
+	            React.createElement("div", { className: "treeicon" },
+	                React.createElement("i", { className: "fa fa-" + this.props.icon + " fileicon", "aria-hidden": "true" })),
+	            React.createElement("div", { className: "treerename" },
+	                React.createElement("input", { autoFocus: true, ref: "treeinput", onBlur: this.props.onBlur, onKeyDown: (e) => {
+	                        var nodename = this.refs.treeinput.value;
+	                        if (e.keyCode == 13)
+	                            this.props.onSubmit(nodename);
+	                    }, type: "text", name: "" }))));
+	    }
+	}
+	exports.default = AddMode;
+	//# sourceMappingURL=AddMode.js.map
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	function Loading(props) {
+	    return (React.createElement("div", { className: "loading" },
+	        React.createElement("img", { src: "/assets/images/rolling.svg", alt: "" }),
+	        " "));
+	}
+	exports.default = Loading;
+	//# sourceMappingURL=Loading.js.map
+
+/***/ }),
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -562,7 +743,7 @@
 	const React = __webpack_require__(1);
 	const TreeView_1 = __webpack_require__(12);
 	const Api = __webpack_require__(14);
-	const AssetTreeLabel_1 = __webpack_require__(21);
+	const AssetTreeLabel_1 = __webpack_require__(25);
 	class AssetsPanel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -604,13 +785,13 @@
 	//# sourceMappingURL=AssetsPanel.js.map
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ContextualMenu_1 = __webpack_require__(19);
+	const ContextualMenu_1 = __webpack_require__(20);
 	class AssetTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -700,89 +881,46 @@
 	//# sourceMappingURL=AssetTreeLabel.js.map
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ContextualMenu_1 = __webpack_require__(19);
-	class PageTreeContextMenu extends React.Component {
+	class Draggable extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	    }
-	    _onToggleSelect() {
+	    onDragStart(e) {
+	        e.dataTransfer.setData("id", this.props.item.item.id);
+	    }
+	    onDragStop(e) {
+	        e.preventDefault();
+	        this.refs.draggable.classList.remove("dragover");
+	        return false;
+	    }
+	    onDragOver(e) {
+	        e.preventDefault();
+	        this.refs.draggable.classList.add("dragover");
+	        return false;
+	    }
+	    onDragLeave(e) {
+	        e.preventDefault();
+	        this.refs.draggable.classList.remove("dragover");
+	        return false;
+	    }
+	    onDrop(e) {
+	        this.refs.draggable.classList.remove("dragover");
+	        var targetid = e.dataTransfer.getData("id");
+	        this.props.onDrop(Number(targetid), this.props.item.item.id);
+	        console.log("dropped " + targetid);
 	    }
 	    render() {
-	        return (React.createElement(ContextualMenu_1.ContextualMenu, { target: this.props.target, shouldFocusOnMount: true, onDismiss: this.props.onDismiss, directionalHint: ContextualMenu_1.DirectionalHint.bottomLeftEdge, items: [
-	                {
-	                    key: 'new',
-	                    name: 'New',
-	                    iconProps: { iconName: "Add" },
-	                    onClick: this.props.onToggleAdd
-	                },
-	                {
-	                    key: 'rename',
-	                    name: 'Rename',
-	                    onClick: this.props.onToggleEdit
-	                },
-	                {
-	                    key: 'mobile',
-	                    name: 'Mobile',
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'divider_1',
-	                    name: '-',
-	                },
-	                {
-	                    key: 'print',
-	                    name: 'Print',
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'music',
-	                    name: 'Music',
-	                    onClick: this._onToggleSelect
-	                },
-	                {
-	                    key: 'musicsub',
-	                    subMenuProps: {
-	                        items: [
-	                            {
-	                                key: 'emailmsg',
-	                                name: 'Email message',
-	                                onClick: this._onToggleSelect
-	                            },
-	                            {
-	                                key: 'event',
-	                                name: 'Calendar event',
-	                                onClick: this._onToggleSelect
-	                            }
-	                        ],
-	                    },
-	                    name: 'New'
-	                },
-	            ] }));
+	        return (React.createElement("div", { ref: "draggable", draggable: true, onDragStart: this.onDragStart.bind(this), onDragEnd: this.onDragStop.bind(this), onDragOver: this.onDragOver.bind(this), onDragLeave: this.onDragLeave.bind(this), onDropCapture: this.onDrop.bind(this), className: this.props.className, onContextMenu: this.props.onContextMenu }, this.props.children));
 	    }
 	}
-	exports.default = PageTreeContextMenu;
-	//# sourceMappingURL=PageTreeContextMenu.js.map
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	const React = __webpack_require__(1);
-	function Loading(props) {
-	    return (React.createElement("div", { className: "loading" },
-	        React.createElement("img", { src: "/assets/images/rolling.svg", alt: "" }),
-	        " "));
-	}
-	exports.default = Loading;
-	//# sourceMappingURL=Loading.js.map
+	exports.default = Draggable;
+	//# sourceMappingURL=draggable.js.map
 
 /***/ })
 /******/ ]);

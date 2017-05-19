@@ -7,6 +7,7 @@ export interface PageTreeContextMenuProps {
     onDismiss: () => void
     onToggleEdit: () => void
     onToggleAdd: () => void
+    onToggleDelete: () => void
     target: MouseEvent
 }
 
@@ -38,12 +39,14 @@ class PageTreeContextMenu extends React.Component<PageTreeContextMenuProps, any>
                 {
                     key: 'rename',
                     name: 'Rename',
+                    iconProps: { iconName: "Edit" },
                     onClick: this.props.onToggleEdit
                 },
                 {
-                    key: 'mobile',
-                    name: 'Mobile',
-                    onClick: this._onToggleSelect
+                    key: 'delete',
+                    name: 'Delete',
+                    iconProps: { iconName: "Delete" },
+                    onClick: this.props.onToggleDelete
                 },
                 {
                     key: 'divider_1',

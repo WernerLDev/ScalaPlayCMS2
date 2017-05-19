@@ -36,3 +36,14 @@ export function addDocument(parent_id:number, name:string, pagetype:string) {
     })
     return ApiCall("/admin/api/v1/documents", "POST", body);
 }
+
+export function deleteDocument(doc:Document) {
+    return ApiCall("/admin/api/v1/documents/" + doc.id, "DELETE");
+}
+
+export function updateParentDocument(source_id:number, parent_id:number) {
+    var body = JSON.stringify({
+        "parent_id": parent_id
+    });
+    return ApiCall("/admin/api/v1/documents/" + source_id + "/updateparent", "PUT", body);
+}

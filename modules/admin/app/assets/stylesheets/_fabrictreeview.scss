@@ -45,6 +45,13 @@ ul.navItems {
                 font-size: 13px;
                 cursor: pointer; white-space: nowrap; 
 
+                .deleted {
+                    color: #ff0000;
+                }
+
+                .dragover {
+                    border: 2px dotted $menuback;
+                }
 
                 .renameContainer {
                     display: flex; 

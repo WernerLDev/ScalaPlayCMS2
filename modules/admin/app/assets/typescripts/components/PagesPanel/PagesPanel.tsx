@@ -67,11 +67,29 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         });
     }
 
+    onDeleted(doc:Api.Document) {
+         this.setState({ working: true }, () => {
+            Api.deleteDocument(doc).then(x => {
+                this.refresh();
+            });
+        });
+    }
+
+    onParentChanged(sourceid:number, targetid:number) {
+        this.setState({ working: true }, () => {
+            Api.updateParentDocument(sourceid, targetid).then(x => {
+                this.refresh();
+            });
+        });
+    }
+
     renderLabel(n:TreeTypes.TreeViewItem<Api.Document>) {
         return( 
             <PageTreeLabel 
                 onRenamed={this.onRenamed.bind(this)}  
                 onAdded={this.onAdded.bind(this)}
+                onDeleted={this.onDeleted.bind(this)}
+                onParentChanged={this.onParentChanged.bind(this)}
                 item={n} 
                 onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }

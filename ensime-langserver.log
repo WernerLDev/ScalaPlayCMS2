@@ -1,23 +1,17 @@
-[2017-05-16 20:08:49,765] INFO org.github.dragos.vscode.Main$ - Starting server in /home/werner/Projects/playCMS
-[2017-05-16 20:08:49,765] INFO org.github.dragos.vscode.Main$ - Starting server in /home/werner/Projects/playCMS
-[2017-05-16 20:08:49,780] INFO org.github.dragos.vscode.Main$ - Classpath: /home/werner/.vscode/extensions/dragos.scala-lsp-0.1.4/coursier
-[2017-05-16 20:08:49,780] INFO org.github.dragos.vscode.Main$ - Classpath: /home/werner/.vscode/extensions/dragos.scala-lsp-0.1.4/coursier
-[2017-05-16 20:08:50,454] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-[2017-05-16 20:08:51,050] INFO org.github.dragos.vscode.EnsimeLanguageServer - Initialized with 6082, /home/werner/Projects/playCMS, ClientCapabilities()
-[2017-05-16 20:08:51,050] INFO org.github.dragos.vscode.EnsimeLanguageServer - Initialized with 6082, /home/werner/Projects/playCMS, ClientCapabilities()
-[2017-05-16 20:08:51,756] ERROR langserver.core.Connection - No notification type exists with method=initialized
-[2017-05-16 20:08:51,756] ERROR langserver.core.Connection - No notification type exists with method=initialized
-[2017-05-16 20:17:53,700] INFO org.github.dragos.vscode.EnsimeLanguageServer - Got hover request at (15, 9).
-[2017-05-16 20:17:53,700] INFO org.github.dragos.vscode.EnsimeLanguageServer - Got hover request at (15, 9).
-[2017-05-16 20:17:53,711] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - DocUriAtPointReq future completed: succes? false
-[2017-05-16 20:17:53,711] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - DocUriAtPointReq future completed: succes? false
-[2017-05-16 20:17:53,801] ERROR langserver.core.Connection - No notification type exists with method=$/cancelRequest
-[2017-05-16 20:17:53,801] ERROR langserver.core.Connection - No notification type exists with method=$/cancelRequest
-[2017-05-16 22:32:50,172] INFO langserver.core.MessageReader - End of stream, terminating thread
-[2017-05-16 22:32:50,172] INFO langserver.core.MessageReader - End of stream, terminating thread
-[2017-05-16 22:32:50,172] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
-[2017-05-16 22:32:50,172] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
-[2017-05-16 22:32:50,173] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
-[2017-05-16 22:32:50,173] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
-[2017-05-16 22:32:50,215] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
-[2017-05-16 22:32:50,215] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
+[2017-05-18 19:06:07,030] INFO org.github.dragos.vscode.Main$ - Starting server in /home/werner/Projects/playCMS
+[2017-05-18 19:06:07,030] INFO org.github.dragos.vscode.Main$ - Starting server in /home/werner/Projects/playCMS
+[2017-05-18 19:06:07,042] INFO org.github.dragos.vscode.Main$ - Classpath: /home/werner/.vscode/extensions/dragos.scala-lsp-0.1.4/coursier
+[2017-05-18 19:06:07,042] INFO org.github.dragos.vscode.Main$ - Classpath: /home/werner/.vscode/extensions/dragos.scala-lsp-0.1.4/coursier
+[2017-05-18 19:06:07,523] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+[2017-05-18 19:06:08,055] INFO org.github.dragos.vscode.EnsimeLanguageServer - Initialized with 4027, /home/werner/Projects/playCMS, ClientCapabilities()
+[2017-05-18 19:06:08,055] INFO org.github.dragos.vscode.EnsimeLanguageServer - Initialized with 4027, /home/werner/Projects/playCMS, ClientCapabilities()
+[2017-05-18 19:06:08,251] ERROR langserver.core.Connection - No notification type exists with method=initialized
+[2017-05-18 19:06:08,251] ERROR langserver.core.Connection - No notification type exists with method=initialized
+[2017-05-18 22:57:38,500] INFO langserver.core.MessageReader - End of stream, terminating thread
+[2017-05-18 22:57:38,500] INFO langserver.core.MessageReader - End of stream, terminating thread
+[2017-05-18 22:57:38,507] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
+[2017-05-18 22:57:38,507] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
+[2017-05-18 22:57:38,508] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
+[2017-05-18 22:57:38,508] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
+[2017-05-18 22:57:38,652] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
+[2017-05-18 22:57:38,652] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
