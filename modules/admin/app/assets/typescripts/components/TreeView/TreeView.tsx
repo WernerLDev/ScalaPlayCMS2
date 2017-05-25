@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TreeTypes from './TreeViewTypes'
-import { css } from 'office-ui-fabric-react/lib/Utilities';
 
 class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
     
@@ -22,7 +21,7 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
         document.addEventListener('mousedown', function(e:MouseEvent){
             let treeNode = ReactDOM.findDOMNode(this.refs.tree);
             let containsElement = treeNode.contains(e.target as Element);
-            let contextOpen = treeNode.getElementsByClassName("ms-Layer").length > 0;
+            let contextOpen = treeNode.getElementsByClassName("contextmenu").length > 0;
             if(!containsElement && !contextOpen) {
                 this.setState({selected: this._emptySelection});
             }
@@ -37,10 +36,7 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
     render() {
         return (
         <div ref='tree' className="TreeContainer">
-            <nav role="navigation"
-            className={ css('ms-Nav', {
-                        'is-onTop ms-u-slideRightIn40': true
-            }) }>
+            <nav role="navigation">
                 <SubTreeView 
                     visible={true}
                     items={this.props.items}
@@ -115,10 +111,10 @@ class SubTreeViewNode extends React.Component<TreeTypes.SubTreeViewNodeProps<any
     }
 
     renderCollapseBtn() {
-        let icon = this.state.collapsed ? "ChevronDown" : "ChevronDown rotateIcon";
+        let icon = this.state.collapsed ? "angle-down" : "angle-down rotateIcon";
         return(
             <span onClick={this.switchCollapseState.bind(this)} className="beforeLabel collapseButton">
-                <i className={"chevronIcon ms-Nav-chevron ms-Icon ms-Icon--"+icon} />
+                <i className={"chevronIcon fa fa-"+icon} />
             </span>
         )
     }

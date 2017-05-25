@@ -1,42 +1,61 @@
+.ui.tabular.tabbar {
+    border: 0;
+    border-radius: 0;
+    background: $color4;
+    margin: 0;
 
-.tabsContainer {
-    background: $color1;
-    min-height: 40px;
-    ul.tabs {
-        display: block;
-        list-style-type: none;
-        margin: 0; padding: 0;
-        min-height: 40px;
-        li {
-            position: relative;
-            display: block;
-            float: left;
-            font-size: 13px;
-            line-height: 40px;
-            padding: 0 5px;
-            height: 40px; margin-right: 2px;
-            background: $color2;
-            text-align: center;
-            cursor: pointer;
-            .clickarea {
-                position: absolute;
-                top: 0; left: 0; bottom: 0; right: 20px;
-            }
-            .fa-window-close { opacity: 0.4; }
-        }
-        li:hover .fa-window-close { opacity: 1 }
-        li.active {
-            background: $menuback;
-            color: #FFF;
-            -webkit-box-shadow: inset -1px 47px 31px -38px rgba(0,0,0,0.44);
--moz-box-shadow: inset -1px 47px 31px -38px rgba(0,0,0,0.44);
-box-shadow: inset -1px 47px 31px -38px rgba(0,0,0,0.44);
-        }
-    }
-    ul.tabs:after {
-        content: "";
-        display: table;
-        clear: both;
+    .active.item {
+        border: 0; border-radius: 0;
+        background: $menuback;
+        color: #FFF;
     }
 }
+
+
+.ui.inverted.segment.toolbar {
+    margin: 0;
+    background: $menuback;
+    border-radius: 0;
+}
+
+// .tabsContainer {
+//     background: $color1;
+//     min-height: 40px;
+//     ul.tabs {
+//         display: block;
+//         list-style-type: none;
+//         margin: 0; padding: 0;
+//         min-height: 40px;
+//         li {
+//             position: relative;
+//             display: block;
+//             float: left;
+//             font-size: 13px;
+//             line-height: 40px;
+//             padding: 0 5px;
+//             height: 40px; margin-right: 2px;
+//             background: $color2;
+//             text-align: center;
+//             cursor: pointer;
+//             .clickarea {
+//                 position: absolute;
+//                 top: 0; left: 0; bottom: 0; right: 20px;
+//             }
+//             .fa-window-close { opacity: 0.4; }
+//         }
+//         li:hover .fa-window-close { opacity: 1 }
+//         li.active {
+//             background: $menuback;
+//             color: #FFF;
+//             -webkit-box-shadow: inset -1px 47px 31px -38px rgba(0,0,0,0.44);
+// -moz-box-shadow: inset -1px 47px 31px -38px rgba(0,0,0,0.44);
+// box-shadow: inset -1px 47px 31px -38px rgba(0,0,0,0.44);
+//         }
+//     }
+//     ul.tabs:after {
+//         content: "";
+//         display: table;
+//         clear: both;
+//     }
+// }
 

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as Tree from '../TreeView/TreeViewTypes'
-import { ContextualMenu, IContextualMenuItem, DirectionalHint } from 'office-ui-fabric-react/lib/ContextualMenu';
 import * as Api from '../../api/Api'
 import PageTreeContextMenu from './PageTreeContextMenu'
 import RenameMode from '../TreeView/partials/RenameMode'

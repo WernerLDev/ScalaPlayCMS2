@@ -18,11 +18,11 @@ ul.navItems {
     -moz-user-select: none;
     border-left: 1px dotted #e2e2e2;
     margin-left: 30px;
-    li.navItem {
+    > li.navItem {
 
         padding: 0;
         margin-left: -13px;
-        .compositeLink {
+        > .compositeLink {
             
             display: flex;
             position: relative;
@@ -31,19 +31,28 @@ ul.navItems {
             min-height: $nodeheight;
             color: #333;
 
-            .emptyPlaceHolder {
-                width: 26px;
+            > .emptyPlaceHolder {
+                width: 26px; min-width: 26px;
                 display: inline-block;
                 margin: 15px 0 0 0;
             }
 
-            .link {
+            > .link {
                 display: inline-block;
                 flex-grow: 1;
 
                 min-height: $nodeheight; line-height: $nodeheight;
                 font-size: 13px;
                 cursor: pointer; white-space: nowrap; 
+
+                &, & > * {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .contextmenu {
+                    white-space: normal;
+                }
 
                 .deleted {
                     color: #ff0000;
@@ -94,13 +103,13 @@ ul.navItems {
                 outline: none; border: none;
                 background: none;
                 font-weight: 400;
-                font-size: 12px; line-height: $nodeheight;
+                font-size: 18px; line-height: $nodeheight;
                 .rotateIcon {
                     transform: rotate(-90deg);
                 }
 
                 .chevronIcon {
-                    outline: none; width: 26px;
+                    outline: none; width: 26px; line-height: 28px;
                     transition: transform .1s linear,-webkit-transform .1s linear;
                 }
 

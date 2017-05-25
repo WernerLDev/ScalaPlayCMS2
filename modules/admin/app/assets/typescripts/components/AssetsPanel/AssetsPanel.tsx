@@ -4,6 +4,7 @@ import TreeView from '../TreeView/TreeView'
 import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import AssetsTreeLabel from './AssetTreeLabel'
+import { Icon, Menu, Dropdown } from 'semantic-ui-react'
 
 export interface AssetPanelProps {
 
@@ -49,17 +50,43 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
     renderLabel(n:TreeTypes.TreeViewItem<Api.Asset>) {
         return( <AssetsTreeLabel item={n} onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
-    
+
+    handleItemClick() {
+        
+    }
+
     render() {
         if(this.state.treeItems.length == 0) {
             return(<div>Loading...</div>);
         }
         return (
-            <TreeView 
-                items={this.state.treeItems} 
-                onClick={() => console.log("clicked")}
-                onRenderLabel={this.renderLabel.bind(this)}
-            />
+            <div>
+                <Menu className="smalltoolbar" icon>
+                    <Menu.Menu>
+                        <Dropdown item icon="add">
+                            <Dropdown.Menu>
+                            <Dropdown.Item>English</Dropdown.Item>
+                            <Dropdown.Item>Russian</Dropdown.Item>
+                            <Dropdown.Item>Spanish</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Menu.Menu>
+
+                    <Menu.Item name='remove' active={false} onClick={this.handleItemClick.bind(this)}>
+                    <Icon name='trash' />
+                    </Menu.Item>
+
+                    <Menu.Item position='right' name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
+                    <Icon name='refresh' />
+                    </Menu.Item>
+                </Menu>
+                <TreeView 
+                    items={this.state.treeItems} 
+                    onClick={() => console.log("clicked")}
+                    onRenderLabel={this.renderLabel.bind(this)}
+                />
+
+            </div>
         );
     }
 }

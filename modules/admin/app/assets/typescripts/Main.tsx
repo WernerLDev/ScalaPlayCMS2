@@ -1,13 +1,8 @@
 import * as React from 'react'
-import { Button } from 'office-ui-fabric-react/lib/Button';
 import * as SplitPane from 'react-split-pane'
 import LargeView from './LargeView'
 import {SideMenu, SideMenuItem} from './components/SideMenu/SideMenu'
 import TreeView from './components/TreeView/TreeView'
-import ItemsMenu from './ItemsMenu'
-import TestTreeViewNode from './TestTreeViewNode'
-import { css } from 'office-ui-fabric-react/lib/Utilities';
-import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import PagesPanel from './components/PagesPanel/PagesPanel'
 import AssetsPanel from './components/AssetsPanel/AssetsPanel'
 
@@ -62,11 +57,6 @@ class Main extends React.Component<MainProps, MainState> {
                         <SplitPane split="vertical" defaultSize={400} minSize={100}>
                             <div className="leftpanel">
                                 <div className={this.state.section == "pages" ? "show" : "hide"}>
-                                    <CommandBar
-                                    isSearchBoxVisible={ false }
-                                    items={ this.itemsNonFocusable }
-                                    farItems={ this.farItemsNonFocusable }
-                                    />
                                     <PagesPanel />
                                 </div>
                                 <div className={this.state.section == "assets" ? "show" : "hide"}>

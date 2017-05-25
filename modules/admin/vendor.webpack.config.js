@@ -3,7 +3,7 @@ var webpack = require('webpack')
 
 module.exports = {
   entry: {
-    'react' : ['react', 'react-dom', 'react-split-pane', 'office-ui-fabric-react']
+    'react' : ['react', 'react-dom', 'react-split-pane', 'semantic-ui-react']
   },
 
   output: {

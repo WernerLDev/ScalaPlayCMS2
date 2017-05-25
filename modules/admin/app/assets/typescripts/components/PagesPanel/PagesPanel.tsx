@@ -4,6 +4,7 @@ import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import PageTreeLabel from './PageTreeLabel'
 import Loading from '../common/Loading'
+import { Icon, Menu, Dropdown } from 'semantic-ui-react'
 
 export interface PagesPanelProps {
 
@@ -94,7 +95,13 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
     
-    
+    handleItemClick() {
+        this.setState({...this.state, working: true}, () => {
+            setTimeout(x => {
+                this.refresh();
+            }, 500);
+        });
+    }
 
     render() {
         if(this.state.treeItems.length == 0) {
@@ -102,12 +109,31 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         }
         return (
             <div>
-                {this.state.working ? (<Loading />) : null}
+                <Menu className="smalltoolbar" icon>
+                    <Menu.Menu>
+                        <Dropdown item icon="add">
+                            <Dropdown.Menu>
+                            <Dropdown.Item>English</Dropdown.Item>
+                            <Dropdown.Item>Russian</Dropdown.Item>
+                            <Dropdown.Item>Spanish</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Menu.Menu>
+
+                    <Menu.Item name='remove' active={false} onClick={this.handleItemClick.bind(this)}>
+                    <Icon name='trash' />
+                    </Menu.Item>
+
+                    <Menu.Item position='right' name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
+                    <Icon name='refresh' />
+                    </Menu.Item>
+                </Menu>
                 <TreeView 
                     items={this.state.treeItems} 
                     onClick={() => console.log("clicked")}
                     onRenderLabel={this.renderLabel.bind(this)}
                 />
+                {this.state.working ? (<Loading />) : null}
             </div>
         );
     }
