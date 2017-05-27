@@ -15,7 +15,7 @@ type ApiParams = {
     body?:any 
 }
 
-export default function ApiCall(call:string, method:string, body?:Object, contenttype?:string) {
+export default function ApiCall(call:string, method:string, body?:string, contenttype?:string) {
     var headers:ApiHeader = {
             "Csrf-Token": csrf
     }
@@ -36,18 +36,25 @@ export default function ApiCall(call:string, method:string, body?:Object, conten
 
     return fetch(call, params).then(response => {
         if(!response.ok) {
-            response.text().then(r => {
+            return response.text().then(r => {
                 let info:ApiErrorInfo = {
                     errorCode : response.status,
                     method : method,
-                    params : JSON.stringify(body),
+                    params : body == null ? "{}" : body,
                     responseBody : r,
                     statusText : response.statusText,
                     url : call
                 }
                 ApiError(info);
+                return response;
             });
         }
         return response;
-    }).then(r => r.json());
+    }).then(r => {
+        if(r.ok) {
+            return r.json();
+        } else {
+            return r;
+        }
+    });
 }

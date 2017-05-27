@@ -15,3 +15,10 @@ export interface Asset {
 export function getAssets():Promise<Asset[]> {
     return ApiCall("/admin/api/v1/assets", "GET").then(r => r as Asset[]);
 }
+
+export function renameAsset(asset:Asset) {
+    var body = JSON.stringify({
+        "name" : asset.label
+    });
+    return ApiCall("/admin/api/v1/assets/" + asset.id + "/rename", "PUT", body);
+}

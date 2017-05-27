@@ -60,7 +60,7 @@ export function addDocument(parent_id:number, name:string, pagetype:string):Prom
             "pagetype": pagetype
         }
     })
-    return ApiCall("/admina/api/v1/documents", "POST", body);
+    return ApiCall("/admin/api/v1/documents", "POST", body);
 }
 
 export function deleteDocument(doc:Document) {

@@ -38023,3 +38023,19 @@ java.lang.NullPointerException: null
 [2017-05-27 17:07:52,009] ERROR langserver.core.Connection - No notification type exists with method=$/cancelRequest
 [2017-05-27 17:07:53,161] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - saveTextDocuemnt TextDocumentIdentifier(file:///home/werner/Projects/playCMS/modules/website/app/controllers/MainController.scala)
 [2017-05-27 17:07:53,161] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - saveTextDocuemnt TextDocumentIdentifier(file:///home/werner/Projects/playCMS/modules/website/app/controllers/MainController.scala)
+[2017-05-27 23:38:22,323] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,323] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,420] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,420] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,420] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,420] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,454] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:38:22,454] DEBUG org.github.dragos.vscode.EnsimeLanguageServer - Removing ${td.uri} from Ensime.
+[2017-05-27 23:50:25,764] INFO langserver.core.MessageReader - End of stream, terminating thread
+[2017-05-27 23:50:25,764] INFO langserver.core.MessageReader - End of stream, terminating thread
+[2017-05-27 23:50:47,072] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
+[2017-05-27 23:50:47,072] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutdown request
+[2017-05-27 23:50:50,312] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
+[2017-05-27 23:50:50,312] INFO org.github.dragos.vscode.EnsimeLanguageServer - Shutting down actor system.
+[2017-05-27 23:51:14,446] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.
+[2017-05-27 23:51:14,446] INFO org.github.dragos.vscode.EnsimeLanguageServer - Actor system down.

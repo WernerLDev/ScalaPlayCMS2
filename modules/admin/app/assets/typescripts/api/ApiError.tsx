@@ -15,6 +15,15 @@ class ApiErrorView extends React.Component<ApiErrorViewProps, any> {
         this.state = { activeItem: "response" }
     }
 
+    renderParams() {
+        let params = JSON.stringify(JSON.parse(this.props.info.params), null, 4);
+        return(
+            <div style={{ whiteSpace: 'pre' }}>
+                {params}
+            </div>
+        )
+    }
+
     render() {
         let activeItem = this.state.activeItem;
         return (
@@ -41,7 +50,7 @@ class ApiErrorView extends React.Component<ApiErrorViewProps, any> {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>Params</Table.Cell>
-                                    <Table.Cell>{this.props.info.params}</Table.Cell>
+                                    <Table.Cell>{this.renderParams()}</Table.Cell>
                                 </Table.Row>
                             </Table.Body>
                             </Table>

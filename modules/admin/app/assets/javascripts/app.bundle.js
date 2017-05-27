@@ -658,7 +658,7 @@
 	const React = __webpack_require__(1);
 	const TreeView_1 = __webpack_require__(23);
 	const Api = __webpack_require__(24);
-	const PageTreeLabel_1 = __webpack_require__(28);
+	const PageTreeLabel_1 = __webpack_require__(29);
 	const semantic_ui_react_1 = __webpack_require__(20);
 	class PagesPanel extends React.Component {
 	    constructor(props, context) {
@@ -889,7 +889,7 @@
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	__export(__webpack_require__(25));
-	__export(__webpack_require__(27));
+	__export(__webpack_require__(28));
 	//# sourceMappingURL=Api.js.map
 
 /***/ }),
@@ -922,7 +922,7 @@
 	            "pagetype": pagetype
 	        }
 	    });
-	    return ApiBase_js_1.default("/admina/api/v1/documents", "POST", body);
+	    return ApiBase_js_1.default("/admin/api/v1/documents", "POST", body);
 	}
 	exports.addDocument = addDocument;
 	function deleteDocument(doc) {
@@ -944,7 +944,7 @@
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	const ApiError_1 = __webpack_require__(37);
+	const ApiError_1 = __webpack_require__(27);
 	var csrf = document.getElementById("csrftoken").innerText;
 	function ApiCall(call, method, body, contenttype) {
 	    var headers = {
@@ -966,20 +966,28 @@
 	    }
 	    return fetch(call, params).then(response => {
 	        if (!response.ok) {
-	            response.text().then(r => {
+	            return response.text().then(r => {
 	                let info = {
 	                    errorCode: response.status,
 	                    method: method,
-	                    params: JSON.stringify(body),
+	                    params: body == null ? "{}" : body,
 	                    responseBody: r,
 	                    statusText: response.statusText,
 	                    url: call
 	                };
 	                ApiError_1.default(info);
+	                return response;
 	            });
 	        }
 	        return response;
-	    }).then(r => r.json());
+	    }).then(r => {
+	        if (r.ok) {
+	            return r.json();
+	        }
+	        else {
+	            return r;
+	        }
+	    });
 	}
 	exports.default = ApiCall;
 	//# sourceMappingURL=ApiBase.js.map
@@ -990,12 +998,52 @@
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	const ApiBase_js_1 = __webpack_require__(26);
-	function getAssets() {
-	    return ApiBase_js_1.default("/admin/api/v1/assets", "GET").then(r => r);
+	const React = __webpack_require__(1);
+	const ReactDOM = __webpack_require__(3);
+	const semantic_ui_react_1 = __webpack_require__(20);
+	class ApiErrorView extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = { activeItem: "response" };
+	    }
+	    renderParams() {
+	        let params = JSON.stringify(JSON.parse(this.props.info.params), null, 4);
+	        return (React.createElement("div", { style: { whiteSpace: 'pre' } }, params));
+	    }
+	    render() {
+	        let activeItem = this.state.activeItem;
+	        return (React.createElement(semantic_ui_react_1.Modal, { style: { minHeight: "500px" }, onClose: this.props.onClose, defaultOpen: true },
+	            React.createElement(semantic_ui_react_1.Modal.Header, null,
+	                "Error ",
+	                this.props.info.errorCode + ": " + this.props.info.statusText),
+	            React.createElement(semantic_ui_react_1.Modal.Content, null,
+	                React.createElement(semantic_ui_react_1.Modal.Description, null,
+	                    React.createElement(semantic_ui_react_1.Menu, { pointing: true, secondary: true },
+	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'response', active: activeItem === 'response', onClick: () => this.setState({ activeItem: "response" }) }),
+	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'info', active: activeItem === 'info', onClick: () => this.setState({ activeItem: "info" }) })),
+	                    React.createElement("div", { style: { display: activeItem == "info" ? "block" : "none" } },
+	                        React.createElement(semantic_ui_react_1.Table, { basic: 'very' },
+	                            React.createElement(semantic_ui_react_1.Table.Body, null,
+	                                React.createElement(semantic_ui_react_1.Table.Row, null,
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Request method"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.method)),
+	                                React.createElement(semantic_ui_react_1.Table.Row, null,
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "URL"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.url)),
+	                                React.createElement(semantic_ui_react_1.Table.Row, null,
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Params"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.renderParams()))))),
+	                    React.createElement("iframe", { style: { display: activeItem == "response" ? "block" : "none" }, width: "100%", height: "342", src: "data:text/html;charset=utf-8," + encodeURI(this.props.info.responseBody) })))));
+	    }
 	}
-	exports.getAssets = getAssets;
-	//# sourceMappingURL=AssetsApi.js.map
+	function ApiError(info) {
+	    let onClose = function () {
+	        document.getElementById("errordiv").innerHTML = "";
+	    };
+	    ReactDOM.render(React.createElement(ApiErrorView, { info: info, onClose: onClose }), document.getElementById('errordiv'));
+	}
+	exports.default = ApiError;
+	//# sourceMappingURL=ApiError.js.map
 
 /***/ }),
 /* 28 */
@@ -1003,11 +1051,31 @@
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
+	const ApiBase_js_1 = __webpack_require__(26);
+	function getAssets() {
+	    return ApiBase_js_1.default("/admin/api/v1/assets", "GET").then(r => r);
+	}
+	exports.getAssets = getAssets;
+	function renameAsset(asset) {
+	    var body = JSON.stringify({
+	        "name": asset.label
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/assets/" + asset.id + "/rename", "PUT", body);
+	}
+	exports.renameAsset = renameAsset;
+	//# sourceMappingURL=AssetsApi.js.map
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const PageTreeContextMenu_1 = __webpack_require__(29);
-	const RenameMode_1 = __webpack_require__(31);
-	const AddMode_1 = __webpack_require__(32);
-	const draggable_1 = __webpack_require__(33);
+	const PageTreeContextMenu_1 = __webpack_require__(30);
+	const RenameMode_1 = __webpack_require__(32);
+	const AddMode_1 = __webpack_require__(33);
+	const draggable_1 = __webpack_require__(34);
 	class PageTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -1075,13 +1143,13 @@
 	//# sourceMappingURL=PageTreeLabel.js.map
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ContextMenu_1 = __webpack_require__(30);
+	const ContextMenu_1 = __webpack_require__(31);
 	class PageTreeContextMenu extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -1142,7 +1210,7 @@
 	//# sourceMappingURL=PageTreeContextMenu.js.map
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1200,7 +1268,7 @@
 	//# sourceMappingURL=ContextMenu.js.map
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1225,7 +1293,7 @@
 	//# sourceMappingURL=RenameMode.js.map
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1251,7 +1319,7 @@
 	//# sourceMappingURL=AddMode.js.map
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1292,7 +1360,6 @@
 	//# sourceMappingURL=draggable.js.map
 
 /***/ }),
-/* 34 */,
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1307,7 +1374,7 @@
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            assets: [], treeItems: []
+	            assets: [], treeItems: [], working: false
 	        };
 	    }
 	    toTreeItems(assets) {
@@ -1328,10 +1395,21 @@
 	        });
 	    }
 	    onContextTriggered(n) {
-	        console.log("asdfasdf");
+	    }
+	    onDeleted(item) {
+	    }
+	    onRenamed(asset) {
+	        this.setState({ working: true }, () => {
+	            Api.renameAsset(asset).then(x => {
+	                Api.getAssets().then(assets => {
+	                    var items = this.toTreeItems(assets);
+	                    this.setState({ assets: assets, treeItems: items, working: false });
+	                });
+	            });
+	        });
 	    }
 	    renderLabel(n) {
-	        return (React.createElement(AssetTreeLabel_1.default, { item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
+	        return (React.createElement(AssetTreeLabel_1.default, { item: n, onRenamed: this.onRenamed.bind(this), onDeleted: this.onDeleted.bind(this), onContextTriggered: this.onContextTriggered.bind(this) }));
 	    }
 	    handleItemClick() {
 	    }
@@ -1341,16 +1419,7 @@
 	        }
 	        return (React.createElement("div", null,
 	            React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
-	                React.createElement(semantic_ui_react_1.Menu.Menu, null,
-	                    React.createElement(semantic_ui_react_1.Dropdown, { item: true, icon: "add" },
-	                        React.createElement(semantic_ui_react_1.Dropdown.Menu, null,
-	                            React.createElement(semantic_ui_react_1.Dropdown.Item, null, "English"),
-	                            React.createElement(semantic_ui_react_1.Dropdown.Item, null, "Russian"),
-	                            React.createElement(semantic_ui_react_1.Dropdown.Item, null, "Spanish")))),
-	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'remove', active: false, onClick: this.handleItemClick.bind(this) },
-	                    React.createElement(semantic_ui_react_1.Icon, { name: 'trash' })),
-	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) },
-	                    React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
+	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
 	            React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) })));
 	    }
 	}
@@ -1364,6 +1433,9 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
+	const AssetContextMenu_1 = __webpack_require__(37);
+	const RenameMode_1 = __webpack_require__(32);
+	const AssetIcons_1 = __webpack_require__(38);
 	class AssetTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
@@ -1379,14 +1451,30 @@
 	            contextMenuVisible: true, menutarget: e
 	        });
 	    }
+	    _onToggleEdit() {
+	        this.setState({ editmode: !this.state.editmode });
+	    }
+	    renderEditForm() {
+	        return (React.createElement(RenameMode_1.default, { defaultValue: this.props.item.item.label, icon: AssetIcons_1.getAssetIcon(this.props.item.item.mimetype), onBlur: this._onToggleEdit.bind(this), onSubmit: (newname) => {
+	                this.setState({ label: newname, editmode: false }, () => {
+	                    this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
+	                });
+	            } }));
+	    }
 	    renderContextMenu() {
-	        return null;
+	        let mimetype = this.props.item.item.mimetype;
+	        return (React.createElement(AssetContextMenu_1.default, { target: this.state.menutarget.nativeEvent, canCreate: mimetype == "home" || mimetype == "folder", canDelete: mimetype != "home", onDismiss: this._onDismiss.bind(this), onToggleDelete: () => {
+	                if (confirm("Are you sure?")) {
+	                    this.setState({ deleted: true }, () => {
+	                        this.props.onDeleted(this.props.item.item);
+	                    });
+	                }
+	            }, onToggleEdit: this._onToggleEdit.bind(this) }));
 	    }
 	    render() {
-	        let icon = this.props.item.item.mimetype == "home" ? "home" : "file-image-o";
-	        if (this.props.item.item.mimetype == "folder") {
-	            icon = "folder";
-	        }
+	        let icon = AssetIcons_1.getAssetIcon(this.props.item.item.mimetype);
+	        if (this.state.editmode)
+	            return this.renderEditForm();
 	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
@@ -1410,47 +1498,90 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const React = __webpack_require__(1);
-	const ReactDOM = __webpack_require__(3);
-	const semantic_ui_react_1 = __webpack_require__(20);
-	class ApiErrorView extends React.Component {
+	const ContextMenu_1 = __webpack_require__(31);
+	class AssetContextMenu extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
-	        this.state = { activeItem: "response" };
+	    }
+	    handleItemClick() {
 	    }
 	    render() {
-	        let activeItem = this.state.activeItem;
-	        return (React.createElement(semantic_ui_react_1.Modal, { style: { minHeight: "500px" }, onClose: this.props.onClose, defaultOpen: true },
-	            React.createElement(semantic_ui_react_1.Modal.Header, null,
-	                "Error ",
-	                this.props.info.errorCode + ": " + this.props.info.statusText),
-	            React.createElement(semantic_ui_react_1.Modal.Content, null,
-	                React.createElement(semantic_ui_react_1.Modal.Description, null,
-	                    React.createElement(semantic_ui_react_1.Menu, { pointing: true, secondary: true },
-	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'response', active: activeItem === 'response', onClick: () => this.setState({ activeItem: "response" }) }),
-	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'info', active: activeItem === 'info', onClick: () => this.setState({ activeItem: "info" }) })),
-	                    React.createElement("div", { style: { display: activeItem == "info" ? "block" : "none" } },
-	                        React.createElement(semantic_ui_react_1.Table, { basic: 'very' },
-	                            React.createElement(semantic_ui_react_1.Table.Body, null,
-	                                React.createElement(semantic_ui_react_1.Table.Row, null,
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Request method"),
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.method)),
-	                                React.createElement(semantic_ui_react_1.Table.Row, null,
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "URL"),
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.url)),
-	                                React.createElement(semantic_ui_react_1.Table.Row, null,
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Params"),
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.params))))),
-	                    React.createElement("iframe", { style: { display: activeItem == "response" ? "block" : "none" }, width: "100%", height: "342", src: "data:text/html;charset=utf-8," + encodeURI(this.props.info.responseBody) })))));
+	        let target = {
+	            x: this.props.target.clientX,
+	            y: this.props.target.clientY
+	        };
+	        let createItems = [
+	            {
+	                icon: "plus",
+	                label: "Create New folder  ",
+	                onClick: this.handleItemClick.bind(this),
+	                children: []
+	            },
+	            {
+	                label: "Upload...",
+	                onClick: this.handleItemClick.bind(this),
+	                children: []
+	            }
+	        ];
+	        let removeItem = {
+	            icon: "trash",
+	            label: "Remove",
+	            onClick: this.props.onToggleDelete,
+	            children: []
+	        };
+	        let otherItems = [
+	            {
+	                icon: "write",
+	                label: "Rename",
+	                onClick: this.props.onToggleEdit,
+	                children: []
+	            },
+	            {
+	                label: "Properties",
+	                onClick: this.handleItemClick.bind(this),
+	                children: []
+	            },
+	            {
+	                label: "Open",
+	                onClick: this.handleItemClick.bind(this),
+	                children: []
+	            }
+	        ];
+	        var items = otherItems;
+	        if (this.props.canCreate) {
+	            items = createItems.concat(items);
+	        }
+	        if (this.props.canDelete) {
+	            items = items.concat(removeItem);
+	        }
+	        return (React.createElement(ContextMenu_1.default, { target: target, items: items, onDismiss: this.props.onDismiss }));
 	    }
 	}
-	function ApiError(info) {
-	    let onClose = function () {
-	        document.getElementById("errordiv").innerHTML = "";
-	    };
-	    ReactDOM.render(React.createElement(ApiErrorView, { info: info, onClose: onClose }), document.getElementById('errordiv'));
+	exports.default = AssetContextMenu;
+	//# sourceMappingURL=AssetContextMenu.js.map
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	function getAssetIcon(mimetype) {
+	    switch (mimetype) {
+	        case "home":
+	            return "home";
+	        case "folder":
+	            return "folder";
+	        case "image/jpeg":
+	            return "file-image-o";
+	        case "text/plain":
+	            return "file-text-o";
+	        default:
+	            return "file-o";
+	    }
 	}
-	exports.default = ApiError;
-	//# sourceMappingURL=ApiError.js.map
+	exports.getAssetIcon = getAssetIcon;
+	//# sourceMappingURL=AssetIcons.js.map
 
 /***/ })
 /******/ ]);

@@ -4,7 +4,7 @@ import TreeView from '../TreeView/TreeView'
 import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import AssetsTreeLabel from './AssetTreeLabel'
-import { Icon, Menu, Dropdown } from 'semantic-ui-react'
+import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 
 export interface AssetPanelProps {
 
@@ -12,7 +12,8 @@ export interface AssetPanelProps {
 
 export interface AssetPanelState {
     assets: Api.Asset[],
-    treeItems : TreeTypes.TreeViewItem<Api.Asset>[]
+    treeItems : TreeTypes.TreeViewItem<Api.Asset>[],
+    working : boolean
 }
 
 class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
@@ -20,7 +21,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
     constructor(props:AssetPanelProps, context:any) {
         super(props, context);
         this.state = {
-            assets: [], treeItems: []
+            assets: [], treeItems: [], working: false
         }
     }
  
@@ -44,11 +45,30 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
     }
 
     onContextTriggered(n:TreeTypes.TreeViewItem<Api.Asset>) {
-        console.log("asdfasdf");
+    }
+
+    onDeleted(item:Api.Asset) {
+
+    }
+
+    onRenamed(asset:Api.Asset) {
+        this.setState({ working: true }, () => {
+            Api.renameAsset(asset).then(x => {
+                Api.getAssets().then(assets => {
+                    var items = this.toTreeItems(assets);
+                    this.setState({ assets: assets, treeItems: items, working: false });
+                })
+            })
+        });
     }
 
     renderLabel(n:TreeTypes.TreeViewItem<Api.Asset>) {
-        return( <AssetsTreeLabel item={n} onContextTriggered={this.onContextTriggered.bind(this)} /> )
+        return( 
+            <AssetsTreeLabel 
+                item={n} 
+                onRenamed={this.onRenamed.bind(this)}
+                onDeleted={this.onDeleted.bind(this)}
+                onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
 
     handleItemClick() {
@@ -62,22 +82,8 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         return (
             <div>
                 <Menu className="smalltoolbar" icon>
-                    <Menu.Menu>
-                        <Dropdown item icon="add">
-                            <Dropdown.Menu>
-                            <Dropdown.Item>English</Dropdown.Item>
-                            <Dropdown.Item>Russian</Dropdown.Item>
-                            <Dropdown.Item>Spanish</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Menu.Menu>
-
-                    <Menu.Item name='remove' active={false} onClick={this.handleItemClick.bind(this)}>
-                    <Icon name='trash' />
-                    </Menu.Item>
-
                     <Menu.Item position='right' name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
-                    <Icon name='refresh' />
+                        {this.state.working ? <Loader active size="tiny" inline /> : <Icon name='refresh' />}
                     </Menu.Item>
                 </Menu>
                 <TreeView 
