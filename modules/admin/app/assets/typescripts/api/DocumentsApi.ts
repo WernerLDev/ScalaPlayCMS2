@@ -2,31 +2,57 @@ import ApiCall from './ApiBase.js';
 
 export interface Document {
     id : number,
-    key : string,
-    path : string,
-    label : string,
+    parent_id : number,
+    name : string,
     doctype : string,
-    collapsed : boolean,
-    published : boolean,
-    children : Document[]
+    collapsed: boolean,
+    view : string,
+    path : string,
+    title : string,
+    locale : string,
+    description : string,
+    created_at : number,
+    updated_at : number,
+    published_at : number
 }
 
-export function getPageTypes() {
-    return ApiCall("/api/v1/pagetypes", "GET");
+// export interface DocumentTree {
+//     id : number,
+//     key : string,
+//     path : string,
+//     label : string,
+//     doctype : string,
+//     collapsed : boolean,
+//     published : boolean,
+//     children : DocumentTree[]
+// }
+
+export interface DocumentTree {
+    doc : Document,
+    children: DocumentTree[]
 }
 
-export function getDocuments():Promise<Document[]> {
-    return ApiCall("/admin/api/v1/documents", "GET").then(r => r as Document[]);
+export interface PageType {
+    typekey : string,
+    typename : string
+}
+
+export function getPageTypes():Promise<PageType[]> {
+    return ApiCall("/admin/api/v1/pagetypes", "GET").then(r => r.pagetypes as PageType[]);
+}
+
+export function getDocuments():Promise<DocumentTree[]> {
+    return ApiCall("/admin/api/v1/documents", "GET").then(r => r as DocumentTree[]);
 }
 
 export function renameDocument(doc:Document) {
     var body = JSON.stringify({
-        "name" : doc.label
+        "name" : doc.name
     });
     return ApiCall("/admin/api/v1/documents/" + doc.id + "/rename", "PUT", body);
 }
 
-export function addDocument(parent_id:number, name:string, pagetype:string) {
+export function addDocument(parent_id:number, name:string, pagetype:string):Promise<Document> {
     var body = JSON.stringify({
             "document" : {
             "parent_id" : parent_id,
@@ -34,7 +60,7 @@ export function addDocument(parent_id:number, name:string, pagetype:string) {
             "pagetype": pagetype
         }
     })
-    return ApiCall("/admin/api/v1/documents", "POST", body);
+    return ApiCall("/admina/api/v1/documents", "POST", body);
 }
 
 export function deleteDocument(doc:Document) {

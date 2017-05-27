@@ -4,16 +4,18 @@ import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import PageTreeLabel from './PageTreeLabel'
 import Loading from '../common/Loading'
-import { Icon, Menu, Dropdown } from 'semantic-ui-react'
+import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 
 export interface PagesPanelProps {
 
 }
 
 export interface PagesPanelState {
-    documents: Api.Document[],
-    treeItems : TreeTypes.TreeViewItem<Api.Document>[]
+    documents: Api.DocumentTree[],
+    treeItems : TreeTypes.TreeViewItem<Api.DocumentTree>[]
     working : boolean
+    pagetypes : Api.PageType[]
+    selected: TreeTypes.TreeViewItem<Api.DocumentTree>
 }
 
 class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
@@ -21,16 +23,16 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
     constructor(props:PagesPanelProps, context:any) {
         super(props, context);
         this.state = {
-            documents: [], treeItems: [], working: true
+            documents: [], treeItems: [], working: true, pagetypes: [], selected: null
         }
     }
  
-    toTreeItems(docs:Api.Document[]):TreeTypes.TreeViewItem<Api.Document>[] {
+    toTreeItems(docs:Api.DocumentTree[]):TreeTypes.TreeViewItem<Api.DocumentTree>[] {
         return docs.map(doc => {
             return {
-                key : doc.id.toString(),
-                name : doc.label,
-                collapsed : doc.collapsed,
+                key : doc.doc.id.toString(),
+                name : doc.doc.name,
+                collapsed : doc.doc.collapsed,
                 children: this.toTreeItems(doc.children),
                 item: doc
             }
@@ -45,14 +47,18 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
     }
 
     componentDidMount() {
-        this.refresh();
+        Api.getPageTypes().then(types => {
+            Api.getDocuments().then(documents => {
+                var items = this.toTreeItems(documents);
+                this.setState({ documents: documents, pagetypes: types, treeItems: items, working: false });
+            });
+        });
     }
 
-    onContextTriggered(n:TreeTypes.TreeViewItem<Api.Document>) {
+    onContextTriggered(n:TreeTypes.TreeViewItem<Api.DocumentTree>) {
     }
 
     onRenamed(doc:Api.Document) {
-        console.log("Got new name" + doc.label);
         this.setState({ working: true }, () => {
             Api.renameDocument(doc).then(x => {
                 this.refresh();
@@ -63,7 +69,17 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
     onAdded(parent_id:number, name:string, pagetype:string) {
         this.setState({ working: true }, () => {
             Api.addDocument(parent_id, name, pagetype).then(x => {
-                this.refresh();
+                Api.getDocuments().then(documents => {
+                    var items = this.toTreeItems(documents);
+                    var newSelection:TreeTypes.TreeViewItem<Api.DocumentTree> = {
+                        key : x.id.toString(),
+                        name : x.name,
+                        collapsed : x.collapsed,
+                        children: [],
+                        item: null
+                    }
+                    this.setState({ documents: documents, treeItems: items, selected: newSelection, working: false });
+                });
             });
         });
     }
@@ -84,13 +100,14 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         });
     }
 
-    renderLabel(n:TreeTypes.TreeViewItem<Api.Document>) {
+    renderLabel(n:TreeTypes.TreeViewItem<Api.DocumentTree>) {
         return( 
             <PageTreeLabel 
                 onRenamed={this.onRenamed.bind(this)}  
                 onAdded={this.onAdded.bind(this)}
                 onDeleted={this.onDeleted.bind(this)}
                 onParentChanged={this.onParentChanged.bind(this)}
+                pagetypes={this.state.pagetypes}
                 item={n} 
                 onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
@@ -105,35 +122,35 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
 
     render() {
         if(this.state.treeItems.length == 0) {
-            return(<Loading />);
+            return(<Menu className="smalltoolbar" icon>
+                
+                <Menu.Item name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
+                    <Icon name='refresh' />
+                </Menu.Item>
+                <Menu.Item position='right'>
+                    <Loader active size="tiny" inline />
+                </Menu.Item>
+            </Menu>);
         }
         return (
             <div>
                 <Menu className="smalltoolbar" icon>
-                    <Menu.Menu>
-                        <Dropdown item icon="add">
-                            <Dropdown.Menu>
-                            <Dropdown.Item>English</Dropdown.Item>
-                            <Dropdown.Item>Russian</Dropdown.Item>
-                            <Dropdown.Item>Spanish</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Menu.Menu>
-
-                    <Menu.Item name='remove' active={false} onClick={this.handleItemClick.bind(this)}>
-                    <Icon name='trash' />
+                    
+                    <Menu.Item name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
+                        <Icon name='refresh' />
                     </Menu.Item>
-
-                    <Menu.Item position='right' name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
-                    <Icon name='refresh' />
-                    </Menu.Item>
+                    {this.state.working ? <Menu.Item position='right'>
+                        <Loader active size="tiny" inline />
+                    </Menu.Item> : null}
                 </Menu>
                 <TreeView 
                     items={this.state.treeItems} 
-                    onClick={() => console.log("clicked")}
+                    selected={this.state.selected}
+                    onClick={(n:TreeTypes.TreeViewItem<Api.DocumentTree>) => {
+                            this.setState({selected: n})
+                        }}
                     onRenderLabel={this.renderLabel.bind(this)}
                 />
-                {this.state.working ? (<Loading />) : null}
             </div>
         );
     }

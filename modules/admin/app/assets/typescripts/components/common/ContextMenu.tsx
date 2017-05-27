@@ -31,10 +31,13 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
         document.addEventListener('mousedown', this.mouseDown);
     }
 
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.mouseDown);
+    }
+
     onDismiss(e:MouseEvent) {
         let menu = this.refs.contextmenu as HTMLElement;
-        if(!menu.contains(e.target as HTMLElement)) {
-            document.removeEventListener('mousedown', this.mouseDown);
+        if(menu != undefined && !menu.contains(e.target as HTMLElement)) {
             this.props.onDismiss();
         }
     }
@@ -45,21 +48,27 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
             item.onClick();
         }
         return(
-             <Menu.Item name={item.label} icon={item.icon} active={false} onClick={itemClicked} />
+             <Menu.Item key={item.label} name={item.label} icon={item.icon} active={false} onClick={itemClicked} />
         )
     }
 
     renderSubMenuItem(item:ContextMenuItem) {
         return(
-            <Dropdown item text={item.label}>
+            <Dropdown key={item.label} item text={item.label}>
                 <Dropdown.Menu>
-                    {item.children.map(x => <Dropdown.Item icon={x.icon} text={x.label} />)}
+                    {item.children.map(x => {
+                       const itemClicked = () => {
+                            this.props.onDismiss();
+                            x.onClick();
+                        }
+                        return(<Dropdown.Item key={x.label} icon={x.icon} text={x.label} onClick={itemClicked}  />)
+                    })}
                 </Dropdown.Menu>
             </Dropdown>
         );
     }
 
-    renderItems(item:ContextMenuItem) {
+    renderItem(item:ContextMenuItem) {
         if(item.children.length > 0) return this.renderSubMenuItem(item);
         else return this.renderMenuItem(item); 
     }
@@ -70,8 +79,8 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
 
         return (
             <div className="contextmenu" ref="contextmenu" style={{ position: 'fixed', top: top, left: left, zIndex: 999 }}>
-                <Menu compact pointing vertical>
-                    {this.props.items.map(x => this.renderItems(x))}
+            <Menu compact pointing vertical>
+                    {this.props.items.map(x => this.renderItem(x))}
                 </Menu>
             </div>
         );

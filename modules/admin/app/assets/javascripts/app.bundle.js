@@ -659,21 +659,20 @@
 	const TreeView_1 = __webpack_require__(23);
 	const Api = __webpack_require__(24);
 	const PageTreeLabel_1 = __webpack_require__(28);
-	const Loading_1 = __webpack_require__(34);
 	const semantic_ui_react_1 = __webpack_require__(20);
 	class PagesPanel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            documents: [], treeItems: [], working: true
+	            documents: [], treeItems: [], working: true, pagetypes: [], selected: null
 	        };
 	    }
 	    toTreeItems(docs) {
 	        return docs.map(doc => {
 	            return {
-	                key: doc.id.toString(),
-	                name: doc.label,
-	                collapsed: doc.collapsed,
+	                key: doc.doc.id.toString(),
+	                name: doc.doc.name,
+	                collapsed: doc.doc.collapsed,
 	                children: this.toTreeItems(doc.children),
 	                item: doc
 	            };
@@ -686,12 +685,16 @@
 	        });
 	    }
 	    componentDidMount() {
-	        this.refresh();
+	        Api.getPageTypes().then(types => {
+	            Api.getDocuments().then(documents => {
+	                var items = this.toTreeItems(documents);
+	                this.setState({ documents: documents, pagetypes: types, treeItems: items, working: false });
+	            });
+	        });
 	    }
 	    onContextTriggered(n) {
 	    }
 	    onRenamed(doc) {
-	        console.log("Got new name" + doc.label);
 	        this.setState({ working: true }, () => {
 	            Api.renameDocument(doc).then(x => {
 	                this.refresh();
@@ -701,7 +704,17 @@
 	    onAdded(parent_id, name, pagetype) {
 	        this.setState({ working: true }, () => {
 	            Api.addDocument(parent_id, name, pagetype).then(x => {
-	                this.refresh();
+	                Api.getDocuments().then(documents => {
+	                    var items = this.toTreeItems(documents);
+	                    var newSelection = {
+	                        key: x.id.toString(),
+	                        name: x.name,
+	                        collapsed: x.collapsed,
+	                        children: [],
+	                        item: null
+	                    };
+	                    this.setState({ documents: documents, treeItems: items, selected: newSelection, working: false });
+	                });
 	            });
 	        });
 	    }
@@ -720,7 +733,7 @@
 	        });
 	    }
 	    renderLabel(n) {
-	        return (React.createElement(PageTreeLabel_1.default, { onRenamed: this.onRenamed.bind(this), onAdded: this.onAdded.bind(this), onDeleted: this.onDeleted.bind(this), onParentChanged: this.onParentChanged.bind(this), item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
+	        return (React.createElement(PageTreeLabel_1.default, { onRenamed: this.onRenamed.bind(this), onAdded: this.onAdded.bind(this), onDeleted: this.onDeleted.bind(this), onParentChanged: this.onParentChanged.bind(this), pagetypes: this.state.pagetypes, item: n, onContextTriggered: this.onContextTriggered.bind(this) }));
 	    }
 	    handleItemClick() {
 	        this.setState(Object.assign({}, this.state, { working: true }), () => {
@@ -731,22 +744,21 @@
 	    }
 	    render() {
 	        if (this.state.treeItems.length == 0) {
-	            return (React.createElement(Loading_1.default, null));
+	            return (React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
+	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) },
+	                    React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' })),
+	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right' },
+	                    React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }))));
 	        }
 	        return (React.createElement("div", null,
 	            React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
-	                React.createElement(semantic_ui_react_1.Menu.Menu, null,
-	                    React.createElement(semantic_ui_react_1.Dropdown, { item: true, icon: "add" },
-	                        React.createElement(semantic_ui_react_1.Dropdown.Menu, null,
-	                            React.createElement(semantic_ui_react_1.Dropdown.Item, null, "English"),
-	                            React.createElement(semantic_ui_react_1.Dropdown.Item, null, "Russian"),
-	                            React.createElement(semantic_ui_react_1.Dropdown.Item, null, "Spanish")))),
-	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'remove', active: false, onClick: this.handleItemClick.bind(this) },
-	                    React.createElement(semantic_ui_react_1.Icon, { name: 'trash' })),
-	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) },
-	                    React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
-	            React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }),
-	            this.state.working ? (React.createElement(Loading_1.default, null)) : null));
+	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) },
+	                    React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' })),
+	                this.state.working ? React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right' },
+	                    React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true })) : null),
+	            React.createElement(TreeView_1.default, { items: this.state.treeItems, selected: this.state.selected, onClick: (n) => {
+	                    this.setState({ selected: n });
+	                }, onRenderLabel: this.renderLabel.bind(this) })));
 	    }
 	}
 	exports.default = PagesPanel;
@@ -770,14 +782,28 @@
 	            children: [],
 	            item: {}
 	        };
-	        this.state = { selected: this._emptySelection };
+	        if (this.props.selected) {
+	            this.state = { selected: this.props.selected };
+	        }
+	        else {
+	            this.state = { selected: this._emptySelection };
+	        }
+	    }
+	    componentWillReceiveProps(nextprops) {
+	        let notNull = nextprops.selected != null && this.props.selected != null;
+	        if (notNull && nextprops.selected.key != this.props.selected.key) {
+	            this.setState({ selected: nextprops.selected });
+	        }
 	    }
 	    componentDidMount() {
 	        document.addEventListener('mousedown', function (e) {
 	            let treeNode = ReactDOM.findDOMNode(this.refs.tree);
-	            let containsElement = treeNode.contains(e.target);
+	            let targetElement = e.target;
+	            let targetParent = targetElement.parentElement;
+	            let isTreeAction = targetElement.classList.contains("treeaction") || targetParent.classList.contains("treeaction");
+	            let containsElement = treeNode.contains(targetElement);
 	            let contextOpen = treeNode.getElementsByClassName("contextmenu").length > 0;
-	            if (!containsElement && !contextOpen) {
+	            if (!containsElement && !contextOpen && !isTreeAction) {
 	                this.setState({ selected: this._emptySelection });
 	            }
 	        }.bind(this));
@@ -874,7 +900,7 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	const ApiBase_js_1 = __webpack_require__(26);
 	function getPageTypes() {
-	    return ApiBase_js_1.default("/api/v1/pagetypes", "GET");
+	    return ApiBase_js_1.default("/admin/api/v1/pagetypes", "GET").then(r => r.pagetypes);
 	}
 	exports.getPageTypes = getPageTypes;
 	function getDocuments() {
@@ -883,7 +909,7 @@
 	exports.getDocuments = getDocuments;
 	function renameDocument(doc) {
 	    var body = JSON.stringify({
-	        "name": doc.label
+	        "name": doc.name
 	    });
 	    return ApiBase_js_1.default("/admin/api/v1/documents/" + doc.id + "/rename", "PUT", body);
 	}
@@ -896,7 +922,7 @@
 	            "pagetype": pagetype
 	        }
 	    });
-	    return ApiBase_js_1.default("/admin/api/v1/documents", "POST", body);
+	    return ApiBase_js_1.default("/admina/api/v1/documents", "POST", body);
 	}
 	exports.addDocument = addDocument;
 	function deleteDocument(doc) {
@@ -914,21 +940,12 @@
 
 /***/ }),
 /* 26 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
+	const ApiError_1 = __webpack_require__(37);
 	var csrf = document.getElementById("csrftoken").innerText;
-	function handleErrors(response) {
-	    if (!response.ok) {
-	        response.text().then(r => {
-	            alert(response.status + " - " + response.statusText + "\n" + r);
-	        });
-	    }
-	    else {
-	        return response;
-	    }
-	}
 	function ApiCall(call, method, body, contenttype) {
 	    var headers = {
 	        "Csrf-Token": csrf
@@ -947,7 +964,22 @@
 	    if ((method != "GET" && method != "HEAD") && body != null) {
 	        params["body"] = body;
 	    }
-	    return fetch(call, params).then(handleErrors).then(r => r.json());
+	    return fetch(call, params).then(response => {
+	        if (!response.ok) {
+	            response.text().then(r => {
+	                let info = {
+	                    errorCode: response.status,
+	                    method: method,
+	                    params: JSON.stringify(body),
+	                    responseBody: r,
+	                    statusText: response.statusText,
+	                    url: call
+	                };
+	                ApiError_1.default(info);
+	            });
+	        }
+	        return response;
+	    }).then(r => r.json());
 	}
 	exports.default = ApiCall;
 	//# sourceMappingURL=ApiBase.js.map
@@ -980,7 +1012,7 @@
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            editmode: false, deleted: false, contextMenuVisible: false, menutarget: null, label: props.item.name, addingmode: false
+	            editmode: false, deleted: false, contextMenuVisible: false, menutarget: null, addtype: "", label: props.item.name, addingmode: false
 	        };
 	    }
 	    componentWillReceiveProps(nextProps) {
@@ -995,29 +1027,31 @@
 	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
 	    }
 	    renderContextMenu() {
-	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ addingmode: true }), onToggleDelete: () => {
-	                this.setState({ deleted: true }, () => {
-	                    this.props.onDeleted(this.props.item.item);
-	                });
+	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, pagetypes: this.props.pagetypes, onDismiss: this._onDismiss.bind(this), onToggleAdd: (t) => this.setState({ addingmode: true, addtype: t }), onToggleDelete: () => {
+	                if (confirm("Are you sure?")) {
+	                    this.setState({ deleted: true }, () => {
+	                        this.props.onDeleted(this.props.item.item.doc);
+	                    });
+	                }
 	            }, onToggleEdit: this._onToggleEdit.bind(this) }));
 	    }
 	    renderAddForm() {
 	        return (React.createElement(AddMode_1.default, { icon: "file-code-o", onBlur: () => this.setState({ addingmode: false }), onSubmit: (val) => {
 	                this.setState({ addingmode: false }, () => {
-	                    this.props.onAdded(this.props.item.item.id, val, "default");
+	                    this.props.onAdded(this.props.item.item.doc.id, val, this.state.addtype);
 	                });
 	            } }));
 	    }
 	    renderEditForm() {
-	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
-	        return (React.createElement(RenameMode_1.default, { defaultValue: this.props.item.item.label, icon: icon, onBlur: this._onToggleEdit.bind(this), onSubmit: (newname) => {
+	        let icon = this.props.item.item.doc.doctype == "home" ? "home" : "file-code-o";
+	        return (React.createElement(RenameMode_1.default, { defaultValue: this.props.item.item.doc.name, icon: icon, onBlur: this._onToggleEdit.bind(this), onSubmit: (newname) => {
 	                this.setState({ label: newname, editmode: false }, () => {
-	                    this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
+	                    this.props.onRenamed(Object.assign({}, this.props.item.item.doc, { name: newname }));
 	                });
 	            } }));
 	    }
 	    render() {
-	        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+	        let icon = this.props.item.item.doc.doctype == "home" ? "home" : "file-code-o";
 	        if (this.state.editmode)
 	            return this.renderEditForm();
 	        return (React.createElement(draggable_1.default, { onDrop: this.props.onParentChanged.bind(this), item: this.props.item, className: this.state.deleted ? "deleted dragitem" : "dragitem", onContextMenu: this.toggleContextMenu.bind(this) },
@@ -1059,26 +1093,23 @@
 	            x: this.props.target.clientX,
 	            y: this.props.target.clientY
 	        };
+	        let newtypes = this.props.pagetypes.map(x => {
+	            return {
+	                key: x.typekey,
+	                label: x.typename,
+	                onClick: () => this.props.onToggleAdd(x.typekey),
+	                children: []
+	            };
+	        });
 	        return (React.createElement(ContextMenu_1.default, { target: target, items: [
 	                {
 	                    icon: "plus",
-	                    label: "New",
+	                    label: "Create New...",
 	                    onClick: this.handleItemClick.bind(this),
-	                    children: [
-	                        {
-	                            label: "test",
-	                            onClick: this.props.onToggleAdd,
-	                            children: []
-	                        },
-	                        {
-	                            label: "test2",
-	                            onClick: this.handleItemClick.bind(this),
-	                            children: []
-	                        }
-	                    ]
+	                    children: newtypes
 	                },
 	                {
-	                    icon: "edit",
+	                    icon: "write",
 	                    label: "Rename",
 	                    onClick: this.props.onToggleEdit,
 	                    children: []
@@ -1090,19 +1121,19 @@
 	                    children: []
 	                },
 	                {
-	                    label: "Something else",
+	                    label: "Dublicate",
 	                    onClick: this.handleItemClick.bind(this),
-	                    children: [{
-	                            icon: "edit",
-	                            label: "subtest",
-	                            onClick: this.props.onToggleEdit,
-	                            children: []
-	                        }, {
-	                            icon: "globe",
-	                            label: "Nog een test",
-	                            onClick: this.handleItemClick.bind(this),
-	                            children: []
-	                        }]
+	                    children: []
+	                },
+	                {
+	                    label: "Properties",
+	                    onClick: this.handleItemClick.bind(this),
+	                    children: []
+	                },
+	                {
+	                    label: "Open",
+	                    onClick: this.handleItemClick.bind(this),
+	                    children: []
 	                }
 	            ], onDismiss: this.props.onDismiss }));
 	    }
@@ -1126,10 +1157,12 @@
 	    componentDidMount() {
 	        document.addEventListener('mousedown', this.mouseDown);
 	    }
+	    componentWillUnmount() {
+	        document.removeEventListener('mousedown', this.mouseDown);
+	    }
 	    onDismiss(e) {
 	        let menu = this.refs.contextmenu;
-	        if (!menu.contains(e.target)) {
-	            document.removeEventListener('mousedown', this.mouseDown);
+	        if (menu != undefined && !menu.contains(e.target)) {
 	            this.props.onDismiss();
 	        }
 	    }
@@ -1138,13 +1171,19 @@
 	            this.props.onDismiss();
 	            item.onClick();
 	        };
-	        return (React.createElement(semantic_ui_react_1.Menu.Item, { name: item.label, icon: item.icon, active: false, onClick: itemClicked }));
+	        return (React.createElement(semantic_ui_react_1.Menu.Item, { key: item.label, name: item.label, icon: item.icon, active: false, onClick: itemClicked }));
 	    }
 	    renderSubMenuItem(item) {
-	        return (React.createElement(semantic_ui_react_1.Dropdown, { item: true, text: item.label },
-	            React.createElement(semantic_ui_react_1.Dropdown.Menu, null, item.children.map(x => React.createElement(semantic_ui_react_1.Dropdown.Item, { icon: x.icon, text: x.label })))));
+	        return (React.createElement(semantic_ui_react_1.Dropdown, { key: item.label, item: true, text: item.label },
+	            React.createElement(semantic_ui_react_1.Dropdown.Menu, null, item.children.map(x => {
+	                const itemClicked = () => {
+	                    this.props.onDismiss();
+	                    x.onClick();
+	                };
+	                return (React.createElement(semantic_ui_react_1.Dropdown.Item, { key: x.label, icon: x.icon, text: x.label, onClick: itemClicked }));
+	            }))));
 	    }
-	    renderItems(item) {
+	    renderItem(item) {
 	        if (item.children.length > 0)
 	            return this.renderSubMenuItem(item);
 	        else
@@ -1154,7 +1193,7 @@
 	        let top = this.props.target.y + "px";
 	        let left = this.props.target.x + "px";
 	        return (React.createElement("div", { className: "contextmenu", ref: "contextmenu", style: { position: 'fixed', top: top, left: left, zIndex: 999 } },
-	            React.createElement(semantic_ui_react_1.Menu, { compact: true, pointing: true, vertical: true }, this.props.items.map(x => this.renderItems(x)))));
+	            React.createElement(semantic_ui_react_1.Menu, { compact: true, pointing: true, vertical: true }, this.props.items.map(x => this.renderItem(x)))));
 	    }
 	}
 	exports.default = ContextMenu;
@@ -1223,7 +1262,7 @@
 	        super(props, context);
 	    }
 	    onDragStart(e) {
-	        e.dataTransfer.setData("id", this.props.item.item.id);
+	        e.dataTransfer.setData("id", this.props.item.key);
 	    }
 	    onDragStop(e) {
 	        e.preventDefault();
@@ -1243,8 +1282,7 @@
 	    onDrop(e) {
 	        this.refs.draggable.classList.remove("dragover");
 	        var targetid = e.dataTransfer.getData("id");
-	        this.props.onDrop(Number(targetid), this.props.item.item.id);
-	        console.log("dropped " + targetid);
+	        this.props.onDrop(Number(targetid), Number(this.props.item.key));
 	    }
 	    render() {
 	        return (React.createElement("div", { ref: "draggable", draggable: true, onDragStart: this.onDragStart.bind(this), onDragEnd: this.onDragStop.bind(this), onDragOver: this.onDragOver.bind(this), onDragLeave: this.onDragLeave.bind(this), onDropCapture: this.onDrop.bind(this), className: this.props.className, onContextMenu: this.props.onContextMenu }, this.props.children));
@@ -1254,21 +1292,7 @@
 	//# sourceMappingURL=draggable.js.map
 
 /***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	const React = __webpack_require__(1);
-	const semantic_ui_react_1 = __webpack_require__(20);
-	function Loading(props) {
-	    return (React.createElement(semantic_ui_react_1.Dimmer, { active: true, inverted: true },
-	        React.createElement(semantic_ui_react_1.Loader, { inverted: true })));
-	}
-	exports.default = Loading;
-	//# sourceMappingURL=Loading.js.map
-
-/***/ }),
+/* 34 */,
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1378,6 +1402,55 @@
 	}
 	exports.default = AssetTreeLabel;
 	//# sourceMappingURL=AssetTreeLabel.js.map
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const ReactDOM = __webpack_require__(3);
+	const semantic_ui_react_1 = __webpack_require__(20);
+	class ApiErrorView extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = { activeItem: "response" };
+	    }
+	    render() {
+	        let activeItem = this.state.activeItem;
+	        return (React.createElement(semantic_ui_react_1.Modal, { style: { minHeight: "500px" }, onClose: this.props.onClose, defaultOpen: true },
+	            React.createElement(semantic_ui_react_1.Modal.Header, null,
+	                "Error ",
+	                this.props.info.errorCode + ": " + this.props.info.statusText),
+	            React.createElement(semantic_ui_react_1.Modal.Content, null,
+	                React.createElement(semantic_ui_react_1.Modal.Description, null,
+	                    React.createElement(semantic_ui_react_1.Menu, { pointing: true, secondary: true },
+	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'response', active: activeItem === 'response', onClick: () => this.setState({ activeItem: "response" }) }),
+	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'info', active: activeItem === 'info', onClick: () => this.setState({ activeItem: "info" }) })),
+	                    React.createElement("div", { style: { display: activeItem == "info" ? "block" : "none" } },
+	                        React.createElement(semantic_ui_react_1.Table, { basic: 'very' },
+	                            React.createElement(semantic_ui_react_1.Table.Body, null,
+	                                React.createElement(semantic_ui_react_1.Table.Row, null,
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Request method"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.method)),
+	                                React.createElement(semantic_ui_react_1.Table.Row, null,
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "URL"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.url)),
+	                                React.createElement(semantic_ui_react_1.Table.Row, null,
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Params"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.params))))),
+	                    React.createElement("iframe", { style: { display: activeItem == "response" ? "block" : "none" }, width: "100%", height: "342", src: "data:text/html;charset=utf-8," + encodeURI(this.props.info.responseBody) })))));
+	    }
+	}
+	function ApiError(info) {
+	    let onClose = function () {
+	        document.getElementById("errordiv").innerHTML = "";
+	    };
+	    ReactDOM.render(React.createElement(ApiErrorView, { info: info, onClose: onClose }), document.getElementById('errordiv'));
+	}
+	exports.default = ApiError;
+	//# sourceMappingURL=ApiError.js.map
 
 /***/ })
 /******/ ]);

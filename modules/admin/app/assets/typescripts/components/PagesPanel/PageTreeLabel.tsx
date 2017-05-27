@@ -5,15 +5,16 @@ import PageTreeContextMenu from './PageTreeContextMenu'
 import RenameMode from '../TreeView/partials/RenameMode'
 import AddMode from '../TreeView/partials/AddMode'
 import Draggable from '../TreeView/partials/draggable'
-
+import { Button, Modal } from 'semantic-ui-react'
 
 export interface PageTreeLabelProps {
-    item: Tree.TreeViewItem<Api.Document>,
-    onContextTriggered: (n:Tree.TreeViewItem<Api.Document>) => void
+    item: Tree.TreeViewItem<Api.DocumentTree>,
+    onContextTriggered: (n:Tree.TreeViewItem<Api.DocumentTree>) => void
     onRenamed : (doc:Api.Document) => void
     onAdded : (parent_id:number, name:string, pagetype:string) => void
     onDeleted : (item:Api.Document) => void
     onParentChanged : (sourceid:number, targetid:number) => void
+    pagetypes : Api.PageType[]
 }
 
 export interface PageTreeLabelState {
@@ -22,6 +23,7 @@ export interface PageTreeLabelState {
   editmode : boolean,
   label : string,
   addingmode: boolean,
+  addtype : string,
   deleted: boolean
 }
 
@@ -30,7 +32,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
     constructor(props:PageTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            editmode: false, deleted: false, contextMenuVisible: false, menutarget:null, label: props.item.name, addingmode: false
+            editmode: false, deleted: false, contextMenuVisible: false, menutarget:null, addtype: "", label: props.item.name, addingmode: false
         }
     }
 
@@ -53,12 +55,15 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         return(
             <PageTreeContextMenu 
               target={this.state.menutarget.nativeEvent}
+              pagetypes={this.props.pagetypes}
               onDismiss={this._onDismiss.bind(this)}
-              onToggleAdd={() => this.setState({ addingmode: true })}
+              onToggleAdd={(t:string) => this.setState({ addingmode: true, addtype: t })}
               onToggleDelete={() => {
-                    this.setState({ deleted: true  }, () => {
-                        this.props.onDeleted(this.props.item.item);
-                    })
+                    if(confirm("Are you sure?")) {
+                        this.setState({ deleted: true  }, () => {
+                            this.props.onDeleted(this.props.item.item.doc);
+                        })
+                    }
                   }}
               onToggleEdit={this._onToggleEdit.bind(this)} />
         )
@@ -71,7 +76,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
                 onBlur={() => this.setState({ addingmode: false })}
                 onSubmit={(val:string) => {
                     this.setState({ addingmode: false }, () => {
-                        this.props.onAdded(this.props.item.item.id, val, "default");
+                        this.props.onAdded(this.props.item.item.doc.id, val, this.state.addtype);
                     })
                 }}
             />
@@ -79,15 +84,15 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
     }
 
     renderEditForm() {
-         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+         let icon = this.props.item.item.doc.doctype == "home" ? "home" : "file-code-o";
          return(
             <RenameMode
-                defaultValue={this.props.item.item.label}
+                defaultValue={this.props.item.item.doc.name}
                 icon={icon}
                 onBlur={this._onToggleEdit.bind(this)}
                 onSubmit={(newname:string) => {
                     this.setState({ label: newname, editmode: false }, () => {
-                        this.props.onRenamed({...this.props.item.item, label: newname});
+                        this.props.onRenamed({...this.props.item.item.doc, name: newname});
                     })
                 }}
             />
@@ -95,7 +100,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
     }
 
     render() {
-        let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
+        let icon = this.props.item.item.doc.doctype == "home" ? "home" : "file-code-o";
         if(this.state.editmode) return this.renderEditForm();
         return(
             <Draggable 

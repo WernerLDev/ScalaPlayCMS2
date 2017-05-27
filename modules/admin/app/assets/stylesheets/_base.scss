@@ -4,7 +4,8 @@
 body {
     background: $bgcolor;
     color: #003300;
-    font-family: 'Varela Round', sans-serif;
+    /*font-family: 'Varela Round', sans-serif;*/
+    font-family: 'Lato', 'sans-serif';
 }
 
 .splitpane-container {
@@ -27,7 +28,7 @@ body {
 .iframe-wrapper {
     position: absolute; top: 126px; left: 0px; right: 0; bottom: 0;
 }
-iframe {
+iframe.documentIframe {
     position: absolute;
     border: 0;
     margin: 0; padding: 0;

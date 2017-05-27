@@ -14,15 +14,30 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
 
     constructor(props:TreeTypes.TreeViewProps<any>, context:any) {
         super(props, context);
-        this.state = { selected: this._emptySelection }
+        if(this.props.selected) {
+            this.state = { selected: this.props.selected }
+        } else {
+            this.state = { selected: this._emptySelection }
+        }
+    }
+
+    componentWillReceiveProps(nextprops:TreeTypes.TreeViewProps<any>) {
+        let notNull = nextprops.selected != null && this.props.selected != null;
+        if(notNull && nextprops.selected.key != this.props.selected.key) {
+            this.setState({ selected: nextprops.selected});
+        }
     }
 
     componentDidMount() {
         document.addEventListener('mousedown', function(e:MouseEvent){
             let treeNode = ReactDOM.findDOMNode(this.refs.tree);
-            let containsElement = treeNode.contains(e.target as Element);
+            let targetElement = e.target as Element;
+            let targetParent = targetElement.parentElement as Element;
+            
+            let isTreeAction = targetElement.classList.contains("treeaction") || targetParent.classList.contains("treeaction");
+            let containsElement = treeNode.contains(targetElement);
             let contextOpen = treeNode.getElementsByClassName("contextmenu").length > 0;
-            if(!containsElement && !contextOpen) {
+            if(!containsElement && !contextOpen && !isTreeAction) {
                 this.setState({selected: this._emptySelection});
             }
         }.bind(this))

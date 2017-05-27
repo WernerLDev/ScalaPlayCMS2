@@ -42,7 +42,7 @@ ul.navItems {
                 flex-grow: 1;
 
                 min-height: $nodeheight; line-height: $nodeheight;
-                font-size: 13px;
+                font-size: 14px;
                 cursor: pointer; white-space: nowrap; 
 
                 &, & > * {
@@ -52,6 +52,10 @@ ul.navItems {
 
                 .contextmenu {
                     white-space: normal;
+                }
+
+                .fileicon {
+                    margin-right: 1px;
                 }
 
                 .deleted {
@@ -71,7 +75,7 @@ ul.navItems {
                     margin-left: 18px;
                 }
                 .treeicon {
-                    flex-basis: 11px; padding-top: 8px;
+                    flex-basis: 11px; min-width: 11px; padding-top: 7px;
                 }
                 .treerename {
                     flex-grow: 1;
@@ -79,8 +83,9 @@ ul.navItems {
                     margin-right: 3px;
                     input[type='text'] {
                         border: 0; outline: 0; background: #fff; height: 22px; margin-top: 3px; width: 100%;
-                        font-size: 13px;
-                        text-indent: 2px;
+                        font-size: 14px;
+                        text-indent: 0px;
+                        padding-left: 3px;
                         font-family: 'Varela Round', sans-serif;
                         border-radius: 3px;
                     }

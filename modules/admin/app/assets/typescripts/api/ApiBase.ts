@@ -1,3 +1,6 @@
+import {ApiErrorInfo} from './ApiError'
+import ApiError from './ApiError'
+
 var csrf = document.getElementById("csrftoken").innerText;
 
 type ApiHeader = {
@@ -10,18 +13,6 @@ type ApiParams = {
     credentials : RequestCredentials,
     headers: ApiHeader,
     body?:any 
-}
-
-function handleErrors(response:Response) {
-    if(!response.ok) {
-        response.text().then(r => {
-            //ApiError(response.status, response.statusText, r);
-            alert(response.status + " - " + response.statusText + "\n" + r);
-        });
-        //throw Error(response.statusText);
-    } else {
-        return response
-    }
 }
 
 export default function ApiCall(call:string, method:string, body?:Object, contenttype?:string) {
@@ -43,5 +34,20 @@ export default function ApiCall(call:string, method:string, body?:Object, conten
         params["body"] = body;
     } 
 
-    return fetch(call, params).then(handleErrors).then(r => r.json());
+    return fetch(call, params).then(response => {
+        if(!response.ok) {
+            response.text().then(r => {
+                let info:ApiErrorInfo = {
+                    errorCode : response.status,
+                    method : method,
+                    params : JSON.stringify(body),
+                    responseBody : r,
+                    statusText : response.statusText,
+                    url : call
+                }
+                ApiError(info);
+            });
+        }
+        return response;
+    }).then(r => r.json());
 }

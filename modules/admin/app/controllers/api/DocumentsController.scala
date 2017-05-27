@@ -24,10 +24,10 @@ class DocumentsController @Inject()(
 ) extends Controller {
   
   implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
-  implicit val DocTreeWrites = Json.writes[DocumentJson]
   implicit val DocWrites = Json.writes[Document]
   implicit val DocumentReads = Json.reads[Document]
   implicit val NewDocReads = Json.reads[NewDocument]
+  implicit val DocumentTreeWrites = Json.writes[DocumentTree]
   
   def getPageTypes = WithAuthAction {
     val pagetypes = templates.templates.map { case (k,v) => {
@@ -43,7 +43,7 @@ class DocumentsController @Inject()(
   }
 
   def listDocuments = WithAuthAction.async {
-    documents.listJson map (x => {
+    documents.getTree map (x => {
       Ok(Json.toJson(x))
     })
   }
@@ -81,7 +81,7 @@ class DocumentsController @Inject()(
               created_at = currentTime, updated_at = currentTime, published_at = currentTime
             )
             documents.create(newDocument) map (x => {
-              Ok(Json.toJson( Map("id" -> JsNumber(x.id),  "parent_id" -> JsNumber(document.parent_id), "name" -> JsString(name)) ))
+              Ok(Json.toJson(x))
             })
           }
           case None => Future(BadRequest("Error: Invalid parent id"))

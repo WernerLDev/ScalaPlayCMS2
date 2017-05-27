@@ -15,7 +15,8 @@ import slick.profile.SqlProfile.ColumnOption.SqlType
 //import scala.concurrent.duration._
 
 case class Document(id : Long , parent_id : Long, name : String, doctype : String, collapsed : Boolean, view:Option[String], path:String, title:String, locale:String, description:String, created_at:Timestamp, updated_at:Timestamp, published_at:Timestamp )
-case class DocumentJson(id : Long, key: String, path:String, label : String, doctype : String, collapsed : Boolean, published: Boolean, children: List[DocumentJson])
+
+case class DocumentTree(doc:Document, children:List[DocumentTree])
 
 class DocumentTableDef(tag: Tag) extends Table[Document](tag, "documents") {
 
@@ -48,15 +49,16 @@ class Documents @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
         dbConfig.db.run(documents.result)
     }
 
-    def listJson():Future[List[DocumentJson]] = {
-        def generateList(d:List[Document],parentid:Long):List[DocumentJson] = {
-            
-            d.filter(x => x.parent_id == parentid).map(x => {
-                val isPublished = x.published_at.before(new Timestamp( (new java.util.Date).getTime()))
-                DocumentJson(x.id, x.name, x.path, x.name, x.doctype, x.collapsed, isPublished, generateList(d ,x.id))
+    def getTree():Future[List[DocumentTree]] = {
+        def generateList(d:List[Document], parentid:Long):List[DocumentTree] = {
+            d.filter(_.parent_id == parentid).map(x => {
+                DocumentTree(
+                    doc = x,
+                    children = generateList(d, x.id)
+                )
             })
         }
-        listAll map (x => generateList(x.toList, 0))
+        listAll.map(x => generateList(x.toList, 0))
     }
 
     def create(doc:Document):Future[Document] = {

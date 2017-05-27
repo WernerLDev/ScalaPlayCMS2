@@ -47,7 +47,7 @@ class AuthAction @Inject()(users:Users, sessions:UserSessions) extends ActionBui
   }
 }
 
-class PageRequest[A](val user:Option[User], val editmode:Boolean, val editables:List[Editable], val documents:List[DocumentJson], request:Request[A]) extends WrappedRequest[A](request)
+class PageRequest[A](val user:Option[User], val editmode:Boolean, val editables:List[Editable], val documents:List[DocumentTree], request:Request[A]) extends WrappedRequest[A](request)
 
 class PageAction @Inject()(users:Users, editables:Editables, documents:Documents) extends ActionBuilder[PageRequest] with ActionTransformer[Request, PageRequest] {
 
@@ -56,7 +56,7 @@ class PageAction @Inject()(users:Users, editables:Editables, documents:Documents
     val editmode = request.getQueryString("editmode").getOrElse("")
     editables.getByPath(request.path) flatMap (docEditable => {
       val editableValues = docEditable.map(_._1).toList
-      documents.listJson flatMap (menuitems => {
+      documents.getTree flatMap (menuitems => {
         users.findByUsername(username) map (userOpt => userOpt match {
           case Some(user:User) => new PageRequest(userOpt, editmode == "editing", editableValues, menuitems, request)
           case None => new PageRequest(None, false, editableValues, menuitems, request)

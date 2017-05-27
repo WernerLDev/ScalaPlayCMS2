@@ -11,6 +11,7 @@ export interface TreeViewItem<T> {
 export interface TreeViewProps<T> {
     items: TreeViewItem<T>[]
     onClick: (n:TreeViewItem<T>) => void
+    selected?:TreeViewItem<T>,
     onRenderLabel?: (node:TreeViewItem<T>) => JSX.Element
 }
 

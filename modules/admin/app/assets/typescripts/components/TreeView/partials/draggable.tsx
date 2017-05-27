@@ -15,7 +15,7 @@ class Draggable extends React.Component<DraggableProps, any> {
     }
 
     onDragStart(e:DragEvent) {
-        e.dataTransfer.setData("id", this.props.item.item.id);
+        e.dataTransfer.setData("id", this.props.item.key);
     }
 
     onDragStop(e:DragEvent) {
@@ -39,8 +39,7 @@ class Draggable extends React.Component<DraggableProps, any> {
     onDrop(e:DragEvent) {
         (this.refs.draggable as HTMLElement).classList.remove("dragover");
         var targetid = e.dataTransfer.getData("id");
-        this.props.onDrop(Number(targetid), this.props.item.item.id);
-        console.log("dropped " + targetid);
+        this.props.onDrop(Number(targetid), Number(this.props.item.key));
     }
 
     render() {

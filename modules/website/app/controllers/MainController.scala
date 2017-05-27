@@ -32,7 +32,7 @@ class MainController @Inject()(documents:Documents, editables:Editables, templat
     documents.getByPath("/" + path) flatMap (docOpt => docOpt match {
       case Some(p) => templates.getAction(p)(request)
       case None => {
-        documents.listJson map (menuitems => {
+        documents.getTree map (menuitems => {
           implicit val pagerequest = new PageRequest(None, false, List(), menuitems, request)
           NotFound(views.html.notfound("The page you are looking for doesn't exist."))
         })
