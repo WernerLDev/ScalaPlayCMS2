@@ -13,3 +13,7 @@ modules/admin/app/assets/javascript
 modules/admin/target
 modules/website/target
 modules/admin/node_modules
+.ensime_cache
+ensime-langserver.log
+.ensime
+pc.stdout.log
