@@ -49,7 +49,7 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
                 this.setState({ progress: this.state.progress + 1 }, () => {
                     setTimeout(() => {
                       this.props.onUploadFinished(this.state.progress / (this.state.numFiles / 100));
-                    },500);
+                    },700);
                 })
             })
         })
@@ -95,7 +95,7 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
 
     renderProgres() {
          return(
-            <Progress value={this.state.progress} total={this.state.numFiles} progress='ratio' autoSuccess indicating />
+            <Progress size="small" value={this.state.progress} total={this.state.numFiles} progress='ratio' autoSuccess indicating />
          );
 
     }

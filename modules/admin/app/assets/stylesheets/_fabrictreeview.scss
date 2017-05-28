@@ -1,8 +1,9 @@
 $nodeheight: 28px;
 
 .treeContainer {
-    padding: 0 15px;
+    padding: 15px;
     overflow: auto;
+    position: absolute; top: 50px; left: 0; right: 0; bottom: 0;
 }
 
 .treeContainer > nav > ul.navItems {

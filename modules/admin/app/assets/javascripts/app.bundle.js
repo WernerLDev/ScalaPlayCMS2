@@ -788,7 +788,10 @@
 	    }
 	    componentWillReceiveProps(nextprops) {
 	        let notNull = nextprops.selected != null && this.props.selected != null;
-	        if (notNull && nextprops.selected.key != this.props.selected.key) {
+	        if (nextprops.selected != null && this.props.selected == null) {
+	            this.setState({ selected: nextprops.selected });
+	        }
+	        else if (notNull && nextprops.selected.key != this.props.selected.key) {
 	            this.setState({ selected: nextprops.selected });
 	        }
 	    }
@@ -1067,7 +1070,7 @@
 	        'server_path': path,
 	        'mimetype': mimetype
 	    });
-	    return ApiBase_js_1.default("/admin/api/v1/assets", "POST", body);
+	    return ApiBase_js_1.default("/admin/api/v1/assets", "POST", body).then(r => r);
 	}
 	exports.addAsset = addAsset;
 	function uploadAsset(file) {
@@ -1409,7 +1412,7 @@
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            assets: [], treeItems: [], working: false, showUploadDialog: false, upload_parent: 0
+	            assets: [], treeItems: [], working: false, showUploadDialog: false, upload_parent: 0, selected: null
 	        };
 	    }
 	    toTreeItems(assets) {
@@ -1454,7 +1457,17 @@
 	    onFolderAdded(parent_id, name) {
 	        this.setState({ working: true }, () => {
 	            Api.addAsset(parent_id, name, "", "folder").then(x => {
-	                this.refresh();
+	                Api.getAssets().then(assets => {
+	                    let items = this.toTreeItems(assets);
+	                    let newSelection = {
+	                        key: x.id.toString(),
+	                        name: x.name,
+	                        children: [],
+	                        collapsed: false,
+	                        item: null
+	                    };
+	                    this.setState({ assets: assets, treeItems: items, selected: newSelection, working: false });
+	                });
 	            });
 	        });
 	    }
@@ -1485,7 +1498,7 @@
 	        return (React.createElement("div", null,
 	            React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
 	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.refreshClicked.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
-	            React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }),
+	            React.createElement(TreeView_1.default, { items: this.state.treeItems, selected: this.state.selected, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }),
 	            this.state.showUploadDialog ?
 	                React.createElement(UploadModal_1.default, { onUploadFinished: (progress) => {
 	                        if (progress == 100) {
@@ -1515,17 +1528,19 @@
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            contextMenuVisible: false, menutarget: null, editmode: false, createmode: false, deleted: false
+	            contextMenuVisible: false, menutarget: null, editmode: false, createmode: false, deleted: false, label: props.item.item.label
 	        };
+	    }
+	    componentWillReceiveProps(nextProps) {
+	        if (nextProps.item.name != this.props.item.name) {
+	            this.setState({ label: nextProps.item.name });
+	        }
 	    }
 	    toggleContextMenu(e) {
 	        this.props.onContextTriggered(this.props.item);
 	        e.persist();
 	        e.preventDefault();
 	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
-	    }
-	    _onToggleEdit() {
-	        this.setState({ editmode: !this.state.editmode });
 	    }
 	    renderAddForm() {
 	        return (React.createElement(AddMode_1.default, { icon: AssetIcons_1.getAssetIcon("folder"), onBlur: () => this.setState({ createmode: false }), onSubmit: (val) => {
@@ -1536,7 +1551,7 @@
 	    }
 	    renderEditForm() {
 	        return (React.createElement(RenameMode_1.default, { defaultValue: this.props.item.item.label, icon: AssetIcons_1.getAssetIcon(this.props.item.item.mimetype), onBlur: this._onToggleEdit.bind(this), onSubmit: (newname) => {
-	                this.setState(Object.assign({}, this.state, { editmode: false }), () => {
+	                this.setState(Object.assign({}, this.state, { label: newname, editmode: false }), () => {
 	                    this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
 	                });
 	            } }));
@@ -1559,9 +1574,12 @@
 	        return (React.createElement(draggable_1.default, { isDropTarget: mimetype == "folder" || mimetype == "home", onDrop: this.props.onParentChanged.bind(this), item: this.props.item, className: this.state.deleted ? "deleted dragitem" : "dragitem", onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
-	            this.props.item.item.label,
+	            this.state.label,
 	            this.state.createmode ? this.renderAddForm() : null,
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
+	    }
+	    _onToggleEdit() {
+	        this.setState({ editmode: !this.state.editmode });
 	    }
 	    _onDismiss() {
 	        this.setState({ contextMenuVisible: false });
@@ -1707,7 +1725,7 @@
 	                this.setState({ progress: this.state.progress + 1 }, () => {
 	                    setTimeout(() => {
 	                        this.props.onUploadFinished(this.state.progress / (this.state.numFiles / 100));
-	                    }, 500);
+	                    }, 700);
 	                });
 	            });
 	        });
@@ -1738,7 +1756,7 @@
 	                        "Drop files here or click to Select files from your computer")))));
 	    }
 	    renderProgres() {
-	        return (React.createElement(semantic_ui_react_1.Progress, { value: this.state.progress, total: this.state.numFiles, progress: 'ratio', autoSuccess: true, indicating: true }));
+	        return (React.createElement(semantic_ui_react_1.Progress, { size: "small", value: this.state.progress, total: this.state.numFiles, progress: 'ratio', autoSuccess: true, indicating: true }));
 	    }
 	    render() {
 	        return (React.createElement(semantic_ui_react_1.Modal, { onClose: this.props.onClose, open: true },

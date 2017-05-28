@@ -8,11 +8,11 @@ import Draggable from '../TreeView/partials/draggable'
 import { getAssetIcon } from './AssetIcons'
 
 export interface AssetTreeLabelProps {
-    item: Tree.TreeViewItem<Api.Asset>,
-    onContextTriggered: (n:Tree.TreeViewItem<Api.Asset>) => void,
-    onDeleted: (item:Api.Asset) => void,
+    item: Tree.TreeViewItem<Api.AssetTree>,
+    onContextTriggered: (n:Tree.TreeViewItem<Api.AssetTree>) => void,
+    onDeleted: (item:Api.AssetTree) => void,
     onToggleUpload: (parent_id:number) => void,
-    onRenamed : (item:Api.Asset) => void
+    onRenamed : (item:Api.AssetTree) => void
     onFolderAdded : (parent_id:number, name:string) => void
     onParentChanged : (sourceid:number, targetid:number) => void
     
@@ -24,6 +24,7 @@ export interface AssetTreeLabelState {
     editmode : boolean
     createmode : boolean
     deleted : boolean
+    label : string
 }
 
 class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabelState> {
@@ -31,7 +32,13 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
     constructor(props:AssetTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:null, editmode: false, createmode: false, deleted: false
+            contextMenuVisible: false, menutarget:null, editmode: false, createmode: false, deleted: false, label: props.item.item.label
+        }
+    }
+
+    componentWillReceiveProps(nextProps:AssetTreeLabelProps) {
+        if(nextProps.item.name != this.props.item.name) {
+          this.setState({ label: nextProps.item.name });
         }
     }
 
@@ -42,10 +49,6 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
         this.setState({ ...this.state,
             contextMenuVisible: true, menutarget: e
         })
-    }
-
-    _onToggleEdit() {
-        this.setState({ editmode: !this.state.editmode });
     }
 
     renderAddForm() {
@@ -68,7 +71,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
                 icon={getAssetIcon(this.props.item.item.mimetype)}
                 onBlur={this._onToggleEdit.bind(this)}
                 onSubmit={(newname:string) => {
-                    this.setState({ ...this.state, editmode: false }, () => {
+                    this.setState({ ...this.state, label: newname, editmode: false }, () => {
                         this.props.onRenamed({...this.props.item.item, label: newname});
                     })
                 }}
@@ -108,11 +111,15 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
                 item={this.props.item}
                 className={this.state.deleted ? "deleted dragitem" : "dragitem"} 
                 onContextMenu={this.toggleContextMenu.bind(this)}>
-                <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.props.item.item.label}
+                <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
                 {this.state.createmode ? this.renderAddForm() : null}
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </Draggable>
         )
+    }
+
+     _onToggleEdit() {
+        this.setState({ editmode: !this.state.editmode });
     }
 
     _onDismiss() {

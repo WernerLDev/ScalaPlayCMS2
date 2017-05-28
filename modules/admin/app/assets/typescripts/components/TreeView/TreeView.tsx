@@ -23,7 +23,9 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
 
     componentWillReceiveProps(nextprops:TreeTypes.TreeViewProps<any>) {
         let notNull = nextprops.selected != null && this.props.selected != null;
-        if(notNull && nextprops.selected.key != this.props.selected.key) {
+        if(nextprops.selected != null && this.props.selected == null) {
+            this.setState({ selected: nextprops.selected });
+        } else if(notNull && nextprops.selected.key != this.props.selected.key) {
             this.setState({ selected: nextprops.selected});
         }
     }

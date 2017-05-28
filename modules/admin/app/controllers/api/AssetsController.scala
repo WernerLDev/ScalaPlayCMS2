@@ -15,11 +15,15 @@ import utils.admin._
 import scala.util.{Success, Failure}
 import java.io.File
 
+case class NewAsset(parent_id : Long, name : String, server_path : String, mimetype : String)
+
 @Singleton
 class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageAction:PageAction, conf:Configuration) extends Controller {
 
-    implicit val DocWrites = Json.writes[AssetTree]
-    
+    implicit val AssetTreeWrites = Json.writes[AssetTree]
+    implicit val AssetWrites = Json.writes[Asset]
+    implicit val NewAssetReads = Json.reads[NewAsset]
+
     def all = WithAuthAction.async { request => {
         //println(conf.getString("elestic.uploaddir"))
         assets.listJson().map(x => {
@@ -27,7 +31,6 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
         })
     }}
 
-    implicit val AssetWrites = Json.writes[Asset]
     def getById(id:Long) = WithAuthAction.async { request => 
         assets.getById(id).map(assetOpt => {
             assetOpt.map(asset => Ok(Json.toJson(asset)))
@@ -53,7 +56,7 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
                   mimetype = mimetype, filesize = assetfile.length(), created_at = currentTime
               )
               assets.create(asset) map ( x => {
-                  Ok(Json.obj("success" -> true))
+                  Ok(Json.toJson(x))
               })
           }
           case None => Future(BadRequest("Error: Missing (or invalid) parameter. [parent_id]"))

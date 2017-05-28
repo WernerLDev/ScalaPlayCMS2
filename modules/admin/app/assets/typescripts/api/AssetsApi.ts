@@ -1,6 +1,26 @@
 import ApiCall from './ApiBase.js';
 
+//Api.getAssets().then(assets => {
+        //     var items = this.toTreeItems(assets);
+        //     this.setState({ assets: assets, treeItems: items, working: false });
+        // });
+
+
+//case class Asset(id : Long , parent_id : Long, name : String, mimetype : String, collapsed : Boolean, path:String, server_path:String, filesize:Long, created_at:Timestamp )
+
 export interface Asset {
+    id : number,
+    parent_id : number,
+    name : string,
+    mimetype : string,
+    collapse : boolean,
+    path : string,
+    server_path: string,
+    filesize: number,
+    created_at : number
+}
+
+export interface AssetTree {
     id : number,
     key : string,
     path : string,
@@ -8,7 +28,7 @@ export interface Asset {
     label : string,
     mimetype : string,
     collapsed : boolean,
-    children : Asset[]
+    children : AssetTree[]
 }
 
 export interface UploadResult {
@@ -18,26 +38,25 @@ export interface UploadResult {
     server_path : string
 }
 
-
-export function getAssets():Promise<Asset[]> {
-    return ApiCall("/admin/api/v1/assets", "GET").then(r => r as Asset[]);
+export function getAssets():Promise<AssetTree[]> {
+    return ApiCall("/admin/api/v1/assets", "GET").then(r => r as AssetTree[]);
 }
 
-export function renameAsset(asset:Asset) {
+export function renameAsset(asset:AssetTree) {
     var body = JSON.stringify({
         "name" : asset.label
     });
     return ApiCall("/admin/api/v1/assets/" + asset.id + "/rename", "PUT", body);
 }
 
-export function addAsset(parent_id:number, name:string, path:string, mimetype:string) {
+export function addAsset(parent_id:number, name:string, path:string, mimetype:string):Promise<Asset> {
     var body = JSON.stringify({
         'parent_id': parent_id,
         'name': name,
         'server_path': path,
         'mimetype': mimetype
     });
-    return ApiCall("/admin/api/v1/assets", "POST", body);
+    return ApiCall("/admin/api/v1/assets", "POST", body).then(r => r as Asset);
 }
 
 export function uploadAsset(file:File):Promise<UploadResult> {
@@ -46,7 +65,7 @@ export function uploadAsset(file:File):Promise<UploadResult> {
     return ApiCall("/admin/api/v1/assets/upload", "POST", data, "none").then(r => r as UploadResult);
 }
 
-export function deleteAsset(asset:Asset) {
+export function deleteAsset(asset:AssetTree) {
     return ApiCall("/admin/api/v1/assets/" + asset.id, "DELETE");
 }
 
