@@ -6,6 +6,7 @@ export interface DraggableProps {
     onContextMenu: (e:React.MouseEvent<HTMLElement>) => void
     item: Tree.TreeViewItem<any>
     onDrop : (source_id:number, target_id:number) => void
+    isDropTarget : boolean
 }
 
 class Draggable extends React.Component<DraggableProps, any> {
@@ -25,21 +26,27 @@ class Draggable extends React.Component<DraggableProps, any> {
     }
 
     onDragOver(e:DragEvent) {
-        e.preventDefault();
-        (this.refs.draggable as HTMLElement).classList.add("dragover");
-        return false;
+        if(this.props.isDropTarget) {
+            e.preventDefault();
+            (this.refs.draggable as HTMLElement).classList.add("dragover");
+            return false;
+        }
     }
 
     onDragLeave(e:DragEvent) {
-        e.preventDefault();
-        (this.refs.draggable as HTMLElement).classList.remove("dragover");
-        return false;
+        if(this.props.isDropTarget){
+            e.preventDefault();
+            (this.refs.draggable as HTMLElement).classList.remove("dragover");
+            return false;
+        }
     }
 
     onDrop(e:DragEvent) {
-        (this.refs.draggable as HTMLElement).classList.remove("dragover");
-        var targetid = e.dataTransfer.getData("id");
-        this.props.onDrop(Number(targetid), Number(this.props.item.key));
+        if(this.props.isDropTarget){
+            (this.refs.draggable as HTMLElement).classList.remove("dragover");
+            var targetid = e.dataTransfer.getData("id");
+            this.props.onDrop(Number(targetid), Number(this.props.item.key));
+        }
     }
 
     render() {

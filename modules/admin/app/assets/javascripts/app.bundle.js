@@ -752,10 +752,7 @@
 	        }
 	        return (React.createElement("div", null,
 	            React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
-	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) },
-	                    React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' })),
-	                this.state.working ? React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right' },
-	                    React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true })) : null),
+	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'refresh', position: "right", active: false, onClick: this.handleItemClick.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
 	            React.createElement(TreeView_1.default, { items: this.state.treeItems, selected: this.state.selected, onClick: (n) => {
 	                    this.setState({ selected: n });
 	                }, onRenderLabel: this.renderLabel.bind(this) })));
@@ -950,7 +947,7 @@
 	    var headers = {
 	        "Csrf-Token": csrf
 	    };
-	    if (contenttype != null) {
+	    if (contenttype != null && contenttype != "none") {
 	        headers["Content-Type"] = contenttype;
 	    }
 	    else if (contenttype == null) {
@@ -970,7 +967,7 @@
 	                let info = {
 	                    errorCode: response.status,
 	                    method: method,
-	                    params: body == null ? "{}" : body,
+	                    params: body == null ? "{}" : body.toString(),
 	                    responseBody: r,
 	                    statusText: response.statusText,
 	                    url: call
@@ -1004,7 +1001,7 @@
 	class ApiErrorView extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
-	        this.state = { activeItem: "response" };
+	        this.state = { activeItem: "request" };
 	    }
 	    renderParams() {
 	        let params = JSON.stringify(JSON.parse(this.props.info.params), null, 4);
@@ -1019,9 +1016,9 @@
 	            React.createElement(semantic_ui_react_1.Modal.Content, null,
 	                React.createElement(semantic_ui_react_1.Modal.Description, null,
 	                    React.createElement(semantic_ui_react_1.Menu, { pointing: true, secondary: true },
-	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'response', active: activeItem === 'response', onClick: () => this.setState({ activeItem: "response" }) }),
-	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'info', active: activeItem === 'info', onClick: () => this.setState({ activeItem: "info" }) })),
-	                    React.createElement("div", { style: { display: activeItem == "info" ? "block" : "none" } },
+	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'request', active: activeItem === 'request', onClick: () => this.setState({ activeItem: "request" }) }),
+	                        React.createElement(semantic_ui_react_1.Menu.Item, { name: 'response', active: activeItem === 'response', onClick: () => this.setState({ activeItem: "response" }) })),
+	                    React.createElement("div", { style: { display: activeItem == "request" ? "block" : "none" } },
 	                        React.createElement(semantic_ui_react_1.Table, { basic: 'very' },
 	                            React.createElement(semantic_ui_react_1.Table.Body, null,
 	                                React.createElement(semantic_ui_react_1.Table.Row, null,
@@ -1063,6 +1060,37 @@
 	    return ApiBase_js_1.default("/admin/api/v1/assets/" + asset.id + "/rename", "PUT", body);
 	}
 	exports.renameAsset = renameAsset;
+	function addAsset(parent_id, name, path, mimetype) {
+	    var body = JSON.stringify({
+	        'parent_id': parent_id,
+	        'name': name,
+	        'server_path': path,
+	        'mimetype': mimetype
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/assets", "POST", body);
+	}
+	exports.addAsset = addAsset;
+	function uploadAsset(file) {
+	    var data = new FormData();
+	    data.append("asset", file);
+	    return ApiBase_js_1.default("/admin/api/v1/assets/upload", "POST", data, "none").then(r => r);
+	}
+	exports.uploadAsset = uploadAsset;
+	function deleteAsset(asset) {
+	    return ApiBase_js_1.default("/admin/api/v1/assets/" + asset.id, "DELETE");
+	}
+	exports.deleteAsset = deleteAsset;
+	function getAsset(id) {
+	    return ApiBase_js_1.default("/admin/api/v1/assets/" + id, "GET");
+	}
+	exports.getAsset = getAsset;
+	function updateParentAsset(id, parent_id) {
+	    var body = JSON.stringify({
+	        "parent_id": parent_id
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/assets/" + id + "/updateparent", "PUT", body);
+	}
+	exports.updateParentAsset = updateParentAsset;
 	//# sourceMappingURL=AssetsApi.js.map
 
 /***/ }),
@@ -1122,7 +1150,7 @@
 	        let icon = this.props.item.item.doc.doctype == "home" ? "home" : "file-code-o";
 	        if (this.state.editmode)
 	            return this.renderEditForm();
-	        return (React.createElement(draggable_1.default, { onDrop: this.props.onParentChanged.bind(this), item: this.props.item, className: this.state.deleted ? "deleted dragitem" : "dragitem", onContextMenu: this.toggleContextMenu.bind(this) },
+	        return (React.createElement(draggable_1.default, { isDropTarget: true, onDrop: this.props.onParentChanged.bind(this), item: this.props.item, className: this.state.deleted ? "deleted dragitem" : "dragitem", onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
 	            this.state.label,
@@ -1338,19 +1366,25 @@
 	        return false;
 	    }
 	    onDragOver(e) {
-	        e.preventDefault();
-	        this.refs.draggable.classList.add("dragover");
-	        return false;
+	        if (this.props.isDropTarget) {
+	            e.preventDefault();
+	            this.refs.draggable.classList.add("dragover");
+	            return false;
+	        }
 	    }
 	    onDragLeave(e) {
-	        e.preventDefault();
-	        this.refs.draggable.classList.remove("dragover");
-	        return false;
+	        if (this.props.isDropTarget) {
+	            e.preventDefault();
+	            this.refs.draggable.classList.remove("dragover");
+	            return false;
+	        }
 	    }
 	    onDrop(e) {
-	        this.refs.draggable.classList.remove("dragover");
-	        var targetid = e.dataTransfer.getData("id");
-	        this.props.onDrop(Number(targetid), Number(this.props.item.key));
+	        if (this.props.isDropTarget) {
+	            this.refs.draggable.classList.remove("dragover");
+	            var targetid = e.dataTransfer.getData("id");
+	            this.props.onDrop(Number(targetid), Number(this.props.item.key));
+	        }
 	    }
 	    render() {
 	        return (React.createElement("div", { ref: "draggable", draggable: true, onDragStart: this.onDragStart.bind(this), onDragEnd: this.onDragStop.bind(this), onDragOver: this.onDragOver.bind(this), onDragLeave: this.onDragLeave.bind(this), onDropCapture: this.onDrop.bind(this), className: this.props.className, onContextMenu: this.props.onContextMenu }, this.props.children));
@@ -1370,11 +1404,12 @@
 	const Api = __webpack_require__(24);
 	const AssetTreeLabel_1 = __webpack_require__(36);
 	const semantic_ui_react_1 = __webpack_require__(20);
+	const UploadModal_1 = __webpack_require__(39);
 	class AssetsPanel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            assets: [], treeItems: [], working: false
+	            assets: [], treeItems: [], working: false, showUploadDialog: false, upload_parent: 0
 	        };
 	    }
 	    toTreeItems(assets) {
@@ -1394,24 +1429,54 @@
 	            this.setState({ assets: assets, treeItems: items });
 	        });
 	    }
+	    refresh() {
+	        Api.getAssets().then(assets => {
+	            var items = this.toTreeItems(assets);
+	            this.setState({ assets: assets, treeItems: items, working: false });
+	        });
+	    }
 	    onContextTriggered(n) {
 	    }
 	    onDeleted(item) {
+	        this.setState({ working: true }, () => {
+	            Api.deleteAsset(item).then(x => {
+	                this.refresh();
+	            });
+	        });
 	    }
 	    onRenamed(asset) {
 	        this.setState({ working: true }, () => {
 	            Api.renameAsset(asset).then(x => {
-	                Api.getAssets().then(assets => {
-	                    var items = this.toTreeItems(assets);
-	                    this.setState({ assets: assets, treeItems: items, working: false });
-	                });
+	                this.refresh();
 	            });
 	        });
 	    }
-	    renderLabel(n) {
-	        return (React.createElement(AssetTreeLabel_1.default, { item: n, onRenamed: this.onRenamed.bind(this), onDeleted: this.onDeleted.bind(this), onContextTriggered: this.onContextTriggered.bind(this) }));
+	    onFolderAdded(parent_id, name) {
+	        this.setState({ working: true }, () => {
+	            Api.addAsset(parent_id, name, "", "folder").then(x => {
+	                this.refresh();
+	            });
+	        });
 	    }
-	    handleItemClick() {
+	    onParentChanged(source_id, parent_id) {
+	        this.setState({ working: true }, () => {
+	            Api.updateParentAsset(source_id, parent_id).then(x => {
+	                this.refresh();
+	            });
+	        });
+	    }
+	    toggleUploadModal(parent_id) {
+	        this.setState({ showUploadDialog: !this.state.showUploadDialog, upload_parent: parent_id });
+	    }
+	    renderLabel(n) {
+	        return (React.createElement(AssetTreeLabel_1.default, { item: n, onToggleUpload: this.toggleUploadModal.bind(this), onRenamed: this.onRenamed.bind(this), onDeleted: this.onDeleted.bind(this), onFolderAdded: this.onFolderAdded.bind(this), onParentChanged: this.onParentChanged.bind(this), onContextTriggered: this.onContextTriggered.bind(this) }));
+	    }
+	    refreshClicked() {
+	        this.setState({ working: true }, () => {
+	            setTimeout(x => {
+	                this.refresh();
+	            }, 500);
+	        });
 	    }
 	    render() {
 	        if (this.state.treeItems.length == 0) {
@@ -1419,8 +1484,16 @@
 	        }
 	        return (React.createElement("div", null,
 	            React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
-	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.handleItemClick.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
-	            React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) })));
+	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.refreshClicked.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
+	            React.createElement(TreeView_1.default, { items: this.state.treeItems, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }),
+	            this.state.showUploadDialog ?
+	                React.createElement(UploadModal_1.default, { onUploadFinished: (progress) => {
+	                        if (progress == 100) {
+	                            this.setState({ working: true, showUploadDialog: false }, () => {
+	                                this.refresh();
+	                            });
+	                        }
+	                    }, parent_id: this.state.upload_parent, onClose: this.toggleUploadModal.bind(this) }) : null));
 	    }
 	}
 	exports.default = AssetsPanel;
@@ -1435,50 +1508,59 @@
 	const React = __webpack_require__(1);
 	const AssetContextMenu_1 = __webpack_require__(37);
 	const RenameMode_1 = __webpack_require__(32);
+	const AddMode_1 = __webpack_require__(33);
+	const draggable_1 = __webpack_require__(34);
 	const AssetIcons_1 = __webpack_require__(38);
 	class AssetTreeLabel extends React.Component {
 	    constructor(props, context) {
 	        super(props, context);
 	        this.state = {
-	            contextMenuVisible: false, menutarget: MouseEvent
+	            contextMenuVisible: false, menutarget: null, editmode: false, createmode: false, deleted: false
 	        };
 	    }
 	    toggleContextMenu(e) {
 	        this.props.onContextTriggered(this.props.item);
 	        e.persist();
 	        e.preventDefault();
-	        this.setState({
-	            contextMenuVisible: true, menutarget: e
-	        });
+	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
 	    }
 	    _onToggleEdit() {
 	        this.setState({ editmode: !this.state.editmode });
 	    }
+	    renderAddForm() {
+	        return (React.createElement(AddMode_1.default, { icon: AssetIcons_1.getAssetIcon("folder"), onBlur: () => this.setState({ createmode: false }), onSubmit: (val) => {
+	                this.setState({ createmode: false }, () => {
+	                    this.props.onFolderAdded(this.props.item.item.id, val);
+	                });
+	            } }));
+	    }
 	    renderEditForm() {
 	        return (React.createElement(RenameMode_1.default, { defaultValue: this.props.item.item.label, icon: AssetIcons_1.getAssetIcon(this.props.item.item.mimetype), onBlur: this._onToggleEdit.bind(this), onSubmit: (newname) => {
-	                this.setState({ label: newname, editmode: false }, () => {
+	                this.setState(Object.assign({}, this.state, { editmode: false }), () => {
 	                    this.props.onRenamed(Object.assign({}, this.props.item.item, { label: newname }));
 	                });
 	            } }));
 	    }
 	    renderContextMenu() {
 	        let mimetype = this.props.item.item.mimetype;
-	        return (React.createElement(AssetContextMenu_1.default, { target: this.state.menutarget.nativeEvent, canCreate: mimetype == "home" || mimetype == "folder", canDelete: mimetype != "home", onDismiss: this._onDismiss.bind(this), onToggleDelete: () => {
+	        return (React.createElement(AssetContextMenu_1.default, { target: this.state.menutarget.nativeEvent, canCreate: mimetype == "home" || mimetype == "folder", canDelete: mimetype != "home", onToggleUpload: () => this.props.onToggleUpload(this.props.item.item.id), onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ createmode: true }), onToggleDelete: () => {
 	                if (confirm("Are you sure?")) {
-	                    this.setState({ deleted: true }, () => {
+	                    this.setState(Object.assign({}, this.state, { deleted: true }), () => {
 	                        this.props.onDeleted(this.props.item.item);
 	                    });
 	                }
 	            }, onToggleEdit: this._onToggleEdit.bind(this) }));
 	    }
 	    render() {
+	        let mimetype = this.props.item.item.mimetype;
 	        let icon = AssetIcons_1.getAssetIcon(this.props.item.item.mimetype);
 	        if (this.state.editmode)
 	            return this.renderEditForm();
-	        return (React.createElement("div", { onContextMenu: this.toggleContextMenu.bind(this) },
+	        return (React.createElement(draggable_1.default, { isDropTarget: mimetype == "folder" || mimetype == "home", onDrop: this.props.onParentChanged.bind(this), item: this.props.item, className: this.state.deleted ? "deleted dragitem" : "dragitem", onContextMenu: this.toggleContextMenu.bind(this) },
 	            React.createElement("i", { className: "fa fa-" + icon + " fileicon", "aria-hidden": "true" }),
 	            " ",
 	            this.props.item.item.label,
+	            this.state.createmode ? this.renderAddForm() : null,
 	            this.state.contextMenuVisible ? this.renderContextMenu() : null));
 	    }
 	    _onDismiss() {
@@ -1514,12 +1596,12 @@
 	            {
 	                icon: "plus",
 	                label: "Create New folder  ",
-	                onClick: this.handleItemClick.bind(this),
+	                onClick: this.props.onToggleAdd,
 	                children: []
 	            },
 	            {
 	                label: "Upload...",
-	                onClick: this.handleItemClick.bind(this),
+	                onClick: this.props.onToggleUpload,
 	                children: []
 	            }
 	        ];
@@ -1576,12 +1658,96 @@
 	            return "file-image-o";
 	        case "text/plain":
 	            return "file-text-o";
+	        case "application/pdf":
+	            return "file-pdf-o";
 	        default:
 	            return "file-o";
 	    }
 	}
 	exports.getAssetIcon = getAssetIcon;
 	//# sourceMappingURL=AssetIcons.js.map
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const React = __webpack_require__(1);
+	const semantic_ui_react_1 = __webpack_require__(20);
+	const Api = __webpack_require__(24);
+	class UploadModal extends React.Component {
+	    constructor(props, context) {
+	        super(props, context);
+	        this.state = { progress: 0, numFiles: 0 };
+	    }
+	    onDragOver(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	        let uploadbtn = this.refs.uploadbtn;
+	        uploadbtn.classList.add("fileover");
+	    }
+	    onDragLeave(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	        let uploadbtn = this.refs.uploadbtn;
+	        uploadbtn.classList.remove("fileover");
+	    }
+	    onDrop(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	        var droppedFiles = e.dataTransfer.files;
+	        let uploadbtn = this.refs.uploadbtn;
+	        uploadbtn.classList.remove("fileover");
+	        this.doUpload(droppedFiles);
+	    }
+	    uploadFile(file) {
+	        return Api.uploadAsset(file).then(result => {
+	            return Api.addAsset(this.props.parent_id, result.name, result.server_path, result.contenttype).then(x => {
+	                this.setState({ progress: this.state.progress + 1 }, () => {
+	                    setTimeout(() => {
+	                        this.props.onUploadFinished(this.state.progress / (this.state.numFiles / 100));
+	                    }, 500);
+	                });
+	            });
+	        });
+	    }
+	    uploadFiles(current, files) {
+	        this.uploadFile(files[current]).then(x => {
+	            if (current < files.length - 1) {
+	                this.uploadFiles(current + 1, files);
+	            }
+	        });
+	    }
+	    doUpload(files) {
+	        this.setState({ progress: 0, numFiles: files.length }, () => {
+	            this.uploadFiles(0, files);
+	        });
+	    }
+	    renderUploadForm() {
+	        return (React.createElement("div", { className: "uploadDialog" },
+	            React.createElement("form", { onDragOver: this.onDragOver.bind(this), onDragLeave: this.onDragLeave.bind(this), onDropCapture: this.onDrop.bind(this) },
+	                React.createElement("label", { ref: "uploadbtn", className: "uploadbtn" },
+	                    React.createElement("input", { multiple: true, type: "file", id: "file-select", name: "asset[]", onChange: (e) => {
+	                            var files = e.currentTarget.files;
+	                            this.doUpload(files);
+	                        } }),
+	                    React.createElement("span", null,
+	                        React.createElement("i", { className: "fa fa-upload", "aria-hidden": "true" }),
+	                        React.createElement("br", null),
+	                        "Drop files here or click to Select files from your computer")))));
+	    }
+	    renderProgres() {
+	        return (React.createElement(semantic_ui_react_1.Progress, { value: this.state.progress, total: this.state.numFiles, progress: 'ratio', autoSuccess: true, indicating: true }));
+	    }
+	    render() {
+	        return (React.createElement(semantic_ui_react_1.Modal, { onClose: this.props.onClose, open: true },
+	            React.createElement(semantic_ui_react_1.Modal.Header, null, "Upload Assets"),
+	            React.createElement(semantic_ui_react_1.Modal.Content, null, this.state.numFiles == 0 ? this.renderUploadForm() : this.renderProgres())));
+	    }
+	}
+	exports.default = UploadModal;
+	//# sourceMappingURL=UploadModal.js.map
 
 /***/ })
 /******/ ]);

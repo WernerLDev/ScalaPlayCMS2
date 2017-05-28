@@ -136,12 +136,9 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
             <div>
                 <Menu className="smalltoolbar" icon>
                     
-                    <Menu.Item name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
-                        <Icon name='refresh' />
+                    <Menu.Item name='refresh' position="right" active={false} onClick={this.handleItemClick.bind(this)}>
+                        {this.state.working ? <Loader active size="tiny" inline /> : <Icon name='refresh' /> }
                     </Menu.Item>
-                    {this.state.working ? <Menu.Item position='right'>
-                        <Loader active size="tiny" inline />
-                    </Menu.Item> : null}
                 </Menu>
                 <TreeView 
                     items={this.state.treeItems} 

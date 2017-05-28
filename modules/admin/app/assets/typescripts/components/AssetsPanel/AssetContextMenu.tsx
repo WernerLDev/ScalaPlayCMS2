@@ -9,6 +9,8 @@ export interface AssetContextMenuProps {
     onDismiss: () => void
     onToggleEdit: () => void
     onToggleDelete: () => void
+    onToggleAdd: () => void
+    onToggleUpload: () => void
     target: MouseEvent,
     canCreate : boolean,
     canDelete : boolean
@@ -34,12 +36,12 @@ class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
             {
                 icon : "plus",
                 label : "Create New folder  ",
-                onClick: this.handleItemClick.bind(this),
+                onClick: this.props.onToggleAdd,
                 children: []
             },
             {
                 label : "Upload...",
-                onClick: this.handleItemClick.bind(this),
+                onClick: this.props.onToggleUpload,
                 children: []
             }
         ]

@@ -3,6 +3,7 @@ import * as Tree from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import AssetContextMenu from './AssetContextMenu'
 import RenameMode from '../TreeView/partials/RenameMode'
+import AddMode from '../TreeView/partials/AddMode'
 import Draggable from '../TreeView/partials/draggable'
 import { getAssetIcon } from './AssetIcons'
 
@@ -10,15 +11,27 @@ export interface AssetTreeLabelProps {
     item: Tree.TreeViewItem<Api.Asset>,
     onContextTriggered: (n:Tree.TreeViewItem<Api.Asset>) => void,
     onDeleted: (item:Api.Asset) => void,
+    onToggleUpload: (parent_id:number) => void,
     onRenamed : (item:Api.Asset) => void
+    onFolderAdded : (parent_id:number, name:string) => void
+    onParentChanged : (sourceid:number, targetid:number) => void
+    
 }
 
-class AssetTreeLabel extends React.Component<AssetTreeLabelProps, any> {
+export interface AssetTreeLabelState {
+    contextMenuVisible : boolean
+    menutarget : React.MouseEvent<HTMLElement>
+    editmode : boolean
+    createmode : boolean
+    deleted : boolean
+}
+
+class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabelState> {
 
     constructor(props:AssetTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:MouseEvent
+            contextMenuVisible: false, menutarget:null, editmode: false, createmode: false, deleted: false
         }
     }
 
@@ -26,7 +39,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, any> {
         this.props.onContextTriggered(this.props.item);
         e.persist();
         e.preventDefault();
-        this.setState({
+        this.setState({ ...this.state,
             contextMenuVisible: true, menutarget: e
         })
     }
@@ -35,6 +48,19 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, any> {
         this.setState({ editmode: !this.state.editmode });
     }
 
+    renderAddForm() {
+        return(
+            <AddMode
+                icon={getAssetIcon("folder")}
+                onBlur={() => this.setState({ createmode: false })}
+                onSubmit={(val:string) => {
+                    this.setState({ createmode: false }, () => {
+                        this.props.onFolderAdded(this.props.item.item.id, val);
+                    })
+                }}
+            />
+        )
+    }
     renderEditForm() {
          return(
             <RenameMode
@@ -42,7 +68,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, any> {
                 icon={getAssetIcon(this.props.item.item.mimetype)}
                 onBlur={this._onToggleEdit.bind(this)}
                 onSubmit={(newname:string) => {
-                    this.setState({ label: newname, editmode: false }, () => {
+                    this.setState({ ...this.state, editmode: false }, () => {
                         this.props.onRenamed({...this.props.item.item, label: newname});
                     })
                 }}
@@ -57,10 +83,12 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, any> {
               target={this.state.menutarget.nativeEvent}
               canCreate={mimetype == "home" || mimetype == "folder"}
               canDelete={mimetype != "home"}
+              onToggleUpload={() => this.props.onToggleUpload(this.props.item.item.id)}
               onDismiss={this._onDismiss.bind(this)}
+              onToggleAdd={() => this.setState({createmode: true})}
               onToggleDelete={() => {
                     if(confirm("Are you sure?")) {
-                        this.setState({ deleted: true  }, () => {
+                        this.setState({ ...this.state, deleted: true  }, () => {
                             this.props.onDeleted(this.props.item.item);
                         })
                     }
@@ -69,19 +97,21 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, any> {
         )
     }
 
-
     render() {
-        // let icon = this.props.item.item.mimetype == "home" ? "home" : "file-image-o";
-        // if(this.props.item.item.mimetype == "folder") {
-        //     icon = "folder";
-        // }
+        let mimetype = this.props.item.item.mimetype;
         let icon = getAssetIcon(this.props.item.item.mimetype);
         if(this.state.editmode) return this.renderEditForm();
         return(
-            <div onContextMenu={this.toggleContextMenu.bind(this)}>
+            <Draggable 
+                isDropTarget={mimetype == "folder" || mimetype == "home"}
+                onDrop={this.props.onParentChanged.bind(this)}
+                item={this.props.item}
+                className={this.state.deleted ? "deleted dragitem" : "dragitem"} 
+                onContextMenu={this.toggleContextMenu.bind(this)}>
                 <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.props.item.item.label}
+                {this.state.createmode ? this.renderAddForm() : null}
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
-            </div>
+            </Draggable>
         )
     }
 

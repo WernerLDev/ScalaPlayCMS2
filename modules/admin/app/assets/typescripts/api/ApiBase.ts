@@ -15,11 +15,11 @@ type ApiParams = {
     body?:any 
 }
 
-export default function ApiCall(call:string, method:string, body?:string, contenttype?:string) {
+export default function ApiCall(call:string, method:string, body?:Object, contenttype?:string) {
     var headers:ApiHeader = {
             "Csrf-Token": csrf
     }
-    if(contenttype != null){
+    if(contenttype != null && contenttype != "none"){
         headers["Content-Type"] = contenttype;
     } else if(contenttype == null) {
         headers["Content-Type"] = "application/json";
@@ -40,7 +40,7 @@ export default function ApiCall(call:string, method:string, body?:string, conten
                 let info:ApiErrorInfo = {
                     errorCode : response.status,
                     method : method,
-                    params : body == null ? "{}" : body,
+                    params : body == null ? "{}" : body.toString(),
                     responseBody : r,
                     statusText : response.statusText,
                     url : call

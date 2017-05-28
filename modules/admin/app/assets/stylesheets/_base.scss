@@ -79,39 +79,7 @@ iframe.documentIframe {
     background: #000; opacity: 0.4;
 }
 
-.uploadDialog {
-    position: absolute; top: 50px; left: 10px; right: 10px;
-    background: #fff;
-    padding: 15px;
-}
 
-
-.uploadbtn {
-    display: block;
-    position: relative;
-    cursor: pointer;
-    background: #FFF;
-    border: 1px dashed $color1;
-    line-height: 20px;
-    width: 100%; height: 150px; 
-    overflow: hidden;
-    input[type="file"] {
-        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        display: block; 
-        opacity: 0;
-    }
-    span {
-        position: absolute; padding-top: 57px; top: 0px; left: 0px; right: 0; bottom: 0; text-align: center;
-        font-size: 13px;
-    }
-    :hover {
-        background: $color4; 
-    }
-}
-
-.uploadDialog .fileover {
-    background: $color2;
-}
 
 .imageviewerback {
     background: $color4;

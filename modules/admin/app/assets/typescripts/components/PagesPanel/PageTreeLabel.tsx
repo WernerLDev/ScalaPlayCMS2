@@ -104,6 +104,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         if(this.state.editmode) return this.renderEditForm();
         return(
             <Draggable 
+                isDropTarget={true}
                 onDrop={this.props.onParentChanged.bind(this)}
                 item={this.props.item}
                 className={this.state.deleted ? "deleted dragitem" : "dragitem"} 

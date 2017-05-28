@@ -9,6 +9,8 @@ export function getAssetIcon(mimetype:string) {
             return "file-image-o"
         case "text/plain":
             return "file-text-o"
+        case "application/pdf":
+            return "file-pdf-o"
         default:
             return "file-o"
     }

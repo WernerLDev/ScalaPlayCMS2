@@ -12,7 +12,7 @@ class ApiErrorView extends React.Component<ApiErrorViewProps, any> {
 
     constructor(props:ApiErrorViewProps, context:any) {
         super(props, context);
-        this.state = { activeItem: "response" }
+        this.state = { activeItem: "request" }
     }
 
     renderParams() {
@@ -32,11 +32,11 @@ class ApiErrorView extends React.Component<ApiErrorViewProps, any> {
                 <Modal.Content>
                 <Modal.Description>
                     <Menu pointing secondary>
+                        <Menu.Item name='request' active={activeItem === 'request'} onClick={() => this.setState({activeItem: "request"})} />
                         <Menu.Item name='response' active={activeItem === 'response'} onClick={() => this.setState({activeItem: "response"})} />
-                        <Menu.Item name='info' active={activeItem === 'info'} onClick={() => this.setState({activeItem: "info"})} />
                     </Menu>
 
-                    <div style={{display: activeItem == "info" ? "block" : "none"}}>
+                    <div style={{display: activeItem == "request" ? "block" : "none"}}>
                     
                         <Table basic='very'>
                             <Table.Body>
