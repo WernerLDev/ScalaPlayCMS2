@@ -13,7 +13,8 @@ export interface AssetContextMenuProps {
     onToggleUpload: () => void
     target: MouseEvent,
     canCreate : boolean,
-    canDelete : boolean
+    canDelete : boolean,
+    canRename : boolean
 }
 
 class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
@@ -31,59 +32,50 @@ class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
             x : this.props.target.clientX,
             y : this.props.target.clientY
         }
-        
-        let createItems:ContextMenuItem[] = [
-            {
-                icon : "plus",
-                label : "Create New folder  ",
-                onClick: this.props.onToggleAdd,
-                children: []
-            },
-            {
-                label : "Upload...",
-                onClick: this.props.onToggleUpload,
-                children: []
-            }
-        ]
-
-        let removeItem:ContextMenuItem = {
-            icon : "trash",
-            label : "Remove",
-            onClick: this.props.onToggleDelete,
-            children: []
-        }
-
-        let otherItems:ContextMenuItem[] = [
-            {
-                icon : "write",
-                label : "Rename",
-                onClick: this.props.onToggleEdit,
-                children: []
-            },
-            {
-                label : "Properties",
-                onClick: this.handleItemClick.bind(this),
-                children: []
-            },
-            {
-                label : "Open",
-                onClick: this.handleItemClick.bind(this),
-                children: []
-            }
-        ];
-
-        var items = otherItems;
-        if(this.props.canCreate) {
-            items = createItems.concat(items);
-        }
-        if(this.props.canDelete) {
-            items = items.concat(removeItem);
-        }
 
         return(
             <ContextMenu
                 target={target}
-                items={items}
+                items={[
+                    {
+                        icon : "plus",
+                        label : "Create New folder  ",
+                        onClick: this.props.onToggleAdd,
+                        children: [],
+                        disabled: !this.props.canCreate
+                    },
+                    {
+                        label : "Upload...",
+                        onClick: this.props.onToggleUpload,
+                        children: [],
+                        disabled: !this.props.canCreate
+
+                    },
+                    {
+                        icon : "write",
+                        label : "Rename",
+                        onClick: this.props.onToggleEdit,
+                        children: [],
+                        disabled: !this.props.canRename
+                    },
+                    {
+                        icon : "trash",
+                        label : "Remove",
+                        onClick: this.props.onToggleDelete,
+                        children: [],
+                        disabled: !this.props.canDelete
+                    },
+                    {
+                        label : "Properties",
+                        onClick: this.handleItemClick.bind(this),
+                        children: []
+                    },
+                    {
+                        label : "Open",
+                        onClick: this.handleItemClick.bind(this),
+                        children: []
+                    }
+                ]}
                 onDismiss={this.props.onDismiss}
             />
         )

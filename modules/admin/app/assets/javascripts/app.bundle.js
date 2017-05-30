@@ -755,7 +755,9 @@
 	                React.createElement(semantic_ui_react_1.Menu.Item, { name: 'refresh', position: "right", active: false, onClick: this.handleItemClick.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
 	            React.createElement(TreeView_1.default, { items: this.state.treeItems, selected: this.state.selected, onClick: (n) => {
 	                    this.setState({ selected: n });
-	                }, onRenderLabel: this.renderLabel.bind(this) })));
+	                }, onRenderLabel: this.renderLabel.bind(this), onCollapse: (i, state) => {
+	                    Api.collapseDocument(i.item.doc.id, state);
+	                } })));
 	    }
 	}
 	exports.default = PagesPanel;
@@ -815,7 +817,7 @@
 	    render() {
 	        return (React.createElement("div", { ref: 'tree', className: "TreeContainer" },
 	            React.createElement("nav", { role: "navigation" },
-	                React.createElement(SubTreeView, { visible: true, items: this.props.items, onClick: this.onClick.bind(this), selected: this.state.selected, onRenderLabel: this.props.onRenderLabel }))));
+	                React.createElement(SubTreeView, { visible: true, items: this.props.items, onClick: this.onClick.bind(this), selected: this.state.selected, onCollapse: this.props.onCollapse, onRenderLabel: this.props.onRenderLabel }))));
 	    }
 	}
 	exports.default = TreeView;
@@ -824,7 +826,7 @@
 	        super(props, context);
 	    }
 	    renderTreeNode(n) {
-	        return (React.createElement(SubTreeViewNode, { key: n.key, onRenderLabel: this.props.onRenderLabel, selected: this.props.selected, onclick: this.props.onClick, item: n }));
+	        return (React.createElement(SubTreeViewNode, { key: n.key, onRenderLabel: this.props.onRenderLabel, selected: this.props.selected, onclick: this.props.onClick, onCollapse: this.props.onCollapse, item: n }));
 	    }
 	    render() {
 	        let visibleClass = this.props.visible ? "" : " hidden";
@@ -848,7 +850,9 @@
 	        };
 	    }
 	    switchCollapseState() {
-	        this.setState(Object.assign({}, this.state, { collapsed: !this.state.collapsed }));
+	        this.setState(Object.assign({}, this.state, { collapsed: !this.state.collapsed }), () => {
+	            this.props.onCollapse(this.props.item, this.state.collapsed);
+	        });
 	    }
 	    renderCollapseBtn() {
 	        let icon = this.state.collapsed ? "angle-down" : "angle-down rotateIcon";
@@ -862,7 +866,7 @@
 	        if (node.children.length == 0)
 	            return null;
 	        else {
-	            return (React.createElement(SubTreeView, { visible: this.state.collapsed, items: node.children, onRenderLabel: this.props.onRenderLabel, onClick: this.props.onclick, selected: this.props.selected }));
+	            return (React.createElement(SubTreeView, { visible: this.state.collapsed, items: node.children, onRenderLabel: this.props.onRenderLabel, onClick: this.props.onclick, onCollapse: this.props.onCollapse, selected: this.props.selected }));
 	        }
 	    }
 	    renderTreeItem(node) {
@@ -922,7 +926,7 @@
 	            "pagetype": pagetype
 	        }
 	    });
-	    return ApiBase_js_1.default("/admin/api/v1/documents", "POST", body);
+	    return ApiBase_js_1.default("/adminn/api/v1/documents", "POST", body);
 	}
 	exports.addDocument = addDocument;
 	function deleteDocument(doc) {
@@ -936,6 +940,13 @@
 	    return ApiBase_js_1.default("/admin/api/v1/documents/" + source_id + "/updateparent", "PUT", body);
 	}
 	exports.updateParentDocument = updateParentDocument;
+	function collapseDocument(id, collapsed) {
+	    var body = JSON.stringify({
+	        "collapsed": collapsed
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/documents/" + id + "/collapse", "PUT", body);
+	}
+	exports.collapseDocument = collapseDocument;
 	//# sourceMappingURL=DocumentsApi.js.map
 
 /***/ }),
@@ -1031,7 +1042,7 @@
 	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "URL"),
 	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.props.info.url)),
 	                                React.createElement(semantic_ui_react_1.Table.Row, null,
-	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Params"),
+	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Body"),
 	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.renderParams()))))),
 	                    React.createElement("iframe", { style: { display: activeItem == "response" ? "block" : "none" }, width: "100%", height: "342", src: "data:text/html;charset=utf-8," + encodeURI(this.props.info.responseBody) })))));
 	    }
@@ -1094,6 +1105,13 @@
 	    return ApiBase_js_1.default("/admin/api/v1/assets/" + id + "/updateparent", "PUT", body);
 	}
 	exports.updateParentAsset = updateParentAsset;
+	function collapseAsset(id, collapsed) {
+	    var body = JSON.stringify({
+	        "collapsed": collapsed
+	    });
+	    return ApiBase_js_1.default("/admin/api/v1/assets/" + id + "/collapse", "PUT", body);
+	}
+	exports.collapseAsset = collapseAsset;
 	//# sourceMappingURL=AssetsApi.js.map
 
 /***/ }),
@@ -1126,7 +1144,7 @@
 	        this.setState(Object.assign({}, this.state, { contextMenuVisible: true, menutarget: e }));
 	    }
 	    renderContextMenu() {
-	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, pagetypes: this.props.pagetypes, onDismiss: this._onDismiss.bind(this), onToggleAdd: (t) => this.setState({ addingmode: true, addtype: t }), onToggleDelete: () => {
+	        return (React.createElement(PageTreeContextMenu_1.default, { target: this.state.menutarget.nativeEvent, pagetypes: this.props.pagetypes, isRootNode: this.props.item.item.doc.doctype == "home", onDismiss: this._onDismiss.bind(this), onToggleAdd: (t) => this.setState({ addingmode: true, addtype: t }), onToggleDelete: () => {
 	                if (confirm("Are you sure?")) {
 	                    this.setState({ deleted: true }, () => {
 	                        this.props.onDeleted(this.props.item.item.doc);
@@ -1211,18 +1229,21 @@
 	                    icon: "write",
 	                    label: "Rename",
 	                    onClick: this.props.onToggleEdit,
-	                    children: []
+	                    children: [],
+	                    disabled: this.props.isRootNode
 	                },
 	                {
 	                    icon: "trash",
 	                    label: "Remove",
 	                    onClick: this.props.onToggleDelete,
-	                    children: []
+	                    children: [],
+	                    disabled: this.props.isRootNode
 	                },
 	                {
 	                    label: "Dublicate",
 	                    onClick: this.handleItemClick.bind(this),
-	                    children: []
+	                    children: [],
+	                    disabled: this.props.isRootNode
 	                },
 	                {
 	                    label: "Properties",
@@ -1270,7 +1291,7 @@
 	            this.props.onDismiss();
 	            item.onClick();
 	        };
-	        return (React.createElement(semantic_ui_react_1.Menu.Item, { key: item.label, name: item.label, icon: item.icon, active: false, onClick: itemClicked }));
+	        return (React.createElement(semantic_ui_react_1.Menu.Item, { key: item.label, disabled: item.disabled ? item.disabled : false, name: item.label, icon: item.icon, active: false, onClick: itemClicked }));
 	    }
 	    renderSubMenuItem(item) {
 	        return (React.createElement(semantic_ui_react_1.Dropdown, { key: item.label, item: true, text: item.label },
@@ -1279,7 +1300,7 @@
 	                    this.props.onDismiss();
 	                    x.onClick();
 	                };
-	                return (React.createElement(semantic_ui_react_1.Dropdown.Item, { key: x.label, icon: x.icon, text: x.label, onClick: itemClicked }));
+	                return (React.createElement(semantic_ui_react_1.Dropdown.Item, { key: x.label, disabled: item.disabled ? item.disabled : false, icon: x.icon, text: x.label, onClick: itemClicked }));
 	            }))));
 	    }
 	    renderItem(item) {
@@ -1498,7 +1519,9 @@
 	        return (React.createElement("div", null,
 	            React.createElement(semantic_ui_react_1.Menu, { className: "smalltoolbar", icon: true },
 	                React.createElement(semantic_ui_react_1.Menu.Item, { position: 'right', name: 'refresh', active: false, onClick: this.refreshClicked.bind(this) }, this.state.working ? React.createElement(semantic_ui_react_1.Loader, { active: true, size: "tiny", inline: true }) : React.createElement(semantic_ui_react_1.Icon, { name: 'refresh' }))),
-	            React.createElement(TreeView_1.default, { items: this.state.treeItems, selected: this.state.selected, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this) }),
+	            React.createElement(TreeView_1.default, { items: this.state.treeItems, selected: this.state.selected, onClick: () => console.log("clicked"), onRenderLabel: this.renderLabel.bind(this), onCollapse: (i, state) => {
+	                    Api.collapseAsset(i.item.id, state);
+	                } }),
 	            this.state.showUploadDialog ?
 	                React.createElement(UploadModal_1.default, { onUploadFinished: (progress) => {
 	                        if (progress == 100) {
@@ -1558,7 +1581,7 @@
 	    }
 	    renderContextMenu() {
 	        let mimetype = this.props.item.item.mimetype;
-	        return (React.createElement(AssetContextMenu_1.default, { target: this.state.menutarget.nativeEvent, canCreate: mimetype == "home" || mimetype == "folder", canDelete: mimetype != "home", onToggleUpload: () => this.props.onToggleUpload(this.props.item.item.id), onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ createmode: true }), onToggleDelete: () => {
+	        return (React.createElement(AssetContextMenu_1.default, { target: this.state.menutarget.nativeEvent, canCreate: mimetype == "home" || mimetype == "folder", canDelete: mimetype != "home", canRename: mimetype != "home", onToggleUpload: () => this.props.onToggleUpload(this.props.item.item.id), onDismiss: this._onDismiss.bind(this), onToggleAdd: () => this.setState({ createmode: true }), onToggleDelete: () => {
 	                if (confirm("Are you sure?")) {
 	                    this.setState(Object.assign({}, this.state, { deleted: true }), () => {
 	                        this.props.onDeleted(this.props.item.item);
@@ -1610,51 +1633,45 @@
 	            x: this.props.target.clientX,
 	            y: this.props.target.clientY
 	        };
-	        let createItems = [
-	            {
-	                icon: "plus",
-	                label: "Create New folder  ",
-	                onClick: this.props.onToggleAdd,
-	                children: []
-	            },
-	            {
-	                label: "Upload...",
-	                onClick: this.props.onToggleUpload,
-	                children: []
-	            }
-	        ];
-	        let removeItem = {
-	            icon: "trash",
-	            label: "Remove",
-	            onClick: this.props.onToggleDelete,
-	            children: []
-	        };
-	        let otherItems = [
-	            {
-	                icon: "write",
-	                label: "Rename",
-	                onClick: this.props.onToggleEdit,
-	                children: []
-	            },
-	            {
-	                label: "Properties",
-	                onClick: this.handleItemClick.bind(this),
-	                children: []
-	            },
-	            {
-	                label: "Open",
-	                onClick: this.handleItemClick.bind(this),
-	                children: []
-	            }
-	        ];
-	        var items = otherItems;
-	        if (this.props.canCreate) {
-	            items = createItems.concat(items);
-	        }
-	        if (this.props.canDelete) {
-	            items = items.concat(removeItem);
-	        }
-	        return (React.createElement(ContextMenu_1.default, { target: target, items: items, onDismiss: this.props.onDismiss }));
+	        return (React.createElement(ContextMenu_1.default, { target: target, items: [
+	                {
+	                    icon: "plus",
+	                    label: "Create New folder  ",
+	                    onClick: this.props.onToggleAdd,
+	                    children: [],
+	                    disabled: !this.props.canCreate
+	                },
+	                {
+	                    label: "Upload...",
+	                    onClick: this.props.onToggleUpload,
+	                    children: [],
+	                    disabled: !this.props.canCreate
+	                },
+	                {
+	                    icon: "write",
+	                    label: "Rename",
+	                    onClick: this.props.onToggleEdit,
+	                    children: [],
+	                    disabled: !this.props.canRename
+	                },
+	                {
+	                    icon: "trash",
+	                    label: "Remove",
+	                    onClick: this.props.onToggleDelete,
+	                    children: [],
+	                    disabled: !this.props.canDelete
+	                },
+	                {
+	                    label: "Properties",
+	                    onClick: this.handleItemClick.bind(this),
+	                    children: []
+	                },
+	                {
+	                    label: "Open",
+	                    onClick: this.handleItemClick.bind(this),
+	                    children: []
+	                }
+	            ], onDismiss: this.props.onDismiss }));
 	    }
 	}
 	exports.default = AssetContextMenu;

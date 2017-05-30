@@ -11,6 +11,7 @@ export interface PageTreeContextMenuProps {
     onToggleDelete: () => void
     target: MouseEvent
     pagetypes : Api.PageType[] 
+    isRootNode : boolean
 }
 
 class PageTreeContextMenu extends React.Component<PageTreeContextMenuProps, any> {
@@ -51,18 +52,21 @@ class PageTreeContextMenu extends React.Component<PageTreeContextMenuProps, any>
                         icon : "write",
                         label : "Rename",
                         onClick: this.props.onToggleEdit,
-                        children: []
+                        children: [],
+                        disabled: this.props.isRootNode
                     },
                     {
                         icon : "trash",
                         label : "Remove",
                         onClick: this.props.onToggleDelete,
-                        children: []
+                        children: [],
+                        disabled: this.props.isRootNode
                     },
                     {
                         label : "Dublicate",
                         onClick: this.handleItemClick.bind(this),
-                        children: []
+                        children: [],
+                        disabled: this.props.isRootNode
                     },
                     {
                         label : "Properties",

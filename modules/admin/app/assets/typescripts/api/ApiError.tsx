@@ -49,7 +49,7 @@ class ApiErrorView extends React.Component<ApiErrorViewProps, any> {
                                     <Table.Cell>{this.props.info.url}</Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
-                                    <Table.Cell>Params</Table.Cell>
+                                    <Table.Cell>Body</Table.Cell>
                                     <Table.Cell>{this.renderParams()}</Table.Cell>
                                 </Table.Row>
                             </Table.Body>

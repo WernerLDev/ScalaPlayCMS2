@@ -59,6 +59,7 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
                     items={this.props.items}
                     onClick={this.onClick.bind(this)} 
                     selected={this.state.selected} 
+                    onCollapse={this.props.onCollapse}
                     onRenderLabel={this.props.onRenderLabel} />
             </nav>
         </div>
@@ -95,6 +96,7 @@ class  SubTreeView extends React.Component<TreeTypes.SubTreeViewProps<any>, any>
                 onRenderLabel={this.props.onRenderLabel}
                 selected={this.props.selected}
                 onclick={this.props.onClick}
+                onCollapse={this.props.onCollapse}
                 item={n}
             />
         )
@@ -124,7 +126,9 @@ class SubTreeViewNode extends React.Component<TreeTypes.SubTreeViewNodeProps<any
     }
 
     switchCollapseState() {
-         this.setState({ ...this.state, collapsed: !this.state.collapsed })
+         this.setState({ ...this.state, collapsed: !this.state.collapsed }, () => {
+             this.props.onCollapse(this.props.item, this.state.collapsed);
+         })
     }
 
     renderCollapseBtn() {
@@ -149,6 +153,7 @@ class SubTreeViewNode extends React.Component<TreeTypes.SubTreeViewNodeProps<any
                     items={node.children} 
                     onRenderLabel={this.props.onRenderLabel} 
                     onClick={this.props.onclick} 
+                    onCollapse={this.props.onCollapse}
                     selected={this.props.selected} 
                 />
             )

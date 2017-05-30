@@ -147,6 +147,9 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                             this.setState({selected: n})
                         }}
                     onRenderLabel={this.renderLabel.bind(this)}
+                     onCollapse={(i:TreeTypes.TreeViewItem<Api.DocumentTree>, state:boolean) => {
+                        Api.collapseDocument(i.item.doc.id, state);
+                    }}
                 />
             </div>
         );

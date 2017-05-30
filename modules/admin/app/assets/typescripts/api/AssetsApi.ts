@@ -1,13 +1,5 @@
 import ApiCall from './ApiBase.js';
 
-//Api.getAssets().then(assets => {
-        //     var items = this.toTreeItems(assets);
-        //     this.setState({ assets: assets, treeItems: items, working: false });
-        // });
-
-
-//case class Asset(id : Long , parent_id : Long, name : String, mimetype : String, collapsed : Boolean, path:String, server_path:String, filesize:Long, created_at:Timestamp )
-
 export interface Asset {
     id : number,
     parent_id : number,
@@ -78,4 +70,11 @@ export function updateParentAsset(id:number, parent_id:number) {
         "parent_id": parent_id
     });
     return ApiCall("/admin/api/v1/assets/" + id + "/updateparent", "PUT", body);
+}
+
+export function collapseAsset(id:number, collapsed:boolean) {
+    var body = JSON.stringify({
+        "collapsed": collapsed
+    });
+    return ApiCall("/admin/api/v1/assets/" + id + "/collapse", "PUT", body);
 }

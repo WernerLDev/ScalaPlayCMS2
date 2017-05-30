@@ -140,6 +140,9 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
                     selected={this.state.selected}
                     onClick={() => console.log("clicked")}
                     onRenderLabel={this.renderLabel.bind(this)}
+                    onCollapse={(i:TreeTypes.TreeViewItem<Api.AssetTree>, state:boolean) => {
+                        Api.collapseAsset(i.item.id, state);
+                    }}
                 />
 
                 {this.state.showUploadDialog ? 

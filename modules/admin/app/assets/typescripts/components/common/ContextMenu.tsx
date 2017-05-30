@@ -6,6 +6,7 @@ export interface ContextMenuItem {
     label:string
     children: ContextMenuItem[]
     onClick:() => void
+    disabled? : boolean
 }
 
 export interface IPoint {
@@ -48,7 +49,7 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
             item.onClick();
         }
         return(
-             <Menu.Item key={item.label} name={item.label} icon={item.icon} active={false} onClick={itemClicked} />
+             <Menu.Item key={item.label} disabled={item.disabled ? item.disabled : false} name={item.label} icon={item.icon} active={false} onClick={itemClicked} />
         )
     }
 
@@ -61,7 +62,7 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
                             this.props.onDismiss();
                             x.onClick();
                         }
-                        return(<Dropdown.Item key={x.label} icon={x.icon} text={x.label} onClick={itemClicked}  />)
+                        return(<Dropdown.Item key={x.label} disabled={item.disabled ? item.disabled : false} icon={x.icon} text={x.label} onClick={itemClicked}  />)
                     })}
                 </Dropdown.Menu>
             </Dropdown>

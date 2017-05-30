@@ -60,7 +60,7 @@ export function addDocument(parent_id:number, name:string, pagetype:string):Prom
             "pagetype": pagetype
         }
     })
-    return ApiCall("/admin/api/v1/documents", "POST", body);
+    return ApiCall("/adminn/api/v1/documents", "POST", body);
 }
 
 export function deleteDocument(doc:Document) {
@@ -72,4 +72,11 @@ export function updateParentDocument(source_id:number, parent_id:number) {
         "parent_id": parent_id
     });
     return ApiCall("/admin/api/v1/documents/" + source_id + "/updateparent", "PUT", body);
+}
+
+export function collapseDocument(id:number, collapsed:boolean) {
+    var body = JSON.stringify({
+        "collapsed": collapsed
+    });
+    return ApiCall("/admin/api/v1/documents/" + id + "/collapse", "PUT", body);
 }

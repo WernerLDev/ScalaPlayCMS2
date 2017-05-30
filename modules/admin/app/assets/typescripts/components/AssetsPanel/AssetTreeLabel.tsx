@@ -86,6 +86,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
               target={this.state.menutarget.nativeEvent}
               canCreate={mimetype == "home" || mimetype == "folder"}
               canDelete={mimetype != "home"}
+              canRename={mimetype != "home"}
               onToggleUpload={() => this.props.onToggleUpload(this.props.item.item.id)}
               onDismiss={this._onDismiss.bind(this)}
               onToggleAdd={() => this.setState({createmode: true})}

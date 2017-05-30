@@ -56,6 +56,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
             <PageTreeContextMenu 
               target={this.state.menutarget.nativeEvent}
               pagetypes={this.props.pagetypes}
+              isRootNode={this.props.item.item.doc.doctype == "home"}
               onDismiss={this._onDismiss.bind(this)}
               onToggleAdd={(t:string) => this.setState({ addingmode: true, addtype: t })}
               onToggleDelete={() => {
