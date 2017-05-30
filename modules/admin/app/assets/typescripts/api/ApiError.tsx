@@ -56,7 +56,7 @@ class ApiErrorView extends React.Component<ApiErrorViewProps, any> {
                             </Table>
                      </div>
 
-                     <iframe style={{display: activeItem == "response" ? "block" : "none"}} width="100%" height="342" src={"data:text/html;charset=utf-8," + encodeURI(this.props.info.responseBody)} />
+                     <iframe style={{display: activeItem == "response" ? "block" : "none"}} width="100%" height="342" src={"data:text/html;charset=utf-8," + encodeURIComponent(this.props.info.responseBody)} />
                 </Modal.Description>
                 </Modal.Content>
             </Modal>

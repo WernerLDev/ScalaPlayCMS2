@@ -926,7 +926,7 @@
 	            "pagetype": pagetype
 	        }
 	    });
-	    return ApiBase_js_1.default("/adminn/api/v1/documents", "POST", body);
+	    return ApiBase_js_1.default("/admin/api/v1/documents", "POST", body);
 	}
 	exports.addDocument = addDocument;
 	function deleteDocument(doc) {
@@ -1044,7 +1044,7 @@
 	                                React.createElement(semantic_ui_react_1.Table.Row, null,
 	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, "Body"),
 	                                    React.createElement(semantic_ui_react_1.Table.Cell, null, this.renderParams()))))),
-	                    React.createElement("iframe", { style: { display: activeItem == "response" ? "block" : "none" }, width: "100%", height: "342", src: "data:text/html;charset=utf-8," + encodeURI(this.props.info.responseBody) })))));
+	                    React.createElement("iframe", { style: { display: activeItem == "response" ? "block" : "none" }, width: "100%", height: "342", src: "data:text/html;charset=utf-8," + encodeURIComponent(this.props.info.responseBody) })))));
 	    }
 	}
 	function ApiError(info) {
