@@ -5,9 +5,10 @@ import * as Api from '../../api/Api'
 import PageTreeLabel from './PageTreeLabel'
 import Loading from '../common/Loading'
 import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
+import * as Tabs from '../TabPanel/TabPanel'
 
 export interface PagesPanelProps {
-
+    onOpenTab: (tab:Tabs.Tab) => void
 }
 
 export interface PagesPanelState {
@@ -143,6 +144,13 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 <TreeView 
                     items={this.state.treeItems} 
                     selected={this.state.selected}
+                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.DocumentTree>) => {
+                        this.props.onOpenTab({
+                            key: n.item.doc.id + "doc",
+                            title: n.item.doc.name,
+                            content: () => (<div>not implemented yet</div>)
+                        })
+                    }}
                     onClick={(n:TreeTypes.TreeViewItem<Api.DocumentTree>) => {
                             this.setState({selected: n})
                         }}

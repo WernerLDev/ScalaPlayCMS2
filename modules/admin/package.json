@@ -2,8 +2,10 @@
   "devDependencies": {
     "@types/react": "^15.0.24",
     "@types/react-dom": "^15.5.0",
+    "@types/react-redux": "^4.4.40",
     "@types/react-split-pane": "^0.1.7",
     "@types/react-tap-event-plugin": "0.0.30",
+    "@types/redux": "^3.6.0",
     "@types/semantic-ui": "^2.2.3",
     "babel-core": "^6.4.5",
     "babel-loader": "^6.2.1",
@@ -23,16 +25,16 @@
     "test": "test"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
+    "immutable": "^3.8.1",
     "moment": "^2.18.1",
-    "prop-types": "^15.5.8",
     "react": "^15.4.2",
     "react-dom": "^15.5.4",
+    "react-redux": "^5.0.5",
     "react-split-pane": "^0.1.59",
     "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.6.0",
     "semantic-ui-react": "^0.68.3",
-    "webpack": "^1.14.0",
-    "wolfy87-eventemitter": "^5.1.0"
+    "webpack": "^1.14.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

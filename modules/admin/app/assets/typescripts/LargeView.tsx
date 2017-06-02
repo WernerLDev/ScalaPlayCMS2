@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Menu, Table, Segment, Icon } from 'semantic-ui-react'
 import Loading from './components/common/Loading'
+import TabPanel from './components/TabPanel/TabPanel'
 
 type tabname = { name:string }
 
@@ -20,11 +21,7 @@ export default class LargeView extends React.Component<any, any> {
         let activeItem = this.state.activeItem;
         return (
             <div>
-              <Menu className="tabbar" tabular>
-                <Menu.Item name='bio' active={activeItem === 'bio'} onClick={this.handleItemClick.bind(this)} />
-                <Menu.Item name='photos' active={activeItem === 'photos'} onClick={this.handleItemClick.bind(this)} />
-              </Menu>
-
+              
               <Segment className="toolbar" inverted>
                 <Menu inverted icon="labeled" size="massive">
                   <Menu.Item name='home' active={false} onClick={this.handleItemClick.bind(this)}>

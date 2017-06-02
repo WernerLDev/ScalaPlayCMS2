@@ -39,7 +39,7 @@ class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
                 items={[
                     {
                         icon : "plus",
-                        label : "Create New folder  ",
+                        label : "Create folder  ",
                         onClick: this.props.onToggleAdd,
                         children: [],
                         disabled: !this.props.canCreate

@@ -5,6 +5,9 @@ import {SideMenu, SideMenuItem} from './components/SideMenu/SideMenu'
 import TreeView from './components/TreeView/TreeView'
 import PagesPanel from './components/PagesPanel/PagesPanel'
 import AssetsPanel from './components/AssetsPanel/AssetsPanel'
+import * as Tabs from './components/TabPanel/TabPanel'
+import * as TabActions from './components/TabPanel/TabActions'
+import * as Immutable from 'immutable'
 
 export interface MainProps {
 }
@@ -12,13 +15,23 @@ export interface MainProps {
 type MainState = {
     section : string,
     selected : string
+    tabbar: {
+        tabs: Immutable.List<Tabs.Tab>
+        active: Tabs.Tab
+     }
 }
 
 class Main extends React.Component<MainProps, MainState> {
  
     constructor(props:MainProps, context:any) {
         super(props, context);
-        this.state = { section : "pages", selected: "" }
+        let initialTabbar = {
+            tabs: TabActions.getInitialState(),
+            active: {
+                key: "", title: "", content: () => (<p></p>)
+            }
+        }
+        this.state = { section : "pages", selected: "", tabbar: initialTabbar }
     }
 
     itemsNonFocusable = [
@@ -31,6 +44,21 @@ class Main extends React.Component<MainProps, MainState> {
 
     switchSection(s:string) {
         this.setState({ section: s });
+    }
+
+    openTab(t:Tabs.Tab) {
+        let newTabs = this.state.tabbar.tabs;
+        
+        if(newTabs.find(x => x.key == t.key) == null) {
+            newTabs = newTabs.push(t);
+        }
+        this.setState({
+            ...this.state,
+            tabbar: {
+                active: t,
+                tabs: newTabs
+            }
+        })
     }
 
     render() {
@@ -57,14 +85,38 @@ class Main extends React.Component<MainProps, MainState> {
                         <SplitPane split="vertical" defaultSize={400} minSize={100}>
                             <div className="leftpanel">
                                 <div className={this.state.section == "pages" ? "show" : "hide"}>
-                                    <PagesPanel />
+                                    <PagesPanel
+                                        onOpenTab={this.openTab.bind(this)}
+                                     />
                                 </div>
                                 <div className={this.state.section == "assets" ? "show" : "hide"}>
-                                    <AssetsPanel />
+                                    <AssetsPanel
+                                        onOpenTab={this.openTab.bind(this)}
+                                     />
                                 </div>
                             </div>
                             <div>
-                                <LargeView />
+                                <Tabs.default 
+                                    active={this.state.tabbar.active}
+                                    tabs={this.state.tabbar.tabs}
+                                    onClose={(tab:Tabs.Tab) => {
+                                        var newtabs = this.state.tabbar.tabs.filter(x => x != tab);
+                                        var newactive = this.state.tabbar.active;
+                                        if(tab == this.state.tabbar.active) {
+                                            newactive = TabActions.findNewActive(tab, this.state.tabbar.tabs);
+                                        }
+                                        this.setState({ ...this.state, tabbar: { tabs: newtabs.toList(), active: newactive} })
+                                    }}
+                                    onSwitch={(t:Tabs.Tab) => {
+                                        this.setState({ 
+                                             ...this.state, 
+                                             tabbar: {
+                                                 ...this.state.tabbar, 
+                                                 active: t
+                                             }  
+                                        })
+                                    }}
+                                />
                             </div>
                         </SplitPane>
                     </div>
@@ -74,18 +126,3 @@ class Main extends React.Component<MainProps, MainState> {
 } 
 
 export default Main;
-
-/*
-<TreeView items={[
-                                    { key: "home", name: "Home", children: [
-                                        { key: "testchild", name: "Testchild", children: [
-                                            { key: "blaat", name: "Blaat", children: [] }
-                                        ] },
-                                        { key: "testchild2", name: "Testchild 2", children: [] }
-                                    ]},
-                                    { key: "assets", name: "Assets", children: [
-                                        { key: "asset1", name: "Some asset", children: [] }
-                                    ]}
-                                ]} onClick={(n) => this.setState({selected: n.key})}
-                                onRenderLabel={(n) => <TestTreeViewNode onContextTriggered={(n) => this.setState({ selected: n.key  })} item={n} /> }
-                                 />*/

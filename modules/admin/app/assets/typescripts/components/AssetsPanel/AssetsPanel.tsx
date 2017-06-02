@@ -6,9 +6,10 @@ import * as Api from '../../api/Api'
 import AssetsTreeLabel from './AssetTreeLabel'
 import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 import UploadModal from './UploadModal'
+import * as Tabs from '../TabPanel/TabPanel'
 
 export interface AssetPanelProps {
-
+    onOpenTab: (tab:Tabs.Tab) => void
 }
 
 export interface AssetPanelState {
@@ -139,6 +140,13 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
                     items={this.state.treeItems} 
                     selected={this.state.selected}
                     onClick={() => console.log("clicked")}
+                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.AssetTree>) => {
+                        this.props.onOpenTab({
+                            key: n.item.id + "asset",
+                            title: n.item.label,
+                            content: () => (<div>Asset: not implemented yet</div>)
+                        })
+                    }}
                     onRenderLabel={this.renderLabel.bind(this)}
                     onCollapse={(i:TreeTypes.TreeViewItem<Api.AssetTree>, state:boolean) => {
                         Api.collapseAsset(i.item.id, state);

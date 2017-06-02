@@ -2,7 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TreeTypes from './TreeViewTypes'
 
-class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
+interface TreeViewState {
+    selected: TreeTypes.TreeViewItem<any>
+    lastClick: number
+}
+
+class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, TreeViewState> {
     
     private _emptySelection:TreeTypes.TreeViewItem<any> = {
         key: "",
@@ -15,9 +20,9 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
     constructor(props:TreeTypes.TreeViewProps<any>, context:any) {
         super(props, context);
         if(this.props.selected) {
-            this.state = { selected: this.props.selected }
+            this.state = { selected: this.props.selected, lastClick: 0 }
         } else {
-            this.state = { selected: this._emptySelection }
+            this.state = { selected: this._emptySelection, lastClick: 0 }
         }
     }
 
@@ -46,8 +51,15 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, any> {
     }
   
     onClick(n:TreeTypes.TreeViewItem<any>) {
-        this.setState({ selected: n });
-        this.props.onClick(n);
+        let lastClick = (new Date()).getTime();
+        let difference = lastClick - this.state.lastClick;
+        this.setState({ selected: n, lastClick: lastClick }, () => {
+            if(difference < 500) {
+                this.props.onDoubleClick(n);
+            } else {
+                this.props.onClick(n);
+            }
+        });
     }
 
     render() {

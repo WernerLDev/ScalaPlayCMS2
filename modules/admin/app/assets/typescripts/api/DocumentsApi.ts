@@ -16,17 +16,6 @@ export interface Document {
     published_at : number
 }
 
-// export interface DocumentTree {
-//     id : number,
-//     key : string,
-//     path : string,
-//     label : string,
-//     doctype : string,
-//     collapsed : boolean,
-//     published : boolean,
-//     children : DocumentTree[]
-// }
-
 export interface DocumentTree {
     doc : Document,
     children: DocumentTree[]
@@ -60,7 +49,7 @@ export function addDocument(parent_id:number, name:string, pagetype:string):Prom
             "pagetype": pagetype
         }
     })
-    return ApiCall("/admin/api/v1/documents", "POST", body);
+    return ApiCall("/admiddn/api/v1/documents", "POST", body);
 }
 
 export function deleteDocument(doc:Document) {
