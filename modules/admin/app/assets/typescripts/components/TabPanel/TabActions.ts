@@ -22,7 +22,7 @@ export function getInitialState():Immutable.List<Tabs.Tab> {
 }
 
 export function findNewActive(tab:Tabs.Tab, alltabs:Immutable.List<Tabs.Tab>) {
-    var i = alltabs.indexOf(tab);
+    let i = alltabs.findIndex(x => x.key == tab.key);
     if(alltabs.get(i+1) != undefined) return alltabs.get(i + 1)
     else if(alltabs.get(i - 1) != undefined) return alltabs.get(i - 1)
     else tab;

@@ -6,6 +6,7 @@ import PageTreeLabel from './PageTreeLabel'
 import Loading from '../common/Loading'
 import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 import * as Tabs from '../TabPanel/TabPanel'
+import DocumentEditMode from '../DocumentEditMode/DocumentEditMode'
 
 export interface PagesPanelProps {
     onOpenTab: (tab:Tabs.Tab) => void
@@ -149,7 +150,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                         this.props.onOpenTab({
                             key: n.item.id + "doc",
                             title: n.item.name,
-                            content: () => (<div>not implemented yet</div>)
+                            content: () => (<DocumentEditMode document={n.item} />)
                         })
                     }}
                     onClick={(n:TreeTypes.TreeViewItem<Api.Document>) => {

@@ -15,7 +15,7 @@ type ApiParams = {
     body?:any 
 }
 
-export default function ApiCall(call:string, method:string, body?:Object, contenttype?:string) {
+export default function ApiCall(call:string, method:string, body?:Object, contenttype?:string):Promise<any> {
     var headers:ApiHeader = {
             "Csrf-Token": csrf
     }
@@ -32,7 +32,7 @@ export default function ApiCall(call:string, method:string, body?:Object, conten
 
     if( (method != "GET" && method != "HEAD") && body != null) {
         params["body"] = body;
-    } 
+    }
 
     return fetch(call, params).then(response => {
         if(!response.ok) {
@@ -52,7 +52,11 @@ export default function ApiCall(call:string, method:string, body?:Object, conten
         return response;
     }).then(r => {
         if(r.ok) {
-            return r.json();
+            if(contenttype == "text/plain") {
+                return r.text();
+            } else {
+                return r.json();
+            }
         } else {
             return r;
         }

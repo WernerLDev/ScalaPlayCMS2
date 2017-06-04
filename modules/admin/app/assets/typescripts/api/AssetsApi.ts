@@ -17,17 +17,6 @@ export interface AssetTree {
     children: AssetTree[]
 }
 
-export interface AssetTreeOld {
-    id : number,
-    key : string,
-    path : string,
-    server_path : string,
-    label : string,
-    mimetype : string,
-    collapsed : boolean,
-    children : AssetTree[]
-}
-
 export interface UploadResult {
     success : boolean,
     name : string,
@@ -68,6 +57,10 @@ export function deleteAsset(asset:Asset) {
 
 export function getAsset(id:number) {
     return ApiCall("/admin/api/v1/assets/" + id, "GET");
+}
+
+export function getAssetContentAsText(asset:Asset) {
+    return ApiCall("/admin/uploads"+asset.path, "GET", null, "text/plain");
 }
 
 export function updateParentAsset(id:number, parent_id:number) {

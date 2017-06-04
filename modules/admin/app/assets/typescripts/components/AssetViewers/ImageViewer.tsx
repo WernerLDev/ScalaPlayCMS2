@@ -9,7 +9,7 @@ export interface ImageViewerProps {
 export const ImageViewer = (props:ImageViewerProps) => {
     
     let handleItemClick = () => {
-
+        alert("asdfasdf");
     }
 
     return (
@@ -19,7 +19,7 @@ export const ImageViewer = (props:ImageViewerProps) => {
                     <Menu.Item name='properties' active={false} onClick={handleItemClick}>
                         <Icon name='setting' />Properties
                     </Menu.Item>
-                    <Menu.Item name='delete' position="right" active={false} onClick={this.handleItemClick}>
+                    <Menu.Item position="right" name='deletething' active={false} onClick={handleItemClick}>
                         <Icon name='trash' />Remove
                     </Menu.Item>
                 </Menu>
@@ -31,19 +31,4 @@ export const ImageViewer = (props:ImageViewerProps) => {
     )
 }
 
-/*class ImageViewer extends React.Component<ImageViewerProps, any> {
 
-    constructor(props:ImageViewerProps, context:any) {
-        super(props, context);
-    }
-
-    render() {
-        return (
-        <div>
-            
-        </div>
-        );
-    }
-}
-
-export default ImageViewer;*/
