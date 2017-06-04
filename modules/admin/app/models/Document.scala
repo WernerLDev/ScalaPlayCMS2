@@ -16,7 +16,7 @@ import slick.profile.SqlProfile.ColumnOption.SqlType
 
 case class Document(id : Long , parent_id : Long, name : String, doctype : String, collapsed : Boolean, view:Option[String], path:String, title:String, locale:String, description:String, created_at:Timestamp, updated_at:Timestamp, published_at:Timestamp )
 
-case class DocumentTree(doc:Document, children:List[DocumentTree])
+case class DocumentTree(document:Document, children:List[DocumentTree])
 
 class DocumentTableDef(tag: Tag) extends Table[Document](tag, "documents") {
 
@@ -53,7 +53,7 @@ class Documents @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
         def generateList(d:List[Document], parentid:Long):List[DocumentTree] = {
             d.filter(_.parent_id == parentid).map(x => {
                 DocumentTree(
-                    doc = x,
+                    document = x,
                     children = generateList(d, x.id)
                 )
             })

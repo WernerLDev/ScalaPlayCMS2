@@ -5,7 +5,7 @@ export interface Asset {
     parent_id : number,
     name : string,
     mimetype : string,
-    collapse : boolean,
+    collapsed : boolean,
     path : string,
     server_path: string,
     filesize: number,
@@ -13,6 +13,11 @@ export interface Asset {
 }
 
 export interface AssetTree {
+    asset:Asset,
+    children: AssetTree[]
+}
+
+export interface AssetTreeOld {
     id : number,
     key : string,
     path : string,
@@ -34,9 +39,9 @@ export function getAssets():Promise<AssetTree[]> {
     return ApiCall("/admin/api/v1/assets", "GET").then(r => r as AssetTree[]);
 }
 
-export function renameAsset(asset:AssetTree) {
+export function renameAsset(asset:Asset) {
     var body = JSON.stringify({
-        "name" : asset.label
+        "name" : asset.name
     });
     return ApiCall("/admin/api/v1/assets/" + asset.id + "/rename", "PUT", body);
 }
@@ -57,7 +62,7 @@ export function uploadAsset(file:File):Promise<UploadResult> {
     return ApiCall("/admin/api/v1/assets/upload", "POST", data, "none").then(r => r as UploadResult);
 }
 
-export function deleteAsset(asset:AssetTree) {
+export function deleteAsset(asset:Asset) {
     return ApiCall("/admin/api/v1/assets/" + asset.id, "DELETE");
 }
 

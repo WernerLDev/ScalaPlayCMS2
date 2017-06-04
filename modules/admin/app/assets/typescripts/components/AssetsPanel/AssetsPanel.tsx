@@ -7,6 +7,7 @@ import AssetsTreeLabel from './AssetTreeLabel'
 import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 import UploadModal from './UploadModal'
 import * as Tabs from '../TabPanel/TabPanel'
+import ViewerFactory from '../AssetViewers/ViewerFactory'
 
 export interface AssetPanelProps {
     onOpenTab: (tab:Tabs.Tab) => void
@@ -14,11 +15,11 @@ export interface AssetPanelProps {
 
 export interface AssetPanelState {
     assets: Api.AssetTree[],
-    treeItems : TreeTypes.TreeViewItem<Api.AssetTree>[],
+    treeItems : TreeTypes.TreeViewItem<Api.Asset>[],
     working : boolean
     showUploadDialog : boolean
     upload_parent : number
-    selected : TreeTypes.TreeViewItem<Api.AssetTree>
+    selected : TreeTypes.TreeViewItem<Api.Asset>
 }
 
 class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
@@ -30,14 +31,14 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         }
     }
  
-    toTreeItems(assets:Api.AssetTree[]):TreeTypes.TreeViewItem<Api.AssetTree>[] {
-        return assets.map(asset => {
+    toTreeItems(assets:Api.AssetTree[]):TreeTypes.TreeViewItem<Api.Asset>[] {
+        return assets.map(assetTree => {
             return {
-                key : asset.id.toString(),
-                name : asset.label,
-                collapsed: asset.collapsed,
-                children: this.toTreeItems(asset.children),
-                item: asset
+                key : assetTree.asset.id.toString(),
+                name : assetTree.asset.name,
+                collapsed: assetTree.asset.collapsed,
+                children: this.toTreeItems(assetTree.children),
+                item: assetTree.asset
             }
         })
     }
@@ -56,10 +57,10 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         });
     }
 
-    onContextTriggered(n:TreeTypes.TreeViewItem<Api.AssetTree>) {
+    onContextTriggered(n:TreeTypes.TreeViewItem<Api.Asset>) {
     }
 
-    onDeleted(item:Api.AssetTree) {
+    onDeleted(item:Api.Asset) {
         this.setState({ working: true }, () => {
             Api.deleteAsset(item).then(x => {
                 this.refresh();
@@ -67,7 +68,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         })
     }
 
-    onRenamed(asset:Api.AssetTree) {
+    onRenamed(asset:Api.Asset) {
         this.setState({ working: true }, () => {
             Api.renameAsset(asset).then(x => {
                 this.refresh();
@@ -80,7 +81,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
             Api.addAsset(parent_id, name, "", "folder").then(x => {
                Api.getAssets().then(assets => {
                     let items = this.toTreeItems(assets);
-                    let newSelection:TreeTypes.TreeViewItem<Api.AssetTree> = {
+                    let newSelection:TreeTypes.TreeViewItem<Api.Asset> = {
                         key: x.id.toString(),
                         name: x.name,
                         children: [],
@@ -105,7 +106,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         this.setState({ showUploadDialog: !this.state.showUploadDialog, upload_parent: parent_id })
     }
 
-    renderLabel(n:TreeTypes.TreeViewItem<Api.AssetTree>) {
+    renderLabel(n:TreeTypes.TreeViewItem<Api.Asset>) {
         return( 
             <AssetsTreeLabel 
                 item={n} 
@@ -139,16 +140,15 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
                 <TreeView 
                     items={this.state.treeItems} 
                     selected={this.state.selected}
-                    onClick={() => console.log("clicked")}
-                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.AssetTree>) => {
+                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.Asset>) => {
                         this.props.onOpenTab({
                             key: n.item.id + "asset",
-                            title: n.item.label,
-                            content: () => (<div>Asset: not implemented yet</div>)
+                            title: n.item.name,
+                            content: () => ViewerFactory(n.item)
                         })
                     }}
                     onRenderLabel={this.renderLabel.bind(this)}
-                    onCollapse={(i:TreeTypes.TreeViewItem<Api.AssetTree>, state:boolean) => {
+                    onCollapse={(i:TreeTypes.TreeViewItem<Api.Asset>, state:boolean) => {
                         Api.collapseAsset(i.item.id, state);
                     }}
                 />

@@ -13,10 +13,10 @@ export interface PagesPanelProps {
 
 export interface PagesPanelState {
     documents: Api.DocumentTree[],
-    treeItems : TreeTypes.TreeViewItem<Api.DocumentTree>[]
+    treeItems : TreeTypes.TreeViewItem<Api.Document>[]
     working : boolean
     pagetypes : Api.PageType[]
-    selected: TreeTypes.TreeViewItem<Api.DocumentTree>
+    selected: TreeTypes.TreeViewItem<Api.Document>
 }
 
 class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
@@ -28,15 +28,16 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         }
     }
  
-    toTreeItems(docs:Api.DocumentTree[]):TreeTypes.TreeViewItem<Api.DocumentTree>[] {
+    toTreeItems(docs:Api.DocumentTree[]):TreeTypes.TreeViewItem<Api.Document>[] {
         return docs.map(doc => {
             return {
-                key : doc.doc.id.toString(),
-                name : doc.doc.name,
-                collapsed : doc.doc.collapsed,
+                key : doc.document.id.toString(),
+                name : doc.document.name,
+                collapsed : doc.document.collapsed,
                 children: this.toTreeItems(doc.children),
-                item: doc
+                item: doc.document
             }
+        
         })
     }
 
@@ -72,7 +73,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
             Api.addDocument(parent_id, name, pagetype).then(x => {
                 Api.getDocuments().then(documents => {
                     var items = this.toTreeItems(documents);
-                    var newSelection:TreeTypes.TreeViewItem<Api.DocumentTree> = {
+                    var newSelection:TreeTypes.TreeViewItem<Api.Document> = {
                         key : x.id.toString(),
                         name : x.name,
                         collapsed : x.collapsed,
@@ -101,7 +102,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
         });
     }
 
-    renderLabel(n:TreeTypes.TreeViewItem<Api.DocumentTree>) {
+    renderLabel(n:TreeTypes.TreeViewItem<Api.Document>) {
         return( 
             <PageTreeLabel 
                 onRenamed={this.onRenamed.bind(this)}  
@@ -144,19 +145,19 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 <TreeView 
                     items={this.state.treeItems} 
                     selected={this.state.selected}
-                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.DocumentTree>) => {
+                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.Document>) => {
                         this.props.onOpenTab({
-                            key: n.item.doc.id + "doc",
-                            title: n.item.doc.name,
+                            key: n.item.id + "doc",
+                            title: n.item.name,
                             content: () => (<div>not implemented yet</div>)
                         })
                     }}
-                    onClick={(n:TreeTypes.TreeViewItem<Api.DocumentTree>) => {
+                    onClick={(n:TreeTypes.TreeViewItem<Api.Document>) => {
                             this.setState({selected: n})
                         }}
                     onRenderLabel={this.renderLabel.bind(this)}
-                     onCollapse={(i:TreeTypes.TreeViewItem<Api.DocumentTree>, state:boolean) => {
-                        Api.collapseDocument(i.item.doc.id, state);
+                     onCollapse={(i:TreeTypes.TreeViewItem<Api.Document>, state:boolean) => {
+                        Api.collapseDocument(i.item.id, state);
                     }}
                 />
             </div>

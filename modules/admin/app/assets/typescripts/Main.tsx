@@ -26,7 +26,7 @@ class Main extends React.Component<MainProps, MainState> {
     constructor(props:MainProps, context:any) {
         super(props, context);
         let initialTabbar = {
-            tabs: TabActions.getInitialState(),
+            tabs: Immutable.List<Tabs.Tab>(),
             active: {
                 key: "", title: "", content: () => (<p></p>)
             }

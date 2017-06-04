@@ -17,7 +17,7 @@ export interface Document {
 }
 
 export interface DocumentTree {
-    doc : Document,
+    document : Document,
     children: DocumentTree[]
 }
 
@@ -49,7 +49,7 @@ export function addDocument(parent_id:number, name:string, pagetype:string):Prom
             "pagetype": pagetype
         }
     })
-    return ApiCall("/admiddn/api/v1/documents", "POST", body);
+    return ApiCall("/admin/api/v1/documents", "POST", body);
 }
 
 export function deleteDocument(doc:Document) {

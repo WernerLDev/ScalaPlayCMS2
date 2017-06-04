@@ -8,14 +8,13 @@ import Draggable from '../TreeView/partials/draggable'
 import { getAssetIcon } from './AssetIcons'
 
 export interface AssetTreeLabelProps {
-    item: Tree.TreeViewItem<Api.AssetTree>,
-    onContextTriggered: (n:Tree.TreeViewItem<Api.AssetTree>) => void,
-    onDeleted: (item:Api.AssetTree) => void,
+    item: Tree.TreeViewItem<Api.Asset>,
+    onContextTriggered: (n:Tree.TreeViewItem<Api.Asset>) => void,
+    onDeleted: (item:Api.Asset) => void,
     onToggleUpload: (parent_id:number) => void,
-    onRenamed : (item:Api.AssetTree) => void
+    onRenamed : (item:Api.Asset) => void
     onFolderAdded : (parent_id:number, name:string) => void
     onParentChanged : (sourceid:number, targetid:number) => void
-    
 }
 
 export interface AssetTreeLabelState {
@@ -32,7 +31,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
     constructor(props:AssetTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:null, editmode: false, createmode: false, deleted: false, label: props.item.item.label
+            contextMenuVisible: false, menutarget:null, editmode: false, createmode: false, deleted: false, label: props.item.item.name
         }
     }
 
@@ -67,12 +66,12 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
     renderEditForm() {
          return(
             <RenameMode
-                defaultValue={this.props.item.item.label}
+                defaultValue={this.props.item.item.name}
                 icon={getAssetIcon(this.props.item.item.mimetype)}
                 onBlur={this._onToggleEdit.bind(this)}
                 onSubmit={(newname:string) => {
                     this.setState({ ...this.state, label: newname, editmode: false }, () => {
-                        this.props.onRenamed({...this.props.item.item, label: newname});
+                        this.props.onRenamed({...this.props.item.item, name: newname});
                     })
                 }}
             />

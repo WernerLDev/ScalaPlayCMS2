@@ -20,13 +20,13 @@ case class NewAsset(parent_id : Long, name : String, server_path : String, mimet
 @Singleton
 class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageAction:PageAction, conf:Configuration) extends Controller {
 
-    implicit val AssetTreeWrites = Json.writes[AssetTree]
     implicit val AssetWrites = Json.writes[Asset]
+    implicit val AssetTreeWrites = Json.writes[AssetTree]
     implicit val NewAssetReads = Json.reads[NewAsset]
 
     def all = WithAuthAction.async { request => {
         //println(conf.getString("elestic.uploaddir"))
-        assets.listJson().map(x => {
+        assets.getTree().map(x => {
             Ok(Json.toJson(x))
         })
     }}
