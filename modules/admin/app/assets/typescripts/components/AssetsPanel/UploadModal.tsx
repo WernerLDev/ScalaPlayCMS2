@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Button, Header, Image, Modal, Progress } from 'semantic-ui-react'
 import * as Api from '../../api/Api'
+import { AjaxUpload } from '../../api/ApiBase'
+import SingleUpload from './SingleUpload'
 
 export interface UploadModalProps {
   onClose: () => void
@@ -10,14 +12,15 @@ export interface UploadModalProps {
 
 export interface UploadModalState {
   progress : number,
-  numFiles : number
+  numFiles : number,
+  files: FileList
 }
 
 class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
 
     constructor(props:UploadModalProps, context:any) {
       super(props, context);
-      this.state = { progress: 0, numFiles: 0 }
+      this.state = { progress: 0, numFiles: 0, files: null }
     }
 
     onDragOver(e:DragEvent) {
@@ -43,7 +46,21 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
         this.doUpload(droppedFiles);
     }
 
-    uploadFile(file:File) {
+    uploadFile(file:File):Promise<Api.UploadResult> {
+        return new Promise(function(resolve, error){
+            AjaxUpload(file, (p:number) => {
+                console.log("Progress is " + p)
+            }, (r:Api.UploadResult) => {
+                console.log("finished, resolving promise");
+                resolve(r);
+            }, (msg:string) => {
+                error(msg);
+            })
+
+        })
+    }
+
+    uploadFileOld(file:File) {
         return Api.uploadAsset(file).then(result => {
             return Api.addAsset(this.props.parent_id, result.name, result.server_path, result.contenttype).then(x => {
                 this.setState({ progress: this.state.progress + 1 }, () => {
@@ -51,6 +68,16 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
                       this.props.onUploadFinished(this.state.progress / (this.state.numFiles / 100));
                     },700);
                 })
+            })
+        })
+    }
+
+    createAsset(result:Api.UploadResult) {
+        Api.addAsset(this.props.parent_id, result.name, result.server_path, result.contenttype).then(x => {
+            this.setState({ progress: this.state.progress + 1 }, () => {
+                setTimeout(() => {
+                    this.props.onUploadFinished(this.state.progress / (this.state.numFiles / 100));
+                },300);
             })
         })
     }
@@ -64,8 +91,7 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
     }
 
     doUpload(files:FileList) {
-        this.setState({ progress: 0, numFiles: files.length }, () => {
-            this.uploadFiles(0, files);
+        this.setState({ progress: 0, numFiles: files.length, files: files }, () => {
         });
     }
 
@@ -77,27 +103,36 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
                   onDragLeave={this.onDragLeave.bind(this)}
                   onDropCapture={this.onDrop.bind(this)}
               >
-              <label ref="uploadbtn" className="uploadbtn">
-                  <input multiple
-                      type="file"
-                      id="file-select"
-                      name="asset[]"
-                      onChange={(e) => {
-                          var files = e.currentTarget.files;
-                          this.doUpload(files);
-                      }} />
-                      <span><i className="fa fa-upload" aria-hidden="true"></i><br />Drop files here or click to Select files from your computer</span>
-                  </label>
+                <label ref="uploadbtn" className="uploadbtn">
+                    <input multiple
+                        type="file"
+                        id="file-select"
+                        name="asset[]"
+                        onChange={(e) => {
+                            var files = e.currentTarget.files;
+                            this.doUpload(files);
+                        }} />
+                        <span><i className="fa fa-upload" aria-hidden="true"></i><br />Drop files here or click to Select files from your computer</span>
+                    </label>
                   </form>
           </div>
       )
     }
 
     renderProgres() {
-         return(
-            <Progress size="small" value={this.state.progress} total={this.state.numFiles} progress='ratio' autoSuccess indicating />
-         );
-
+        return(
+            <div>
+                {[].map.call(this.state.files, (file:File) => (
+                    <SingleUpload 
+                        key={file.name}
+                        file={file}
+                        onFinished={(result:Api.UploadResult) => {
+                            this.createAsset(result);
+                        }}
+                    />
+                ))}
+            </div>
+        )
     }
 
     render() {

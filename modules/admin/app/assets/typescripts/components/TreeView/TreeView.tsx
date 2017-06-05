@@ -57,7 +57,7 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, TreeViewSta
             if(difference < 500) {
                 this.props.onDoubleClick(n);
             } else {
-                this.props.onClick(n);
+                if(this.props.onClick) this.props.onClick(n);
             }
         });
     }
