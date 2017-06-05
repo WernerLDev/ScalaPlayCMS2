@@ -23,6 +23,7 @@ PUT     /api/v1/documents/:id/publishdate  controllers.admin.api.DocumentsContro
 
 GET     /api/v1/assets              controllers.admin.api.AssetsController.all
 GET     /api/v1/assets/:id          controllers.admin.api.AssetsController.getById(id:Long)
+GET     /api/v1/assets/:id/childs   controllers.admin.api.AssetsController.getByParentId(id:Long)
 POST    /api/v1/assets              controllers.admin.api.AssetsController.create
 POST    /api/v1/assets/upload       controllers.admin.api.AssetsController.upload
 PUT     /api/v1/assets/:id/rename   controllers.admin.api.AssetsController.rename(id:Long)

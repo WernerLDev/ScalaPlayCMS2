@@ -28,6 +28,10 @@ export function getAssets():Promise<AssetTree[]> {
     return ApiCall("/admin/api/v1/assets", "GET").then(r => r as AssetTree[]);
 }
 
+export function getAssetChilds(id:number):Promise<Asset[]> {
+    return ApiCall("/admin/api/v1/assets/" + id + "/childs", "GET").then(r => r as Asset[])
+}
+
 export function renameAsset(asset:Asset) {
     var body = JSON.stringify({
         "name" : asset.name

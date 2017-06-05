@@ -38,6 +38,12 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
         })
     }
 
+    def getByParentId(id:Long) = WithAuthAction.async { request =>
+        assets.getByParentId(id).map(assets => {
+            Ok(Json.toJson(assets))
+        })
+    }
+
     def create = WithAuthAction.async(parse.json) { request =>
       val uploadroot = conf.getString("elestic.uploadroot").getOrElse("")
       val parent_id = (request.body \ "parent_id").asOpt[Int].getOrElse(0)
