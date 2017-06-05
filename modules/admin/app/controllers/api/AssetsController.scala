@@ -51,7 +51,7 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
               val newpath = if(parentAsset.mimetype == "home") "/" + name else parentAsset.path + "/" + name
               val assetfile = new File(uploadroot + server_path)
               val asset = Asset(
-                  id = 0, parent_id = parent_id, name = name, path = newpath,
+                  id = 0, parent_id = parent_id, name = name.replaceAll(" ", "-"), path = newpath,
                   server_path = server_path, collapsed = true,
                   mimetype = mimetype, filesize = assetfile.length(), created_at = currentTime
               )
@@ -67,10 +67,22 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
         val uploadroot = conf.getString("elestic.uploadroot").getOrElse("")
         val uploaddir = conf.getString("elestic.uploaddir").getOrElse("")
         val assetsdir = uploadroot + uploaddir;
+        def genFilename(step:Int, ext:String):String = {
+            val currTime = new java.util.Date().getTime()
+            if(step == 0) {
+                val f = new File(assetsdir + currTime + "." + ext)
+                if(f.exists) genFilename(1, ext)
+                else currTime + "." + ext
+            } else {
+                val f = new File(assetsdir + currTime + "(" + step + ")." + ext)
+                if(f.exists) genFilename(step + 1, ext)
+                else currTime + "(" + step + ")." + ext
+            }
+        }
         request.body.file("asset").map { asset =>
             //val filename = asset.filename 
             val extension = asset.filename.split("\\.").toList.last
-            val filename = new java.util.Date().getTime() + "." + extension
+            val filename = genFilename(0, extension)
             val contentType = asset.contentType
             val outputfile = new File(assetsdir + filename)
             asset.ref.moveTo(outputfile)
@@ -90,7 +102,7 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
 
     def rename(id:Long) = WithAuthAction.async(parse.json) { request =>
         (request.body \ "name").asOpt[String].map(name => {
-            assets.setName(id, name).map(x => 
+            assets.setName(id, name.replaceAll(" ", "-")).map(x => 
                 Ok(Json.obj("success" -> true))
             )
         }).getOrElse(Future(BadRequest("Missing parameter [name]")) )

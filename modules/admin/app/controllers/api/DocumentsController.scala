@@ -43,8 +43,8 @@ class DocumentsController @Inject()(
   }
 
   def listDocuments = WithAuthAction.async {
-    documents.getTree map (x => {
-      Ok(Json.toJson(x))
+    documents.getTree map (tree => {
+      Ok(Json.toJson(tree))
     })
   }
   
@@ -80,8 +80,8 @@ class DocumentsController @Inject()(
               title = "", description = "", locale = "en",
               created_at = currentTime, updated_at = currentTime, published_at = currentTime
             )
-            documents.create(newDocument) map (x => {
-              Ok(Json.toJson(x))
+            documents.create(newDocument) map (doc => {
+              Ok(Json.toJson(doc))
             })
           }
           case None => Future(BadRequest("Error: Invalid parent id"))

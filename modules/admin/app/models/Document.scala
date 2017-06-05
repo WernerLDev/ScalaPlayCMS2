@@ -11,8 +11,6 @@ import javax.inject._
 import play.api.Play.current
 import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.SqlType
-//import scala.concurrent._
-//import scala.concurrent.duration._
 
 case class Document(id : Long , parent_id : Long, name : String, doctype : String, collapsed : Boolean, view:Option[String], path:String, title:String, locale:String, description:String, created_at:Timestamp, updated_at:Timestamp, published_at:Timestamp )
 
