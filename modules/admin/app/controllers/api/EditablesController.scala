@@ -12,7 +12,6 @@ import play.api.libs.functional.syntax._
 import java.sql.Timestamp
 import java.util.Date
 import utils.admin._
-import utils.admin.PageTemplates
 
 @Singleton
 class EditablesController @Inject()(

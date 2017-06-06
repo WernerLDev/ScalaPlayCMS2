@@ -51,27 +51,14 @@ class AdminController @Inject()(
                 users.authenticate(userData.username, userData.password) flatMap (userOpt => {
                     userOpt match {
                         case Some(user:User) => {
-                            val currDate:Date = new Date()
-                            val expirationDate:Date = new Date(currDate.getTime() + 1 * 24 * 3600 * 1000)
-                            val sessionKey = PasswordHasher.generateKey
                             val useragent = request.headers.get("User-Agent").getOrElse("Unknown")
                             val ip = request.remoteAddress
-                            sessions.cleanup(user, useragent, ip) flatMap(x => {
-                                val newSession = UserSession(
-                                    id = 0,
-                                    session_key = sessionKey,
-                                    user_id = user.id,
-                                    passwordhash = user.passwordhash,
-                                    ipaddress = ip,
-                                    useragent = useragent,
-                                    expiration_date = new Timestamp(expirationDate.getTime())
-                                )
-                                sessions.create(newSession) map(session => {
+                            val sessionKey = PasswordHasher.generateKey
+                            sessions.newSession(user, useragent, ip, sessionKey) map ( session => {
                                     Redirect(controllers.admin.routes.MainController.index)
                                     .withSession(
                                         request.session + ("username" -> user.username) + ("skey" -> sessionKey)
                                     )
-                                })
                             })
                         }
                         case None => {

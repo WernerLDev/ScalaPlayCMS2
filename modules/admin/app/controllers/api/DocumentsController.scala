@@ -12,14 +12,12 @@ import play.api.libs.functional.syntax._
 import java.sql.Timestamp
 import java.util.Date
 import utils.admin._
-import utils.admin.PageTemplates
 
 case class NewDocument(name:String, pagetype:String, parent_id:Long)
 
 @Singleton
 class DocumentsController @Inject()(
     documents:Documents, 
-    templates:PageTemplates, 
     WithAuthAction:AuthAction
 ) extends Controller {
   
@@ -29,18 +27,6 @@ class DocumentsController @Inject()(
   implicit val NewDocReads = Json.reads[NewDocument]
   implicit val DocumentTreeWrites = Json.writes[DocumentTree]
   
-  def getPageTypes = WithAuthAction {
-    val pagetypes = templates.templates.map { case (k,v) => {
-      Json.toJson(Map( "typekey" -> JsString(k), "typename" -> JsString(v.name)))
-     }}.toSeq
-    Ok(
-      Json.toJson(
-        Map(
-          "pagetypes" -> JsArray(pagetypes)
-        )
-      )
-    )
-  }
 
   def listDocuments = WithAuthAction.async {
     documents.getTree map (tree => {

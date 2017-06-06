@@ -1,6 +1,5 @@
 package models.admin
 
-import play.api.Play
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.Future
 import slick.driver.JdbcProfile
@@ -8,10 +7,7 @@ import slick.driver.MySQLDriver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.Singleton
 import javax.inject._
-import play.api.Play.current
-import slick.profile.SqlProfile.ColumnOption.SqlType
 import scala.concurrent._
-import scala.concurrent.duration._
 import utils.admin.PasswordHasher
 import java.sql.Timestamp
 import java.util.Date;
@@ -52,7 +48,7 @@ class UserSessions @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
       sessions.join(users).on(_.user_id === _.id).filter(_._1.session_key === key).result.headOption
     }
 
-    def create(session:UserSession) = dbConfig.db.run {
+    def create(session:UserSession):Future[UserSession] = dbConfig.db.run {
       insertQuery += session
     }
 
@@ -65,6 +61,23 @@ class UserSessions @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
 
     def deleteByKey(key:String) = dbConfig.db.run {
       sessions.filter(_.session_key === key).delete
+    }
+
+    def newSession(user:User, useragent:String, ip:String, sessionKey:String):Future[UserSession] = {
+        val currDate:Date = new Date()
+        val expirationDate:Date = new Date(currDate.getTime() + 1 * 24 * 3600 * 1000)
+        cleanup(user, useragent, ip) flatMap (x => {
+            val newSession = UserSession(
+                id = 0,
+                session_key = sessionKey,
+                user_id = user.id,
+                passwordhash = user.passwordhash,
+                ipaddress = ip,
+                useragent = useragent,
+                expiration_date = new Timestamp(expirationDate.getTime())
+            )
+            create(newSession)
+        })
     }
 
 }

@@ -9,7 +9,6 @@ GET     /login/retrievePassword     controllers.admin.AdminController.retrievePa
 POST    /login/retrievePassword     controllers.admin.AdminController.retrievePassword
 GET     /login/resetpassword/:token  controllers.admin.AdminController.resetPassword(token:String)
 
-GET     /api/v1/pagetypes                   controllers.admin.api.DocumentsController.getPageTypes
 GET     /api/v1/documents                  controllers.admin.api.DocumentsController.listDocuments
 GET     /api/v1/documents/:id              controllers.admin.api.DocumentsController.getDocument(id:Long)
 DELETE  /api/v1/documents/:id              controllers.admin.api.DocumentsController.deleteDocument(id:Long)

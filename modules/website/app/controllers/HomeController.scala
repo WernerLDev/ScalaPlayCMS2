@@ -20,17 +20,17 @@ class HomeController @Inject()(PageAction:PageAction) extends Controller {
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  def index = PageAction { implicit request =>
+    Ok(views.html.home("Your new application is ready."))
   }
 
   def test(p:Document) = PageAction { implicit request =>
-    Ok("Test template")
+    Ok(views.html.test(p))
   }
 
   def default(p:Document) = PageAction { implicit request =>
     println(request.user)
-    Ok("default template")
+    Ok(views.html.default(p))
   }
 
 }

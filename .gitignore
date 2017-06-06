@@ -19,3 +19,4 @@ modules/admin/node_modules
 pc.stdout.log
 /uploads
 modules/admin/app/assets/javascripts
+modules/website/app/assets/vendor

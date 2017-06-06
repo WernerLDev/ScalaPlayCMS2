@@ -1,5 +1,7 @@
  
-GET     /                           controllers.website.MainController.index
-
+GET     /                           controllers.website.HomeController.index
+GET     /api/v1/pagetypes           controllers.website.api.DocumentsController.getPageTypes
 
 GET     /assets/*file               controllers.website.Assets.versioned(path="/public/lib/playcmswebsite", file:Asset)
+
+GET     /*path                      controllers.website.api.DocumentsController.page(path:String)

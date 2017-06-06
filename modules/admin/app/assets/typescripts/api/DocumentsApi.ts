@@ -27,7 +27,7 @@ export interface PageType {
 }
 
 export function getPageTypes():Promise<PageType[]> {
-    return ApiCall("/admin/api/v1/pagetypes", "GET").then(r => r.pagetypes as PageType[]);
+    return ApiCall("/api/v1/pagetypes", "GET").then(r => r.pagetypes as PageType[]);
 }
 
 export function getDocuments():Promise<DocumentTree[]> {

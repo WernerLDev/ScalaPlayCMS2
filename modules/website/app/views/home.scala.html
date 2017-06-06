@@ -1,8 +1,9 @@
+@import _root_.utils.admin._
 @*
  * This template takes a single argument, a String containing a
  * message to display.
  *@
-@(message: String)
+@(message: String)(implicit request:PageRequest[AnyContent])
 
 @*
  * Call the `main` template with two arguments. The first
@@ -17,4 +18,6 @@
      *@
     @play20.welcome(message, style = "Scala")
 
+}{
+    @defaultheader()
 }

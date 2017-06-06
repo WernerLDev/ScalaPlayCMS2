@@ -1,0 +1,15 @@
+@import _root_.utils.admin._
+@import _root_.views.html.editables._
+@(head:String)(implicit request:PageRequest[AnyContent])
+<div class="jumbotron darkheader">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<!--<div class="jtoverlay"></div>-->
+					<h2>@head</h2>
+
+                    @inlineeditable("headtext", "p", false)
+				</div>
+			</div>
+		</div>
+	</div>

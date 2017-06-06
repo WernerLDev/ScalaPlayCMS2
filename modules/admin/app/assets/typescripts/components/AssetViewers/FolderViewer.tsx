@@ -101,7 +101,9 @@ class FolderViewer extends React.Component<FolderViewerProps, FolderViewState> {
                     </Menu.Item>
                 </Menu>
             </Segment>
-            {this.state.viewmode == "grid" ? this.renderGrid() : this.renderList()}
+            <div className="asset-wrapper">
+                {this.state.viewmode == "grid" ? this.renderGrid() : this.renderList()}
+            </div>
         </div>
         );
     }

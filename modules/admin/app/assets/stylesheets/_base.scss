@@ -25,8 +25,12 @@ body {
     //border-right: 1px solid $color2;
 }
 
+.asset-wrapper {
+    position: absolute; top: 117px; left: 0px; right: 0; bottom: 0; overflow: auto;
+}
+
 .iframe-wrapper {
-    position: absolute; top: 143px; left: 0px; right: 0; bottom: 0;
+   position: absolute; top: 143px; left: 0px; right: 0; bottom: 0;
 }
 iframe.documentIframe {
     position: absolute;
