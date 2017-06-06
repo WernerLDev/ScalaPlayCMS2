@@ -1,7 +1,7 @@
 @import _root_.utils.admin._
 @(msg:String)(implicit request:PageRequest[AnyContent])
 
-@main("Page not found") {
+@webmain("Page not found") {
     <div style="text-align: center">
     <h1>Error 404: Page not found</h1>
     <p>@msg</p>
