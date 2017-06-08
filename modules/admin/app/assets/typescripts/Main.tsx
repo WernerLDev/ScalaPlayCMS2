@@ -8,13 +8,17 @@ import AssetsPanel from './components/AssetsPanel/AssetsPanel'
 import * as Tabs from './components/TabPanel/TabPanel'
 import * as TabActions from './components/TabPanel/TabActions'
 import * as Immutable from 'immutable'
+import * as SplitPaneActions from './actions/SplitpaneActions'
+import PageProperties from './components/PagesPanel/PageProperties'
+import * as Api from './api/Api'
 
 export interface MainProps {
 }
 
 type MainState = {
     section : string,
-    selected : string
+    selected : string,
+    pageProperties: Api.Document
     tabbar: {
         tabs: Immutable.List<Tabs.Tab>
         active: Tabs.Tab
@@ -31,7 +35,7 @@ class Main extends React.Component<MainProps, MainState> {
                 key: "", title: "", content: () => (<p></p>)
             }
         }
-        this.state = { section : "pages", selected: "", tabbar: initialTabbar }
+        this.state = { section : "pages", selected: "", tabbar: initialTabbar, pageProperties: null }
     }
 
     itemsNonFocusable = [
@@ -43,12 +47,15 @@ class Main extends React.Component<MainProps, MainState> {
     ]
 
     switchSection(s:string) {
-        this.setState({ section: s });
+        let leftpane = this.refs.leftpane as HTMLElement;
+        if(this.state.section == s) SplitPaneActions.hideLeftPanel(leftpane);
+        if(this.state.section == "") SplitPaneActions.showLeftPanel(leftpane); 
+        this.setState({section: s == this.state.section ? "" : s});
     }
 
     openTab(t:Tabs.Tab) {
         let newTabs = this.state.tabbar.tabs;
-        
+         
         if(newTabs.find(x => x.key == t.key) == null) {
             newTabs = newTabs.push(t);
         }
@@ -82,11 +89,17 @@ class Main extends React.Component<MainProps, MainState> {
                             onClick={() => this.switchSection("settings")} >Settings</SideMenuItem>
                     </SideMenu>
                     <div className="splitpane-container">
-                        <SplitPane split="vertical" defaultSize={400} minSize={100}>
-                            <div className="leftpanel">
+                        <SplitPane 
+                            split="vertical" 
+                            defaultSize={400} 
+                            minSize={100}
+                            onDragStarted={SplitPaneActions.resizingPanel.bind(this)} 
+                            onDragFinished={SplitPaneActions.resizingPanelFinished.bind(this)}>
+                            <div ref="leftpane" className="leftpanel">
                                 <div className={this.state.section == "pages" ? "show" : "hide"}>
                                     <PagesPanel
                                         onOpenTab={this.openTab.bind(this)}
+                                        onToggleProperties={(doc:Api.Document) => this.setState({ ...this.state, pageProperties: doc })}
                                      />
                                 </div>
                                 <div className={this.state.section == "assets" ? "show" : "hide"}>
@@ -102,7 +115,7 @@ class Main extends React.Component<MainProps, MainState> {
                                     onClose={(tab:Tabs.Tab) => {
                                         var newtabs = this.state.tabbar.tabs.filter(x => x != tab);
                                         var newactive = this.state.tabbar.active;
-                                        if(tab == this.state.tabbar.active) {
+                                        if(tab.key == this.state.tabbar.active.key) {
                                             newactive = TabActions.findNewActive(tab, this.state.tabbar.tabs);
                                         }
                                         this.setState({ ...this.state, tabbar: { tabs: newtabs.toList(), active: newactive} })
@@ -120,6 +133,12 @@ class Main extends React.Component<MainProps, MainState> {
                             </div>
                         </SplitPane>
                     </div>
+                    {this.state.pageProperties != null ? 
+                        <PageProperties 
+                            document={this.state.pageProperties} 
+                            onClose={() => this.setState({...this.state, pageProperties: null})} />
+                        : null
+                    }
                 </div>
         );
     } 

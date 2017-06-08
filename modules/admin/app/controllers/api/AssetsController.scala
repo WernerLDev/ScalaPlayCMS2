@@ -147,7 +147,7 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
                         inline = true
                     )
                 }
-            }).getOrElse(NotFound(views.html.notfound("The uploaded file you are looking for doesn't exist.")))
+            }).getOrElse(NotFound(views.html.admin.notfound("The uploaded file you are looking for doesn't exist.")))
         })
    }
 }

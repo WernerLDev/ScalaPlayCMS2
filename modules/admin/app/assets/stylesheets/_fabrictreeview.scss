@@ -49,6 +49,7 @@ ul.navItems {
                 &, & > * {
                     overflow: hidden;
                     text-overflow: ellipsis;
+                    width: auto;
                 }
 
                 .contextmenu {
@@ -64,7 +65,8 @@ ul.navItems {
                 }
 
                 .dragover {
-                    border: 2px dotted $menuback;
+                    border: 1px dotted $menuback;
+                    
                 }
 
                 .renameContainer {

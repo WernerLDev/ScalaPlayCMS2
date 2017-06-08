@@ -63,9 +63,10 @@ class UserSessions @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
       sessions.filter(_.session_key === key).delete
     }
 
-    def newSession(user:User, useragent:String, ip:String, sessionKey:String):Future[UserSession] = {
+    def newSession(user:User, useragent:String, ip:String):Future[UserSession] = {
         val currDate:Date = new Date()
         val expirationDate:Date = new Date(currDate.getTime() + 1 * 24 * 3600 * 1000)
+        val sessionKey = PasswordHasher.generateKey
         cleanup(user, useragent, ip) flatMap (x => {
             val newSession = UserSession(
                 id = 0,

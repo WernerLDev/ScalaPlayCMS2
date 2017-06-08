@@ -1,4 +1,5 @@
 import ApiCall from './ApiBase.js';
+import * as Immutable from 'immutable'
 
 export interface Document {
     id : number,
@@ -24,6 +25,13 @@ export interface DocumentTree {
 export interface PageType {
     typekey : string,
     typename : string
+}
+
+export type Editable = {
+    id : number,
+    document_id : number,
+    name : string,
+    value : string
 }
 
 export function getPageTypes():Promise<PageType[]> {
@@ -68,4 +76,11 @@ export function collapseDocument(id:number, collapsed:boolean) {
         "collapsed": collapsed
     });
     return ApiCall("/admin/api/v1/documents/" + id + "/collapse", "PUT", body);
+}
+
+export function saveEditables(id:number, editables:Immutable.List<Editable>) {
+    var body = JSON.stringify({
+        "editables": editables
+    });
+    return ApiCall("/admin/api/v1/documents/" + id + "/editables", "PUT", body);
 }

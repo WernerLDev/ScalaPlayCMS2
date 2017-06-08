@@ -53,11 +53,10 @@ class AdminController @Inject()(
                         case Some(user:User) => {
                             val useragent = request.headers.get("User-Agent").getOrElse("Unknown")
                             val ip = request.remoteAddress
-                            val sessionKey = PasswordHasher.generateKey
-                            sessions.newSession(user, useragent, ip, sessionKey) map ( session => {
+                            sessions.newSession(user, useragent, ip) map ( session => {
                                     Redirect(controllers.admin.routes.MainController.index)
                                     .withSession(
-                                        request.session + ("username" -> user.username) + ("skey" -> sessionKey)
+                                        request.session + ("username" -> user.username) + ("skey" -> session.session_key)
                                     )
                             })
                         }

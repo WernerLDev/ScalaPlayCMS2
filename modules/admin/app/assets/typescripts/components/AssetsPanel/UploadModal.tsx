@@ -131,6 +131,8 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
                         }}
                     />
                 ))}
+                <hr />
+                {"Finished " + this.state.progress + " of " + this.state.numFiles + " files"}
             </div>
         )
     }

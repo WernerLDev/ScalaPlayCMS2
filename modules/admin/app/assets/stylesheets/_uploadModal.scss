@@ -7,7 +7,8 @@
     display: block;
     position: relative;
     cursor: pointer;
-    background: #FFF;
+    background: #EEE;
+    border-radius: 6px;
     border: 1px dashed $color1;
     line-height: 20px;
     width: 100%; height: 150px; 
@@ -25,7 +26,14 @@
         background: $color4; 
     }
 }
+.uploadbtn:hover {
+    background: $color4;
+}
 
 .uploadDialog .fileover {
     background: $color2;
+}
+
+.ui.progress>.label {
+    font-weight: normal;
 }

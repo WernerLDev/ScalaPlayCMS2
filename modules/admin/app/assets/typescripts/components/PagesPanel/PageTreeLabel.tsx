@@ -14,6 +14,7 @@ export interface PageTreeLabelProps {
     onAdded : (parent_id:number, name:string, pagetype:string) => void
     onDeleted : (item:Api.Document) => void
     onParentChanged : (sourceid:number, targetid:number) => void
+    onToggleProperties: () => void
     pagetypes : Api.PageType[]
 }
 
@@ -59,6 +60,7 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
               isRootNode={this.props.item.item.doctype == "home"}
               onDismiss={this._onDismiss.bind(this)}
               onToggleAdd={(t:string) => this.setState({ addingmode: true, addtype: t })}
+              onToggleProperties={this.props.onToggleProperties}
               onToggleDelete={() => {
                     if(confirm("Are you sure?")) {
                         this.setState({ deleted: true  }, () => {

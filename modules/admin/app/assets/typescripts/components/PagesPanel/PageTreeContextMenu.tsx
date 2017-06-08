@@ -9,6 +9,7 @@ export interface PageTreeContextMenuProps {
     onToggleEdit: () => void
     onToggleAdd: (type:string) => void
     onToggleDelete: () => void
+    onToggleProperties: () => void
     target: MouseEvent
     pagetypes : Api.PageType[] 
     isRootNode : boolean
@@ -70,7 +71,7 @@ class PageTreeContextMenu extends React.Component<PageTreeContextMenuProps, any>
                     },
                     {
                         label : "Properties",
-                        onClick: this.handleItemClick.bind(this),
+                        onClick: this.props.onToggleProperties,
                         children: []
                     },
                     {

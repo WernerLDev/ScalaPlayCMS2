@@ -36,8 +36,9 @@ class SingleUpload extends React.Component<SingleUploadProps, SingleUploadState>
                 active
                 autoSuccess
                 indicating
-                size="tiny"
+                size="small"
                 label={this.props.file.name}
+                className="uploadProgress"
             />
         );
     }

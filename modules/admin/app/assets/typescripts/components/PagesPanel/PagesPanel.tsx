@@ -10,6 +10,7 @@ import DocumentEditMode from '../DocumentEditMode/DocumentEditMode'
 
 export interface PagesPanelProps {
     onOpenTab: (tab:Tabs.Tab) => void
+    onToggleProperties: (doc:Api.Document) => void
 }
 
 export interface PagesPanelState {
@@ -111,6 +112,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 onDeleted={this.onDeleted.bind(this)}
                 onParentChanged={this.onParentChanged.bind(this)}
                 pagetypes={this.state.pagetypes}
+                onToggleProperties={() => this.props.onToggleProperties(n.item)}
                 item={n} 
                 onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
