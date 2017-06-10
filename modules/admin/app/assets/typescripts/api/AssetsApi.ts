@@ -49,11 +49,11 @@ export function addAsset(parent_id:number, name:string, path:string, mimetype:st
     return ApiCall("/admin/api/v1/assets", "POST", body).then(r => r as Asset);
 }
 
-export function uploadAsset(file:File):Promise<UploadResult> {
-    var data  = new FormData();
-    data.append("asset", file);
-    return ApiCall("/admin/api/v1/assets/upload", "POST", data, "none").then(r => r as UploadResult);
-}
+// export function uploadAsset(file:File):Promise<UploadResult> {
+//     var data  = new FormData();
+//     data.append("asset", file);
+//     return ApiCall("/admin/api/v1/assets/upload", "POST", data, "none").then(r => r as UploadResult);
+// }
 
 export function deleteAsset(asset:Asset) {
     return ApiCall("/admin/api/v1/assets/" + asset.id, "DELETE");

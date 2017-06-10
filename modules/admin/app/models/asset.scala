@@ -59,26 +59,8 @@ class Assets @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, c
         listAll map (x => generateList(x.toList, 0))
     }
 
-    // def listJson():Future[List[AssetTree]] = {
-    //     def generateList(d:List[Asset],parentid:Long):List[AssetTree] = {
-    //         d.filter(x => x.parent_id == parentid).sortBy(a => a.mimetype)
-    //         .map(x => {
-    //             val childItems = generateList(d, x.id)
-    //             AssetTree(
-    //                 id = x.id, 
-    //                 key = x.name,
-    //                 path = x.path,
-    //                 server_path = x.server_path,
-    //                 label = x.name,
-    //                 mimetype = x.mimetype, 
-    //                 collapsed = x.collapsed, 
-    //                 children = childItems.filter(_.mimetype == "folder") ++ childItems.filter(_.mimetype != "folder")
-    //              )
-    //          })
-    //     }
-    //     listAll map (x => generateList(x.toList, 0))
-    // }
 
+    /** Get an asset by name */
     def getByName(name:String) = dbConfig.db.run {
         assets.filter(_.name === name).result.headOption
     }

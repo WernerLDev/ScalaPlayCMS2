@@ -15,7 +15,8 @@
     "babel-preset-react": "^6.3.13",
     "ts-loader": "^2.0.3",
     "typescript": "^2.4.0-dev.20170505",
-    "webpack": "^2.5.1"
+    "webpack": "^2.5.1",
+    "source-map-loader": "^0.2.1"
   },
   "name": "elsticspider",
   "description": "This is your new Play application =================================",
@@ -25,16 +26,14 @@
     "test": "test"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "immutable": "^3.8.1",
     "moment": "^2.18.1",
     "react": "^15.4.2",
     "react-dom": "^15.5.4",
-    "react-redux": "^5.0.5",
     "react-split-pane": "^0.1.59",
     "react-tap-event-plugin": "^2.0.1",
-    "redux": "^3.6.0",
-    "semantic-ui-react": "^0.68.3",
-    "webpack": "^1.14.0"
+    "semantic-ui-react": "^0.68.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

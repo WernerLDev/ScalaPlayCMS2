@@ -25,6 +25,12 @@ type MainState = {
      }
 }
 
+/**
+ * Entry point for the application. This components renders all the components needed to build up the userinterface
+ * 
+ * @class Main
+ * @extends {React.Component<MainProps, MainState>}
+ */
 class Main extends React.Component<MainProps, MainState> {
  
     constructor(props:MainProps, context:any) {
@@ -126,7 +132,7 @@ class Main extends React.Component<MainProps, MainState> {
                                              tabbar: {
                                                  ...this.state.tabbar, 
                                                  active: t
-                                             }  
+                                             }
                                         })
                                     }}
                                 />

@@ -16,7 +16,20 @@ type ApiParams = {
     body?:any 
 }
 
-export default function ApiCall(call:string, method:string, body?:Object, contenttype?:string):Promise<any> {
+type RequestMethod = "GET" | "POST" | "PUT" | "HEAD" | "PATCH" | "DELETE"
+
+/**
+ * Abstraction layer around the fetch method to make Api calls easier.
+ * This function automatically handles errors by displaying a Modal with some information about the call.
+ * 
+ * @export
+ * @param {string} call 
+ * @param {RequestMethod} method 
+ * @param {string} [body]  Use the result of JSON.stringify for the body.
+ * @param {string} [contenttype] 
+ * @returns {Promise<any>} 
+ */
+export default function ApiCall(call:string, method:RequestMethod, body?:string, contenttype?:string):Promise<any> {
     var headers:ApiHeader = {
             "Csrf-Token": csrf
     }
@@ -49,21 +62,29 @@ export default function ApiCall(call:string, method:string, body?:Object, conten
                 ApiError(info);
                 return response;
             });
-        }
-        return response;
-    }).then(r => {
-        if(r.ok) {
-            if(contenttype == "text/plain") {
-                return r.text();
-            } else {
-                return r.json();
-            }
         } else {
-            return r;
+            if(contenttype == "text/plain") {
+                return response.text();
+            } else {
+                return response.json();
+            }
         }
+    }).catch(x => {
+        alert("Looks like you're not connected to the internet anymore, or the host is down.");
+        return x;
     });
 }
 
+
+/**
+ * Performs file upload by making use of the XMLHttpRequest object. onProgress is triggered multiple times during the upload to allow you to draw a progressbar.
+ * 
+ * @export
+ * @param {File} file 
+ * @param {(p:number) => void} onProgress 
+ * @param {(r:UploadResult) => void} onFinished 
+ * @param {(r:string) => void} onError 
+ */
 export function AjaxUpload(file:File, onProgress:(p:number) => void, onFinished:(r:UploadResult) => void, onError:(r:string) => void) {
 
     let xhr = new XMLHttpRequest();
