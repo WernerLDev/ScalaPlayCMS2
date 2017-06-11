@@ -73,6 +73,10 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
     onAdded(parent_id:number, name:string, pagetype:string) {
         this.setState({ working: true }, () => {
             Api.addDocument(parent_id, name, pagetype).then(x => {
+                if(x == null) {
+                    this.setState({...this.state, working: false});
+                    return;
+                }
                 Api.getDocuments().then(documents => {
                     var items = this.toTreeItems(documents);
                     var newSelection:TreeTypes.TreeViewItem<Api.Document> = {

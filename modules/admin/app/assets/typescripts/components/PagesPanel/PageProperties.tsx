@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Header, Image, Modal, Menu, Table } from 'semantic-ui-react'
+import { Button, Header, Image, Modal, Menu, Table, Form } from 'semantic-ui-react'
 import * as Api from '../../api/Api'
 import * as moment from 'moment'
 
@@ -50,7 +50,9 @@ class PageProperties extends React.Component<PagePropertiesProps, any> {
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Name</Table.Cell>
-                                        <Table.Cell>{this.props.document.name}</Table.Cell>
+                                        <Table.Cell>
+                                            <Form.Input type='text' width="12" defaultValue={this.props.document.name}  />
+                                        </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Page type</Table.Cell>

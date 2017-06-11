@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Api from '../../api/Api'
-import { Menu, Segment, Icon, Dimmer, Loader } from 'semantic-ui-react'
+import { Menu, Dropdown, Segment, Icon, Dimmer, Loader } from 'semantic-ui-react'
 import * as Immutable from 'immutable'
 
 export interface DocumentEditModeProps {
@@ -51,9 +51,18 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
                     <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
                         <Icon name='eye' />Save & Publish
                     </Menu.Item>
+                     <Dropdown item icon="eye" text='Display Options'>
+                    <Dropdown.Menu>
+                        <Dropdown.Header>Text Size</Dropdown.Header>
+                        <Dropdown.Item>Small</Dropdown.Item>
+                        <Dropdown.Item>Medium</Dropdown.Item>
+                        <Dropdown.Item>Large</Dropdown.Item>
+                    </Dropdown.Menu>
+                    </Dropdown>
                     <Menu.Item name='properties' active={false} onClick={this.saveEditables.bind(this)}>
                         <Icon name='save' />Save
                     </Menu.Item>
+
                     <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
                         <Icon name='setting' />Properties
                     </Menu.Item>

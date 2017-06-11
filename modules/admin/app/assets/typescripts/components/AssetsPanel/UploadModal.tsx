@@ -60,18 +60,6 @@ class UploadModal extends React.Component<UploadModalProps, UploadModalState> {
         })
     }
 
-    uploadFileOld(file:File) {
-        return Api.uploadAsset(file).then(result => {
-            return Api.addAsset(this.props.parent_id, result.name, result.server_path, result.contenttype).then(x => {
-                this.setState({ progress: this.state.progress + 1 }, () => {
-                    setTimeout(() => {
-                      this.props.onUploadFinished(this.state.progress / (this.state.numFiles / 100));
-                    },700);
-                })
-            })
-        })
-    }
-
     createAsset(result:Api.UploadResult) {
         Api.addAsset(this.props.parent_id, result.name, result.server_path, result.contenttype).then(x => {
             this.setState({ progress: this.state.progress + 1 }, () => {

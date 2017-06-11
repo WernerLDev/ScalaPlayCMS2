@@ -17,7 +17,7 @@ export interface TabPanelProps {
     onSwitch: (tab:Tab) => void
 }
 
-class TabPanel extends React.Component<TabPanelProps, any> {
+class TabPanel extends React.Component<TabPanelProps, void> {
     
     constructor(props:TabPanelProps, context:any) {
         super(props, context);
