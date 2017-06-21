@@ -1,31 +1,56 @@
 import * as React from 'react';
-import { Button, Header, Image, Modal, Menu, Table, Form } from 'semantic-ui-react'
+import { Button, Header, Image, Modal, Menu, Table, Form, Dropdown, Dimmer, Loader, Segment } from 'semantic-ui-react'
 import * as Api from '../../api/Api'
 import * as moment from 'moment'
+import {DatePickerInput} from 'rc-datepicker';
 
 export interface PagePropertiesProps {
     onClose: () => void
+    open: boolean
     document: Api.Document
 }
 
 export interface PagePropertiesState {
     activeItem: string
+    document: Api.Document,
+    pagetypes : Api.PageType[]
+    working : boolean
 }
 
-class PageProperties extends React.Component<PagePropertiesProps, any> {
+class PageProperties extends React.Component<PagePropertiesProps, PagePropertiesState> {
 
     constructor(props:PagePropertiesProps, context:any) {
         super(props, context);
-        this.state = { activeItem: "properties" }
+        this.state = { activeItem: "properties", document: props.document, pagetypes: [], working: true }
+    }
+
+    componentWillMount() {
+        Api.getPageTypes().then(pagetypes => {
+            Api.getDocument(this.props.document.id).then(document => {
+                this.setState({
+                    pagetypes: pagetypes,
+                    document: document,
+                    working: false
+                })
+            })
+        })
+    }
+
+    refresh() {
+        Api.getDocument(this.props.document.id).then(document => {
+            this.setState({
+                document: document
+            })
+        })
     }
 
     render() {
         return (
-            <Modal style={{minHeight: "500px"}} onClose={this.props.onClose} defaultOpen={true}>
+            <Modal  onClose={this.props.onClose} open={this.props.open}  defaultOpen={true}>
                     <Modal.Header>Properties</Modal.Header>
-                    <Modal.Content>
+                    <Modal.Content style={{minHeight: "500px"}}>
                     <Modal.Description>
-                        <Menu pointing secondary>
+                        <Menu tabular>
                             <Menu.Item 
                                 name='properties' 
                                 active={this.state.activeItem === 'properties'} 
@@ -51,12 +76,54 @@ class PageProperties extends React.Component<PagePropertiesProps, any> {
                                     <Table.Row>
                                         <Table.Cell>Name</Table.Cell>
                                         <Table.Cell>
-                                            <Form.Input type='text' width="12" defaultValue={this.props.document.name}  />
+                                            <Form.Input 
+                                                onChange={(e) => {
+                                                    this.setState({
+                                                        ...this.state, 
+                                                        document: {...this.state.document, name: e.currentTarget.value}
+                                                    })
+                                                }}
+                                                fluid type='text' width="12" 
+                                                defaultValue={this.props.document.name}  />
                                         </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Page type</Table.Cell>
-                                        <Table.Cell>{this.props.document.view}</Table.Cell>
+                                        <Table.Cell>
+                                            <Dropdown 
+                                                placeholder='Select pagetype' 
+                                                defaultValue={this.props.document.view} 
+                                                fluid selection 
+                                                onChange={(e, {value}) => {
+                                                    this.setState({
+                                                        ...this.state, 
+                                                        document: {...this.state.document, view: value as string}
+                                                    })
+                                                }}
+                                                options={this.state.pagetypes.map(x => {
+                                                    return {
+                                                        text: x.typename,
+                                                        value: x.typekey
+                                                    }
+                                                })} />
+                                        </Table.Cell>
+                                    </Table.Row>
+                                    <Table.Row>
+                                        <Table.Cell>Publish date</Table.Cell>
+                                        <Table.Cell>
+                                            <DatePickerInput
+                                                style={{background: "none"}}
+                                                onChange={(date) => {
+                                                     this.setState({
+                                                        ...this.state, 
+                                                        document: {...this.state.document, published_at: date.getTime()}
+                                                    })
+                                                }}
+                                                defaultValue={moment(this.props.document.created_at)}
+                                                displayFormat="MMMM Do YYYY, HH:MM"
+                                                showOnInputClick
+                                            />
+                                        </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Created at</Table.Cell>
@@ -65,10 +132,6 @@ class PageProperties extends React.Component<PagePropertiesProps, any> {
                                     <Table.Row>
                                         <Table.Cell>Last updated at</Table.Cell>
                                         <Table.Cell>{moment(this.props.document.updated_at).format("MMMM Do YYYY, HH:MM")}</Table.Cell>
-                                    </Table.Row>
-                                    <Table.Row>
-                                        <Table.Cell>Pubilsh date</Table.Cell>
-                                        <Table.Cell>{moment(this.props.document.published_at).format("MMMM Do YYYY, HH:MM")}</Table.Cell>
                                     </Table.Row>
                                 </Table.Body>
                                 </Table>
@@ -80,15 +143,57 @@ class PageProperties extends React.Component<PagePropertiesProps, any> {
                                 <Table.Body>
                                     <Table.Row>
                                         <Table.Cell width="3">Title</Table.Cell>
-                                        <Table.Cell>{this.props.document.title}</Table.Cell>
+                                        <Table.Cell>
+                                            <Form.Input 
+                                                onChange={(e) => {
+                                                    this.setState({
+                                                        ...this.state, 
+                                                        document: {...this.state.document, title: e.currentTarget.value}
+                                                    })
+                                                }}
+                                                fluid type='text' width="12" 
+                                                defaultValue={this.props.document.title}  />
+                                        </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Description</Table.Cell>
-                                        <Table.Cell>{this.props.document.description}</Table.Cell>
+                                        <Table.Cell>
+                                            <Form.Input 
+                                                onChange={(e) => {
+                                                    this.setState({
+                                                        ...this.state, 
+                                                        document: {...this.state.document, description: e.currentTarget.value}
+                                                    })
+                                                }}
+                                                fluid type='text' width="12" 
+                                                defaultValue={this.props.document.description}  />
+                                        </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Language</Table.Cell>
-                                        <Table.Cell>{this.props.document.locale}</Table.Cell>
+                                        <Table.Cell>
+                                            <Dropdown 
+                                                placeholder='Select language' 
+                                                defaultValue={this.props.document.locale} 
+                                                fluid selection 
+                                                onChange={(e, {value}) => {
+                                                    this.setState({
+                                                        ...this.state, 
+                                                        document: {...this.state.document, locale: value as string}
+                                                    })
+                                                }}
+                                                options={[
+                                                    {
+                                                        text: "English",
+                                                        value: "en"
+                                                    },
+                                                    {
+                                                        text: "Dutch",
+                                                        value: "nl"
+                                                    }
+                                                ]} />
+                                            
+                                        </Table.Cell>
                                     </Table.Row>
                                 </Table.Body>
                                 </Table>
@@ -97,6 +202,28 @@ class PageProperties extends React.Component<PagePropertiesProps, any> {
 
                     </Modal.Description>
                     </Modal.Content>
+                     <Modal.Actions>
+                        <Button color='grey' onClick={this.props.onClose}>
+                        Close
+                        </Button>
+                        <Button 
+                            positive 
+                            icon='checkmark' 
+                            labelPosition='right' 
+                            onClick={() => {
+                                this.setState({...this.state, working: true}, () => {
+                                    Api.updateDocument(this.state.document).then(x => {
+                                        this.props.onClose();
+                                    });
+                                });
+                            }}
+                            content="Save and close"  />
+                    </Modal.Actions>
+                    {this.state.working ? 
+                        <Dimmer active inverted>
+                            <Loader size='small'></Loader>
+                        </Dimmer>
+                    : null}
                 </Modal>
         );
     }

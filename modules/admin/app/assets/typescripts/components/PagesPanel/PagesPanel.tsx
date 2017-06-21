@@ -7,10 +7,11 @@ import Loading from '../common/Loading'
 import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 import * as Tabs from '../TabPanel/TabPanel'
 import DocumentEditMode from '../DocumentEditMode/DocumentEditMode'
+import * as fbemitter from 'fbemitter'
 
 export interface PagesPanelProps {
     onOpenTab: (tab:Tabs.Tab) => void
-    onToggleProperties: (doc:Api.Document) => void
+    emitter: fbemitter.EventEmitter
 }
 
 export interface PagesPanelState {
@@ -116,8 +117,8 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 onDeleted={this.onDeleted.bind(this)}
                 onParentChanged={this.onParentChanged.bind(this)}
                 pagetypes={this.state.pagetypes}
-                onToggleProperties={() => this.props.onToggleProperties(n.item)}
                 item={n} 
+                emitter={this.props.emitter}
                 onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
     

@@ -10,5 +10,4 @@ export default function Loading (props: LoadingProps) {
             <Loader inverted></Loader>
         </Dimmer>
     );
-    //return(<div className="loading"><img src="/assets/images/rolling.svg" alt="" /> </div>);
 }

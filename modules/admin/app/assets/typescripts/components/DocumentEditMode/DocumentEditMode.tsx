@@ -51,13 +51,13 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
                     <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
                         <Icon name='eye' />Save & Publish
                     </Menu.Item>
-                     <Dropdown item icon="eye" text='Display Options'>
-                    <Dropdown.Menu>
-                        <Dropdown.Header>Text Size</Dropdown.Header>
-                        <Dropdown.Item>Small</Dropdown.Item>
-                        <Dropdown.Item>Medium</Dropdown.Item>
-                        <Dropdown.Item>Large</Dropdown.Item>
-                    </Dropdown.Menu>
+                     <Dropdown item size="small" labeled={false} icon="arrow down">
+                        <Dropdown.Menu>
+                            <Dropdown.Header>Text Size</Dropdown.Header>
+                            <Dropdown.Item>Small</Dropdown.Item>
+                            <Dropdown.Item>Medium</Dropdown.Item>
+                            <Dropdown.Item>Large</Dropdown.Item>
+                        </Dropdown.Menu>
                     </Dropdown>
                     <Menu.Item name='properties' active={false} onClick={this.saveEditables.bind(this)}>
                         <Icon name='save' />Save

@@ -18,7 +18,8 @@ module.exports = {
           {
               test:   /\.js$/,
               loader: 'source-map-loader',
-              exclude: path.join(__dirname, '/node_modules/')
+              exclude: path.join(__dirname, '/node_modules/'),
+              include: path.join(__dirname, '/target/web/typescript/main/typescripts')
           }
       ]
   },

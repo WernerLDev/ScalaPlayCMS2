@@ -27,7 +27,7 @@ export interface PageType {
     typename : string
 }
 
-export type Editable = {
+export interface Editable {
     id : number,
     document_id : number,
     name : string,
@@ -41,6 +41,10 @@ export function getPageTypes():Promise<PageType[]> {
 
 export function getDocuments():Promise<DocumentTree[]> {
     return ApiCall("/admin/api/v1/documents", "GET").then(r => r as DocumentTree[]);
+}
+
+export function getDocument(id:number):Promise<Document> {
+    return ApiCall("/admin/api/v1/documents/" + id, "GET").then(r => r as Document);
 }
 
 export function renameDocument(doc:Document) {
@@ -62,7 +66,7 @@ export function renameDocument(doc:Document) {
  */
 export function addDocument(parent_id:number, name:string, pagetype:string):Promise<Document> {
     var body = JSON.stringify({
-            "documentt" : {
+            "document" : {
             "parent_id" : parent_id,
             "name" : name,
             "pagetype": pagetype
@@ -73,6 +77,13 @@ export function addDocument(parent_id:number, name:string, pagetype:string):Prom
 
 export function deleteDocument(doc:Document) {
     return ApiCall("/admin/api/v1/documents/" + doc.id, "DELETE");
+}
+
+export function updateDocument(document:Document) {
+    var body = JSON.stringify({
+        "document" : document
+    });
+    return ApiCall("/admin/api/v1/documents", "PUT", body);
 }
 
 export function updateParentDocument(source_id:number, parent_id:number) {

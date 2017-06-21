@@ -25,7 +25,7 @@ class RenameMode extends React.Component<RenameModeProps, any> {
                     ref="editfield" 
                     type="text" 
                     onKeyDown={(e) => {
-                        if(e.keyCode == 13) this.props.onSubmit( (this.refs.editfield as HTMLInputElement).value )
+                        if(e.keyCode == 13) this.props.onSubmit(e.currentTarget.value);
                     }} 
                     onBlur={this.props.onBlur} 
                     defaultValue={this.props.defaultValue} />

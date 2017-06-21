@@ -6,6 +6,7 @@ import RenameMode from '../TreeView/partials/RenameMode'
 import AddMode from '../TreeView/partials/AddMode'
 import Draggable from '../TreeView/partials/draggable'
 import { Button, Modal } from 'semantic-ui-react'
+import * as fbemitter from 'fbemitter'
 
 export interface PageTreeLabelProps {
     item: Tree.TreeViewItem<Api.Document>,
@@ -14,8 +15,8 @@ export interface PageTreeLabelProps {
     onAdded : (parent_id:number, name:string, pagetype:string) => void
     onDeleted : (item:Api.Document) => void
     onParentChanged : (sourceid:number, targetid:number) => void
-    onToggleProperties: () => void
     pagetypes : Api.PageType[]
+    emitter : fbemitter.EventEmitter
 }
 
 export interface PageTreeLabelState {
@@ -60,7 +61,9 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
               isRootNode={this.props.item.item.doctype == "home"}
               onDismiss={this._onDismiss.bind(this)}
               onToggleAdd={(t:string) => this.setState({ addingmode: true, addtype: t })}
-              onToggleProperties={this.props.onToggleProperties}
+              onProperties={() => {
+                  this.props.emitter.emit("pagepropertiesopened", this.props.item.item);
+              }}
               onToggleDelete={() => {
                     if(confirm("Are you sure?")) {
                         this.setState({ deleted: true  }, () => {

@@ -11,6 +11,7 @@ import * as Immutable from 'immutable'
 import * as SplitPaneActions from './actions/SplitpaneActions'
 import PageProperties from './components/PagesPanel/PageProperties'
 import * as Api from './api/Api'
+import * as fbemitter from 'fbemitter'
 
 export interface MainProps {
 }
@@ -18,7 +19,8 @@ export interface MainProps {
 type MainState = {
     section : string,
     selected : string,
-    pageProperties: Api.Document
+    emitter : fbemitter.EventEmitter
+    pagepropertieDocument : Api.Document
     tabbar: {
         tabs: Immutable.List<Tabs.Tab>
         active: Tabs.Tab
@@ -41,16 +43,18 @@ class Main extends React.Component<MainProps, MainState> {
                 key: "", title: "", content: () => (<p></p>)
             }
         }
-        this.state = { section : "pages", selected: "", tabbar: initialTabbar, pageProperties: null }
+        this.state = { section : "pages", selected: "", tabbar: initialTabbar, emitter: new fbemitter.EventEmitter(), pagepropertieDocument: null }
     }
 
-    itemsNonFocusable = [
-        { key: "new", name: "New", iconProps: { iconName: "add" }  }
-    ]
-
-    farItemsNonFocusable = [
-        { key: "test", name: "Test", iconProps: { iconName: "add" } }
-    ]
+    componentWillMount() {
+        this.state.emitter.addListener("pagepropertiesopened", (doc:Api.Document) => {
+            console.log("Triggered " + doc.name);
+            this.setState({
+                ...this.state,
+                pagepropertieDocument: doc
+            });
+        });
+    }
 
     switchSection(s:string) {
         let leftpane = this.refs.leftpane as HTMLElement;
@@ -105,7 +109,7 @@ class Main extends React.Component<MainProps, MainState> {
                                 <div className={this.state.section == "pages" ? "show" : "hide"}>
                                     <PagesPanel
                                         onOpenTab={this.openTab.bind(this)}
-                                        onToggleProperties={(doc:Api.Document) => this.setState({ ...this.state, pageProperties: doc })}
+                                        emitter={this.state.emitter}
                                      />
                                 </div>
                                 <div className={this.state.section == "assets" ? "show" : "hide"}>
@@ -139,12 +143,12 @@ class Main extends React.Component<MainProps, MainState> {
                             </div>
                         </SplitPane>
                     </div>
-                    {this.state.pageProperties != null ? 
-                        <PageProperties 
-                            document={this.state.pageProperties} 
-                            onClose={() => this.setState({...this.state, pageProperties: null})} />
-                        : null
-                    }
+
+                    {this.state.pagepropertieDocument != null ? <PageProperties 
+                        open={this.state.pagepropertieDocument != null}
+                        document={this.state.pagepropertieDocument} 
+                        onClose={() => this.setState({...this.state, pagepropertieDocument: null})} />
+                    : null }
                 </div>
         );
     } 
