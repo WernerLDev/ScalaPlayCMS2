@@ -54,8 +54,9 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, TreeViewSta
     onClick(n:TreeTypes.TreeViewItem<any>) {
         let lastClick = (new Date()).getTime();
         let difference = lastClick - this.state.lastClick;
+        let isSameNode = n.key == this.state.selected.key;
         this.setState({ selected: n, lastClick: lastClick }, () => {
-            if(difference < 500) {
+            if(difference < 500 && isSameNode) {
                 this.props.onDoubleClick(n);
             } else {
                 if(this.props.onClick) this.props.onClick(n);

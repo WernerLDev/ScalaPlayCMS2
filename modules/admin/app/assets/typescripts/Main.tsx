@@ -48,7 +48,6 @@ class Main extends React.Component<MainProps, MainState> {
 
     componentWillMount() {
         this.state.emitter.addListener("pagepropertiesopened", (doc:Api.Document) => {
-            console.log("Triggered " + doc.name);
             this.setState({
                 ...this.state,
                 pagepropertieDocument: doc
@@ -147,6 +146,12 @@ class Main extends React.Component<MainProps, MainState> {
                     {this.state.pagepropertieDocument != null ? <PageProperties 
                         open={this.state.pagepropertieDocument != null}
                         document={this.state.pagepropertieDocument} 
+                        onSaved={() => {
+                            this.state.emitter.emit("documentChanged");
+                            {/*this.setState({...this.state, pagepropertieDocument: null}, () => {
+                                this.state.emitter.emit("documentChanged");
+                            })*/}
+                        }}
                         onClose={() => this.setState({...this.state, pagepropertieDocument: null})} />
                     : null }
                 </div>

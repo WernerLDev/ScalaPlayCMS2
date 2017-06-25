@@ -2,9 +2,11 @@ import * as React from 'react';
 import * as Api from '../../api/Api'
 import { Menu, Dropdown, Segment, Icon, Dimmer, Loader } from 'semantic-ui-react'
 import * as Immutable from 'immutable'
+import * as fbemmiter from 'fbemitter'
 
 export interface DocumentEditModeProps {
     document:Api.Document
+    emitter:fbemmiter.EventEmitter
 }
 
 export interface DocumentEditModeState {
@@ -21,6 +23,10 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
 
     handleItemClick() {
 
+    }
+
+    onProperties() {
+        this.props.emitter.emit("pagepropertiesopened", this.props.document);
     }
 
     saveEditables() {
@@ -51,19 +57,11 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
                     <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
                         <Icon name='eye' />Save & Publish
                     </Menu.Item>
-                     <Dropdown item size="small" labeled={false} icon="arrow down">
-                        <Dropdown.Menu>
-                            <Dropdown.Header>Text Size</Dropdown.Header>
-                            <Dropdown.Item>Small</Dropdown.Item>
-                            <Dropdown.Item>Medium</Dropdown.Item>
-                            <Dropdown.Item>Large</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
                     <Menu.Item name='properties' active={false} onClick={this.saveEditables.bind(this)}>
                         <Icon name='save' />Save
                     </Menu.Item>
 
-                    <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
+                    <Menu.Item name='properties' active={false} onClick={this.onProperties.bind(this)}>
                         <Icon name='setting' />Properties
                     </Menu.Item>
                     <Menu.Item position="right" name='deletething' active={false} onClick={this.handleItemClick}>

@@ -6,6 +6,7 @@ import RenameMode from '../TreeView/partials/RenameMode'
 import AddMode from '../TreeView/partials/AddMode'
 import Draggable from '../TreeView/partials/draggable'
 import { getAssetIcon } from './AssetIcons'
+import { Button } from 'semantic-ui-react'
 
 export interface AssetTreeLabelProps {
     item: Tree.TreeViewItem<Api.Asset>,
@@ -78,6 +79,16 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
         )
     }
 
+    renderMenuButton() {
+        return(
+            <Button 
+                onClick={this.toggleContextMenu.bind(this)}
+                basic compact size="tiny" floated="right" 
+                className="menubtn"
+                icon='ellipsis horizontal' />
+        )
+    }
+
     renderContextMenu() {
         let mimetype = this.props.item.item.mimetype;
         return(
@@ -112,7 +123,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
                 className={this.state.deleted ? "deleted dragitem" : "dragitem"} 
                 onContextMenu={this.toggleContextMenu.bind(this)}>
                 <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
-                {this.state.createmode ? this.renderAddForm() : null}
+                {this.state.createmode ? this.renderAddForm() : this.renderMenuButton()}
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </Draggable>
         )

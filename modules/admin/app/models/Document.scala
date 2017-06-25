@@ -74,8 +74,11 @@ class Documents @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
         })
     }
 
-    def update(doc:Document):Future[Document] = dbConfig.db.run {
-        documents.filter(_.id === doc.id).update(doc).map (x => doc)
+    def update(doc:Document):Future[Document] = {
+        val newdoc = doc.copy(name = doc.name.toLowerCase.replace(" ", "-"))
+        dbConfig.db.run {
+            documents.filter(_.id === newdoc.id).update(newdoc).map (_ => newdoc)
+        }
     }
 
     def setCollapsed(id:Long, state:Boolean):Future[Int] = dbConfig.db.run {

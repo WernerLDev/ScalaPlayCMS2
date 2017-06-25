@@ -78,17 +78,21 @@ ul.navItems {
                     margin-left: 18px;
                 }
                 .treeicon {
-                    flex-basis: 11px; min-width: 11px; padding-top: 6px;
+                    flex-basis: 11px; min-width: 11px; 
+                    .fa {
+                        height: 26px; line-height: 26px;
+                    }
                 }
                 .treerename {
                     flex-grow: 1;
                     margin-left: 1px;
                     margin-right: 3px;
                     input[type='text'] {
-                        border: 0; outline: 0; background: #fff; height: 22px; margin-top: 3px; width: 100%;
+                        border: 0; outline: 0; background: #fff; height: 24px; line-height: 26px; margin-top: 0px; width: 100%;
                         font-size: 14px;
                         text-indent: 0px;
                         padding-left: 5px;
+                        
                         font-family: 'Lato', sans-serif;
                         border-radius: 3px;
                     }
@@ -100,7 +104,7 @@ ul.navItems {
             }
 
             .collapseButton {
-                display: inline-block; width: 26px; height: $nodeheight;
+                display: inline-block; width: 26px; 
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
@@ -129,15 +133,39 @@ ul.navItems {
             }
             .collapseButton:focus { outline: none }
         }
+        .menubtn {
+            border: 0; box-shadow: none; float: none; display: none; position: absolute; top:0; right: 0;
+            height: auto; min-height: 1px; line-height: 14px;
+        }
+        .menubtn:hover, .menubtn:focus {
+            background-color: none;
+            background: none; border: 0; box-shadow: none;
+        }
+
         .compositeLink:hover {
             background: #f3f3f3;
+            .menubtn { display: inline-block; }
         }
 
         .selected, .selected:hover {
-            box-sizing: border-box;
-            background: #d9e7ec;
+            box-sizing: content-box;
+            background: #ecfaff;
             color: #333;
-            border-radius: 4px;
+            border: 1px solid #6bccea;
+            margin-left: -1px;
+            overflow: hidden;
+            min-height: 26px;
+            .menubtn { display: inline-block; }
+            .link {
+                min-height: 26px;
+                line-height: 26px;
+            }
+            .collapseButton {
+                line-height: 26px;
+                .chevronIcon {
+                    line-height: 26px;
+                }
+            }
         }
 
         ul.hidden  { 

@@ -30,7 +30,11 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
             documents: [], treeItems: [], working: true, pagetypes: [], selected: null
         }
     }
- 
+
+    componentWillMount() {
+        this.props.emitter.addListener("documentChanged", this.refresh.bind(this));
+    }
+
     toTreeItems(docs:Api.DocumentTree[]):TreeTypes.TreeViewItem<Api.Document>[] {
         return docs.map(doc => {
             return {
@@ -40,15 +44,16 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 children: this.toTreeItems(doc.children),
                 item: doc.document
             }
-        
         })
     }
 
     refresh() {
-        Api.getDocuments().then(documents => {
-            var items = this.toTreeItems(documents);
-            this.setState({ documents: documents, treeItems: items, working: false });
-        });
+        this.setState({...this.state, working: true}, () => {
+            Api.getDocuments().then(documents => {
+                var items = this.toTreeItems(documents);
+                this.setState({ documents: documents, treeItems: items, working: false });
+            });
+        })
     }
 
     componentDidMount() {
@@ -157,7 +162,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                         this.props.onOpenTab({
                             key: n.item.id + "doc",
                             title: n.item.name,
-                            content: () => (<DocumentEditMode document={n.item} />)
+                            content: () => (<DocumentEditMode emitter={this.props.emitter} document={n.item} />)
                         })
                     }}
                     onClick={(n:TreeTypes.TreeViewItem<Api.Document>) => {

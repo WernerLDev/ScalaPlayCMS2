@@ -9,7 +9,7 @@ import { Button, Modal } from 'semantic-ui-react'
 import * as fbemitter from 'fbemitter'
 
 export interface PageTreeLabelProps {
-    item: Tree.TreeViewItem<Api.Document>,
+    item: Tree.TreeViewItem<Api.Document>
     onContextTriggered: (n:Tree.TreeViewItem<Api.Document>) => void
     onRenamed : (doc:Api.Document) => void
     onAdded : (parent_id:number, name:string, pagetype:string) => void
@@ -20,13 +20,13 @@ export interface PageTreeLabelProps {
 }
 
 export interface PageTreeLabelState {
-  contextMenuVisible : boolean,
-  menutarget : React.MouseEvent<HTMLElement>,
-  editmode : boolean,
-  label : string,
-  addingmode: boolean,
-  addtype : string,
-  deleted: boolean
+    contextMenuVisible : boolean,
+    menutarget : React.MouseEvent<HTMLElement>,
+    editmode : boolean,
+    label : string,
+    addingmode: boolean,
+    addtype : string,
+    deleted: boolean
 }
 
 class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelState> {
@@ -105,6 +105,16 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         )
     }
 
+    renderMenuButton() {
+        return(
+            <Button 
+                onClick={this.toggleContextMenu.bind(this)}
+                basic compact size="tiny" floated="right" 
+                className="menubtn"
+                icon='ellipsis horizontal' />
+        )
+    }
+
     render() {
         let icon = this.props.item.item.doctype == "home" ? "home" : "file-code-o";
         if(this.state.editmode) return this.renderEditForm();
@@ -115,8 +125,8 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
                 item={this.props.item}
                 className={this.state.deleted ? "deleted dragitem" : "dragitem"} 
                 onContextMenu={this.toggleContextMenu.bind(this)}>
-                    <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
-                    {this.state.addingmode ? this.renderAddForm() : null}
+                    <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label} 
+                    {this.state.addingmode ? this.renderAddForm() : this.renderMenuButton()}
                     {this.state.contextMenuVisible ? this.renderContextMenu() : null}    
             </Draggable>
         )

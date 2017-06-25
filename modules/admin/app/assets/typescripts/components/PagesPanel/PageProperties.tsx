@@ -6,6 +6,7 @@ import {DatePickerInput} from 'rc-datepicker';
 
 export interface PagePropertiesProps {
     onClose: () => void
+    onSaved: () => void
     open: boolean
     document: Api.Document
 }
@@ -15,13 +16,14 @@ export interface PagePropertiesState {
     document: Api.Document,
     pagetypes : Api.PageType[]
     working : boolean
+    saving : boolean
 }
 
 class PageProperties extends React.Component<PagePropertiesProps, PagePropertiesState> {
 
     constructor(props:PagePropertiesProps, context:any) {
         super(props, context);
-        this.state = { activeItem: "properties", document: props.document, pagetypes: [], working: true }
+        this.state = { activeItem: "properties", document: props.document, pagetypes: [], working: true, saving: false }
     }
 
     componentWillMount() {
@@ -39,14 +41,15 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
     refresh() {
         Api.getDocument(this.props.document.id).then(document => {
             this.setState({
-                document: document
+                document: document,
+                saving: false
             })
         })
     }
 
     render() {
         return (
-            <Modal  onClose={this.props.onClose} open={this.props.open}  defaultOpen={true}>
+            <Modal  onClose={this.props.onClose} open={this.props.open}>
                     <Modal.Header>Properties</Modal.Header>
                     <Modal.Content style={{minHeight: "500px"}}>
                     <Modal.Description>
@@ -67,11 +70,11 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                 <Table.Body>
                                     <Table.Row>
                                         <Table.Cell width="3">#</Table.Cell>
-                                        <Table.Cell>{this.props.document.id}</Table.Cell>
+                                        <Table.Cell>{this.state.document.id}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Path</Table.Cell>
-                                        <Table.Cell>{this.props.document.path}</Table.Cell>
+                                        <Table.Cell>{this.state.document.path}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Name</Table.Cell>
@@ -84,7 +87,7 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                                     })
                                                 }}
                                                 fluid type='text' width="12" 
-                                                defaultValue={this.props.document.name}  />
+                                                value={this.state.document.name}  />
                                         </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
@@ -92,7 +95,7 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                         <Table.Cell>
                                             <Dropdown 
                                                 placeholder='Select pagetype' 
-                                                defaultValue={this.props.document.view} 
+                                                value={this.state.document.view} 
                                                 fluid selection 
                                                 onChange={(e, {value}) => {
                                                     this.setState({
@@ -119,7 +122,7 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                                         document: {...this.state.document, published_at: date.getTime()}
                                                     })
                                                 }}
-                                                defaultValue={moment(this.props.document.created_at)}
+                                                value={moment(this.state.document.published_at)}
                                                 displayFormat="MMMM Do YYYY, HH:MM"
                                                 showOnInputClick
                                             />
@@ -127,11 +130,11 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Created at</Table.Cell>
-                                        <Table.Cell>{moment(this.props.document.created_at).format("MMMM Do YYYY, HH:MM")}</Table.Cell>
+                                        <Table.Cell>{moment(this.state.document.created_at).format("MMMM Do YYYY, HH:MM")}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Last updated at</Table.Cell>
-                                        <Table.Cell>{moment(this.props.document.updated_at).format("MMMM Do YYYY, HH:MM")}</Table.Cell>
+                                        <Table.Cell>{moment(this.state.document.updated_at).format("MMMM Do YYYY, HH:MM")}</Table.Cell>
                                     </Table.Row>
                                 </Table.Body>
                                 </Table>
@@ -152,7 +155,7 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                                     })
                                                 }}
                                                 fluid type='text' width="12" 
-                                                defaultValue={this.props.document.title}  />
+                                                value={this.state.document.title}  />
                                         </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
@@ -166,7 +169,7 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                                     })
                                                 }}
                                                 fluid type='text' width="12" 
-                                                defaultValue={this.props.document.description}  />
+                                                value={this.state.document.description}  />
                                         </Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
@@ -174,8 +177,8 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                         <Table.Cell>
                                             <Dropdown 
                                                 placeholder='Select language' 
-                                                defaultValue={this.props.document.locale} 
-                                                fluid selection 
+                                                value={this.state.document.locale} 
+                                                fluid selection search
                                                 onChange={(e, {value}) => {
                                                     this.setState({
                                                         ...this.state, 
@@ -185,11 +188,13 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                                 options={[
                                                     {
                                                         text: "English",
-                                                        value: "en"
+                                                        value: "en",
+                                                        flag: "gb"
                                                     },
                                                     {
                                                         text: "Dutch",
-                                                        value: "nl"
+                                                        value: "nl",
+                                                        flag: "nl"
                                                     }
                                                 ]} />
                                             
@@ -203,21 +208,26 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                     </Modal.Description>
                     </Modal.Content>
                      <Modal.Actions>
-                        <Button color='grey' onClick={this.props.onClose}>
-                        Close
-                        </Button>
-                        <Button 
-                            positive 
-                            icon='checkmark' 
-                            labelPosition='right' 
-                            onClick={() => {
-                                this.setState({...this.state, working: true}, () => {
-                                    Api.updateDocument(this.state.document).then(x => {
-                                        this.props.onClose();
+                        <Button.Group>
+                            <Button color='grey' onClick={this.props.onClose}>
+                            Close
+                            </Button>
+                            <Button.Or />
+                            <Button 
+                                positive 
+                                icon='checkmark' 
+                                labelPosition='right' 
+                                loading={this.state.saving}
+                                onClick={() => {
+                                    this.setState({...this.state, saving: true}, () => {
+                                        Api.updateDocument(this.state.document).then(x => {
+                                            this.refresh();
+                                            this.props.onSaved();
+                                        });
                                     });
-                                });
-                            }}
-                            content="Save and close"  />
+                                }}
+                                content="Save"  />
+                        </Button.Group>
                     </Modal.Actions>
                     {this.state.working ? 
                         <Dimmer active inverted>

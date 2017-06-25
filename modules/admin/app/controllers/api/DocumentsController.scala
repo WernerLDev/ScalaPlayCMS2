@@ -76,9 +76,14 @@ class DocumentsController @Inject()(
   }
   
   def updateDocument = WithAuthAction.async(parse.json) { request => 
-    {request.body \ "document"}.asOpt[Document].map( document => {
-      documents.update(document) map (x => {
-        Ok( Json.toJson(Map("success" -> JsBoolean(true))) )
+    {request.body \ "document"}.asOpt[Document].map(document => {
+      documents.update(document) flatMap (x => {
+        documents.getById(document.parent_id) flatMap (docOpt => docOpt match {
+          case Some(doc) => documents.updatePath(doc) map (_ => {
+            Ok(Json.toJson(x))
+          })
+          case None => Future(BadRequest("Invalid parent id"))
+        })
       })
     }).getOrElse(Future(BadRequest("Parameter missing")))
   }
