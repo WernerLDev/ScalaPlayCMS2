@@ -53,6 +53,25 @@ class Main extends React.Component<MainProps, MainState> {
                 pagepropertieDocument: doc
             });
         });
+
+        this.state.emitter.addListener("documentChanged", (doc:Api.Document) => {
+             this.setState({
+                ...this.state,
+                tabbar: {
+                    ...this.state.tabbar,
+                    tabs: this.state.tabbar.tabs.map(tab => {
+                        if(tab.key == doc.id + "doc") {
+                            return {
+                                key: tab.key,
+                                title: doc.name,
+                                content: tab.content
+                            }
+                        }
+                        return tab;
+                    }).toList()
+                }
+            });
+        });
     }
 
     switchSection(s:string) {
@@ -146,11 +165,13 @@ class Main extends React.Component<MainProps, MainState> {
                     {this.state.pagepropertieDocument != null ? <PageProperties 
                         open={this.state.pagepropertieDocument != null}
                         document={this.state.pagepropertieDocument} 
-                        onSaved={() => {
-                            this.state.emitter.emit("documentChanged");
-                            {/*this.setState({...this.state, pagepropertieDocument: null}, () => {
-                                this.state.emitter.emit("documentChanged");
-                            })*/}
+                        onSaved={(doc:Api.Document) => {
+                            this.setState({
+                                ...this.state,
+                                pagepropertieDocument: null,
+                            }, () => {
+                                this.state.emitter.emit("documentChanged", doc);
+                            })
                         }}
                         onClose={() => this.setState({...this.state, pagepropertieDocument: null})} />
                     : null }

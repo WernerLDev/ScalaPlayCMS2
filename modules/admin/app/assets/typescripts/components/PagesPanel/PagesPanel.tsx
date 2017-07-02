@@ -71,7 +71,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
     onRenamed(doc:Api.Document) {
         this.setState({ working: true }, () => {
             Api.renameDocument(doc).then(x => {
-                this.refresh();
+                this.props.emitter.emit("documentChanged", doc);
             });
         });
     }

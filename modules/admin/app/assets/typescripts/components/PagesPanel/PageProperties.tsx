@@ -6,7 +6,7 @@ import {DatePickerInput} from 'rc-datepicker';
 
 export interface PagePropertiesProps {
     onClose: () => void
-    onSaved: () => void
+    onSaved: (doc:Api.Document) => void
     open: boolean
     document: Api.Document
 }
@@ -219,14 +219,13 @@ class PageProperties extends React.Component<PagePropertiesProps, PageProperties
                                 labelPosition='right' 
                                 loading={this.state.saving}
                                 onClick={() => {
-                                    this.setState({...this.state, saving: true}, () => {
+                                    this.setState({...this.state, saving: true, working: true}, () => {
                                         Api.updateDocument(this.state.document).then(x => {
-                                            this.refresh();
-                                            this.props.onSaved();
+                                            this.props.onSaved(this.state.document);
                                         });
                                     });
                                 }}
-                                content="Save"  />
+                                content="Save & close"  />
                         </Button.Group>
                     </Modal.Actions>
                     {this.state.working ? 
