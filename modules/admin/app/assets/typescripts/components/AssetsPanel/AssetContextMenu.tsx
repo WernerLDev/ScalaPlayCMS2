@@ -11,6 +11,7 @@ export interface AssetContextMenuProps {
     onToggleDelete: () => void
     onToggleAdd: () => void
     onToggleUpload: () => void
+    onProperties: () => void
     target: MouseEvent,
     canCreate : boolean,
     canDelete : boolean,
@@ -67,7 +68,7 @@ class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
                     },
                     {
                         label : "Properties",
-                        onClick: this.handleItemClick.bind(this),
+                        onClick: this.props.onProperties,
                         children: []
                     },
                     {

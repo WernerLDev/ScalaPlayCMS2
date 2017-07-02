@@ -10,6 +10,7 @@ import * as TabActions from './components/TabPanel/TabActions'
 import * as Immutable from 'immutable'
 import * as SplitPaneActions from './actions/SplitpaneActions'
 import PageProperties from './components/PagesPanel/PageProperties'
+import AssetProperties from './components/AssetsPanel/AssetProperties'
 import * as Api from './api/Api'
 import * as fbemitter from 'fbemitter'
 
@@ -21,6 +22,7 @@ type MainState = {
     selected : string,
     emitter : fbemitter.EventEmitter
     pagepropertieDocument : Api.Document
+    assetpropetiesAsset : Api.Asset
     tabbar: {
         tabs: Immutable.List<Tabs.Tab>
         active: Tabs.Tab
@@ -43,7 +45,13 @@ class Main extends React.Component<MainProps, MainState> {
                 key: "", title: "", content: () => (<p></p>)
             }
         }
-        this.state = { section : "pages", selected: "", tabbar: initialTabbar, emitter: new fbemitter.EventEmitter(), pagepropertieDocument: null }
+        this.state = { 
+            section : "pages", 
+            selected: "", 
+            tabbar: initialTabbar, 
+            emitter: new fbemitter.EventEmitter(), 
+            assetpropetiesAsset: null,
+            pagepropertieDocument: null }
     }
 
     componentWillMount() {
@@ -51,6 +59,13 @@ class Main extends React.Component<MainProps, MainState> {
             this.setState({
                 ...this.state,
                 pagepropertieDocument: doc
+            });
+        });
+
+        this.state.emitter.addListener("assetpropertiesopened", (asset:Api.Asset) => {
+            this.setState({
+                ...this.state,
+                assetpropetiesAsset: asset
             });
         });
 
@@ -133,6 +148,7 @@ class Main extends React.Component<MainProps, MainState> {
                                 <div className={this.state.section == "assets" ? "show" : "hide"}>
                                     <AssetsPanel
                                         onOpenTab={this.openTab.bind(this)}
+                                        emitter={this.state.emitter}
                                      />
                                 </div>
                             </div>
@@ -161,6 +177,18 @@ class Main extends React.Component<MainProps, MainState> {
                             </div>
                         </SplitPane>
                     </div>
+
+                    {this.state.assetpropetiesAsset != null ? <AssetProperties
+                        asset={this.state.assetpropetiesAsset}
+                        onClose={() => {
+                            this.setState({...this.state, assetpropetiesAsset: null})
+                        }}
+                        open={true}
+                        onSaved={(asset:Api.Asset) => {
+                            this.setState({...this.state, assetpropetiesAsset: null}, () => {
+                                this.state.emitter.emit("assetChanged", asset);
+                            })
+                        }} /> : null}
 
                     {this.state.pagepropertieDocument != null ? <PageProperties 
                         open={this.state.pagepropertieDocument != null}

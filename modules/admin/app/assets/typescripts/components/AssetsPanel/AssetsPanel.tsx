@@ -8,9 +8,10 @@ import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
 import UploadModal from './UploadModal'
 import * as Tabs from '../TabPanel/TabPanel'
 import ViewerFactory from '../AssetViewers/ViewerFactory'
-
+import * as fbemitter from 'fbemitter'
 export interface AssetPanelProps {
     onOpenTab: (tab:Tabs.Tab) => void
+    emitter : fbemitter.EventEmitter
 }
 
 export interface AssetPanelState {
@@ -48,6 +49,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
             var items = this.toTreeItems(assets);
             this.setState({ assets: assets, treeItems: items });
         });
+        this.props.emitter.addListener("assetChanged", this.refresh.bind(this));
     }
 
     refresh() {
@@ -110,6 +112,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         return( 
             <AssetsTreeLabel 
                 item={n} 
+                emitter={this.props.emitter}
                 onToggleUpload={this.toggleUploadModal.bind(this)}
                 onRenamed={this.onRenamed.bind(this)}
                 onDeleted={this.onDeleted.bind(this)}

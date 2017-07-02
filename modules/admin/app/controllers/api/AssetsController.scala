@@ -20,7 +20,9 @@ case class NewAsset(parent_id : Long, name : String, server_path : String, mimet
 @Singleton
 class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageAction:PageAction, conf:Configuration) extends Controller {
 
+    implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
     implicit val AssetWrites = Json.writes[Asset]
+    implicit val AssetReads = Json.reads[Asset]
     implicit val AssetTreeWrites = Json.writes[AssetTree]
     implicit val NewAssetReads = Json.reads[NewAsset]
 
@@ -67,6 +69,19 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
           }
           case None => Future(BadRequest("Error: Missing (or invalid) parameter. [parent_id]"))
       })
+    }
+
+    def update = WithAuthAction.async(parse.json) { request =>
+        {request.body \ "asset"}.asOpt[Asset].map(asset => {
+            assets.update(asset) flatMap (x => {
+                assets.getById(asset.parent_id) flatMap (assetOpt => assetOpt match {
+                case Some(parentAsset) => assets.updatePath(parentAsset) map (_ => {
+                    Ok(Json.toJson(x))
+                })
+                case None => Future(BadRequest("Invalid parent id"))
+                })
+            })
+        }).getOrElse(Future(BadRequest("Parameter missing")))
     }
 
     def upload = WithAuthAction(parse.multipartFormData) { implicit request =>

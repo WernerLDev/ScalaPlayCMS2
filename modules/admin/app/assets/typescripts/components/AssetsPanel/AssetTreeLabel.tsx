@@ -7,6 +7,7 @@ import AddMode from '../TreeView/partials/AddMode'
 import Draggable from '../TreeView/partials/draggable'
 import { getAssetIcon } from './AssetIcons'
 import { Button } from 'semantic-ui-react'
+import * as fbemitter from 'fbemitter'
 
 export interface AssetTreeLabelProps {
     item: Tree.TreeViewItem<Api.Asset>,
@@ -16,6 +17,7 @@ export interface AssetTreeLabelProps {
     onRenamed : (item:Api.Asset) => void
     onFolderAdded : (parent_id:number, name:string) => void
     onParentChanged : (sourceid:number, targetid:number) => void
+    emitter: fbemitter.EventEmitter
 }
 
 export interface AssetTreeLabelState {
@@ -97,6 +99,9 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
               canCreate={mimetype == "home" || mimetype == "folder"}
               canDelete={mimetype != "home"}
               canRename={mimetype != "home"}
+              onProperties={() => {
+                  this.props.emitter.emit("assetpropertiesopened", this.props.item.item)
+              }}
               onToggleUpload={() => this.props.onToggleUpload(this.props.item.item.id)}
               onDismiss={this._onDismiss.bind(this)}
               onToggleAdd={() => this.setState({createmode: true})}

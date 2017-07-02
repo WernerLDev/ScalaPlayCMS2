@@ -59,6 +59,13 @@ export function deleteAsset(asset:Asset) {
     return ApiCall("/admin/api/v1/assets/" + asset.id, "DELETE");
 }
 
+export function updateAsset(asset:Asset) {
+    var body = JSON.stringify({
+        "asset" : asset
+    });
+    return ApiCall("/admin/api/v1/assets", "PUT", body);
+}
+
 export function getAsset(id:number) {
     return ApiCall("/admin/api/v1/assets/" + id, "GET");
 }
