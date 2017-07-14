@@ -42,10 +42,12 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, TreeViewSta
             let targetElement = e.target as Element;
             let targetParent = targetElement.parentElement as Element;
             
+            let clickedInTree = treeNode.contains(targetElement);
+            let isMenuItem = targetElement.classList.contains("item") || targetParent.classList.contains("item");
             let isTreeAction = targetElement.classList.contains("treeaction") || targetParent.classList.contains("treeaction");
-            let containsElement = treeNode.contains(targetElement);
             let contextOpen = treeNode.getElementsByClassName("contextmenu").length > 0;
-            if(!containsElement && !contextOpen && !isTreeAction) {
+
+            if(!isMenuItem && !clickedInTree && !contextOpen && !isTreeAction) {
                 this.setState({selected: this._emptySelection});
             }
         }.bind(this))
@@ -66,8 +68,8 @@ class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, TreeViewSta
 
     render() {
         return (
-        <div ref='tree' className="TreeContainer">
-            <nav role="navigation">
+        <div className="TreeContainer">
+            <nav ref="tree" role="navigation">
                 <SubTreeView 
                     visible={true}
                     items={this.props.items}

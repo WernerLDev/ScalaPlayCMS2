@@ -1,0 +1,64 @@
+
+.asset-wrapper {
+    position: absolute; top: 117px; left: 0px; right: 0; bottom: 0; overflow: auto;
+}
+
+
+.table-head {
+    position: absolute; top: 117px; left: 0; right: 0; height: 50px;
+    background: #ff00ff;
+}
+
+.table-body {
+    position: absolute; top: 167px; left: 0px; right: 0; bottom: 50px; overflow: auto;
+    background: #00ff00;
+}
+
+.table-footer {
+     position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+    background: #ff00ff;
+}
+
+
+/*Flexbox logic */
+
+.table--fixed {
+  display: flex;
+  width: 50%;
+  flex-flow: column;
+}
+
+.table--fixed thead {
+  display: block;
+  > tr {
+    display: flex;
+    >th {
+      flex: 1;      
+    }
+    >th:nth-child(2) {
+      flex: 0 0 20px;
+    }
+  }
+}
+
+.table--fixed tbody { 
+  height: 500px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.table--fixed tbody {
+  display: block;
+  > tr {
+    display: flex;
+    // flex-wrap:nowrap;
+    >td {
+      flex: 1;
+      // display:flex;
+      // justify-content:flex-start;
+    }
+    >td:nth-child(2){
+      flex: 0 0 26px;
+    }
+  }
+}

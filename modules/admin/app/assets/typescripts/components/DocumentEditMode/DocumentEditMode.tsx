@@ -52,7 +52,7 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
     render() {
         return (
         <div id="wrapper">
-            <Segment className="toolbar" inverted>
+            <Segment inverted className="toolbar">
                 <Menu inverted icon="labeled" size="massive">
                     <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
                         <Icon name='eye' />Save & Publish

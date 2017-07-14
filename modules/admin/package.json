@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
+    "@types/fixed-data-table": "^0.6.32",
     "@types/moment": "^2.13.0",
     "@types/react": "^15.0.24",
     "@types/react-dom": "^15.5.0",
@@ -30,6 +31,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "fbemitter": "^2.1.1",
+    "fixed-data-table": "^0.6.4",
     "immutable": "^3.8.1",
     "moment": "^2.18.1",
     "rc-datepicker": "^5.0.7",

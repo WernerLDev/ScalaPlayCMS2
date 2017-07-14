@@ -7,6 +7,8 @@ export function getAssetIcon(mimetype:string) {
            return "folder"
         case "image/jpeg":
             return "file-image-o"
+        case "image/png":
+            return "file-image-o"
         case "text/plain":
             return "file-text-o"
         case "application/pdf":

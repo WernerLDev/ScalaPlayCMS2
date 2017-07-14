@@ -2,9 +2,21 @@ name := """playCMS"""
 
 Common.settings
 
+lazy val SlickScaffolder = project
 lazy val admin = (project in file("modules/admin")).enablePlugins(PlayScala, SbtWeb)
 lazy val website = (project in file("modules/website")).enablePlugins(PlayScala, SbtWeb).dependsOn(admin).aggregate(admin)
-lazy val root = (project in file(".")).enablePlugins(PlayScala, SbtWeb).dependsOn(admin).aggregate(admin).dependsOn(website).aggregate(website)
+lazy val root = (project in file("."))
+                .enablePlugins(PlayScala, SbtWeb)
+                .dependsOn(admin)
+                .aggregate(admin)
+                .dependsOn(website)
+                .aggregate(website)
+                .dependsOn(SlickScaffolder)
+
+
+lazy val genModels = inputKey[Unit]("Generate models and table defenitions")
+
+fullRunInputTask(genModels, Test, "werlang.Main")
 
 libraryDependencies ++= Seq(
   cache,

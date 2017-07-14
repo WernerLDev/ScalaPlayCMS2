@@ -147,7 +147,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
                         this.props.onOpenTab({
                             key: n.item.id + "asset",
                             title: n.item.name,
-                            content: () => ViewerFactory(n.item)
+                            content: () => ViewerFactory(n.item, this.props.emitter)
                         })
                     }}
                     onRenderLabel={this.renderLabel.bind(this)}

@@ -6,6 +6,7 @@ import TreeView from './components/TreeView/TreeView'
 import PagesPanel from './components/PagesPanel/PagesPanel'
 import AssetsPanel from './components/AssetsPanel/AssetsPanel'
 import * as Tabs from './components/TabPanel/TabPanel'
+import TabPanel from './components/TabPanel/TabPanel'
 import * as TabActions from './components/TabPanel/TabActions'
 import * as Immutable from 'immutable'
 import * as SplitPaneActions from './actions/SplitpaneActions'
@@ -153,7 +154,7 @@ class Main extends React.Component<MainProps, MainState> {
                                 </div>
                             </div>
                             <div>
-                                <Tabs.default 
+                                <TabPanel 
                                     active={this.state.tabbar.active}
                                     tabs={this.state.tabbar.tabs}
                                     onClose={(tab:Tabs.Tab) => {

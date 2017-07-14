@@ -80,7 +80,7 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
 
         return (
             <div className="contextmenu" ref="contextmenu" style={{ position: 'fixed', top: top, left: left, zIndex: 999 }}>
-            <Menu compact pointing vertical>
+                <Menu compact pointing vertical>
                     {this.props.items.map(x => this.renderItem(x))}
                 </Menu>
             </div>
