@@ -14,6 +14,7 @@ import PageProperties from './components/PagesPanel/PageProperties'
 import AssetProperties from './components/AssetsPanel/AssetProperties'
 import * as Api from './api/Api'
 import * as fbemitter from 'fbemitter'
+import { Dropdown, Icon, Menu, Segment, LabelProps } from 'semantic-ui-react'
 
 export interface MainProps {
 }
@@ -113,6 +114,18 @@ class Main extends React.Component<MainProps, MainState> {
     }
 
     render() {
+        const friendOptions = [
+            {
+                text: 'Jenny Hess',
+                value: 'Jenny Hess',
+                image: { avatar: true, src: '/assets/images/avatar/small/jenny.jpg' },
+            },
+            {
+                text: 'test',
+                value: 'test Hess',
+                image: { avatar: true, src: '/assets/images/avatar/small/jenny.jpg' },
+            },
+        ];
         return (
                 <div>
                     <SideMenu>
@@ -130,7 +143,28 @@ class Main extends React.Component<MainProps, MainState> {
                             onClick={() => this.switchSection("assets")} >Assets</SideMenuItem>
                         <SideMenuItem
                             active={this.state.section == "settings"} icon="gears" 
-                            onClick={() => this.switchSection("settings")} >Settings</SideMenuItem>
+                            onClick={() => this.switchSection("settings")} >
+                            Settings
+                            
+                        </SideMenuItem>
+                            <li className="SideMenuDropDown">
+                                <Menu borderless secondary inverted compact pointing vertical>
+                                    <Dropdown
+                                     trigger={
+                                          <div style={{textAlign: 'center'}}>
+                                            <i className={"fa fa-gears"} aria-hidden="true"></i>
+                                            <p>Settings</p>
+                                        </div>
+                                     }
+                                     item compact>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item icon='edit' onClick={() => console.log("test")} text='Edit Profile' />
+                                            <Dropdown.Item icon='globe' onClick={() => console.log("test")} text='Choose Language' />
+                                            <Dropdown.Item icon='settings' onClick={() => console.log("test")} text='Account Settings' />
+                                        </Dropdown.Menu>    
+                                    </Dropdown>
+                                </Menu>
+                            </li>
                     </SideMenu>
                     <div className="splitpane-container">
                         <SplitPane 

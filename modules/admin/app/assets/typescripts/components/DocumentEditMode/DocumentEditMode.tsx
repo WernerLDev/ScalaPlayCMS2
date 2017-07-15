@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Api from '../../api/Api'
-import { Menu, Dropdown, Segment, Icon, Dimmer, Loader } from 'semantic-ui-react'
+import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button } from 'semantic-ui-react'
 import * as Immutable from 'immutable'
 import * as fbemmiter from 'fbemitter'
 
@@ -50,6 +50,12 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
     }
 
     render() {
+        const options = [
+            { key: 'edit', icon: 'edit', text: 'Edit Post', value: 'edit' },
+            { key: 'delete', icon: 'delete', text: 'Remove Post', value: 'delete' },
+            { key: 'hide', icon: 'hide', text: 'Hide Post', value: 'hide' },
+        ]
+
         return (
         <div id="wrapper">
             <Segment inverted className="toolbar">
@@ -57,6 +63,10 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
                     <Menu.Item name='properties' active={false} onClick={this.handleItemClick}>
                         <Icon name='eye' />Save & Publish
                     </Menu.Item>
+                    {/* <Button.Group>
+                        <Button>Save</Button>
+                        <Dropdown options={options} floating button className='icon' />
+                    </Button.Group> */}
                     <Menu.Item name='properties' active={false} onClick={this.saveEditables.bind(this)}>
                         <Icon name='save' />Save
                     </Menu.Item>
