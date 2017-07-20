@@ -13,14 +13,34 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.SqlType
 import models.admin._
 
-case class Entity (id:Long, name:String)
+case class Entity (
+  id:Long, 
+  name:String,
+  object_id:Long,
+  parent_id:Long,
+  discriminator:String,
+  created_at:Timestamp, 
+  updated_at:Timestamp, 
+  published_at:Timestamp 
+)
+
+case class EntityTree (
+  entity: Entity,
+  children: List[EntityTree]
+)
 
 class EntityTableDef(tag:Tag) extends Table[Entity](tag, "entities") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def name = column[String]("name")
+  def object_id = column[Long]("object_id")
+  def parent_id = column[Long]("parent_id")
+  def discriminator = column[String]("discriminator")
+  def created_at = column[Timestamp]("created_at", SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+  def updated_at = column[Timestamp]("updated_at", SqlType("timestamp not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP"))
+  def published_at = column[Timestamp]("published_at", SqlType("timestamp not null default CURRENT_TIMESTAMP"))
 
-  override def * = (id, name) <>(Entity.tupled, Entity.unapply)
+  override def * = (id, name, object_id, parent_id, discriminator, created_at, updated_at, published_at) <>(Entity.tupled, Entity.unapply)
 }
 
 
@@ -47,6 +67,18 @@ class Entities @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   def getAll = dbConfig.db.run {
     entities.result
+  }
+
+  def getTree = {
+    def generateList(d:List[Entity], parentid:Long):List[EntityTree] = {
+        d.filter(_.parent_id == parentid).map(x => {
+            EntityTree(
+                entity = x,
+                children = generateList(d, x.id)
+            )
+        })
+    }
+    getAll.map(x => generateList(x.toList, 0))
   }
 
 }

@@ -22,12 +22,11 @@ class EntitiesController @Inject()(
     WithAuthAction:AuthAction, 
     conf:Configuration) extends Controller {
 
-
     implicit val entityWrites = Json.writes[Entity]
+    implicit val entityTreeWrites = Json.writes[EntityTree]
 
     def getAll = WithAuthAction.async {
-      entities.getAll map (x => {
-          println(x)
+      entities.getTree map (x => {
         Ok(Json.toJson(x))
     })
   }

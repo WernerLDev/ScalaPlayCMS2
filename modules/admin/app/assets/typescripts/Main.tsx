@@ -5,6 +5,7 @@ import {SideMenu, SideMenuItem} from './components/SideMenu/SideMenu'
 import TreeView from './components/TreeView/TreeView'
 import PagesPanel from './components/PagesPanel/PagesPanel'
 import AssetsPanel from './components/AssetsPanel/AssetsPanel'
+import EntitiesPanel from './components/EntitiesPanel/EntitiesPanel'
 import * as Tabs from './components/TabPanel/TabPanel'
 import TabPanel from './components/TabPanel/TabPanel'
 import * as TabActions from './components/TabPanel/TabActions'
@@ -141,12 +142,7 @@ class Main extends React.Component<MainProps, MainState> {
                         <SideMenuItem 
                             active={this.state.section == "assets"} icon="picture-o"
                             onClick={() => this.switchSection("assets")} >Assets</SideMenuItem>
-                        <SideMenuItem
-                            active={this.state.section == "settings"} icon="gears" 
-                            onClick={() => this.switchSection("settings")} >
-                            Settings
-                            
-                        </SideMenuItem>
+                        
                             <li className="SideMenuDropDown">
                                 <Menu borderless secondary inverted compact pointing vertical>
                                     <Dropdown
@@ -186,6 +182,14 @@ class Main extends React.Component<MainProps, MainState> {
                                         emitter={this.state.emitter}
                                      />
                                 </div>
+                                <div className={this.state.section == "entities" ? "show" : "hide"}>
+                                    
+                                    <EntitiesPanel
+                                        onOpenTab={this.openTab.bind(this)}
+                                        emitter={this.state.emitter}
+                                     />
+                                </div>
+
                             </div>
                             <div>
                                 <TabPanel 

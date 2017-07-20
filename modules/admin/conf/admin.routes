@@ -20,6 +20,8 @@ PUT     /api/v1/documents/:id/updateparent controllers.admin.api.DocumentsContro
 PUT     /api/v1/documents/:id/editables    controllers.admin.api.EditablesController.saveEditables(id:Long)
 PUT     /api/v1/documents/:id/publishdate  controllers.admin.api.DocumentsController.setDocumentPublishDate(id:Long)
 
+GET     /api/v1/entities            controllers.admin.api.EntitiesController.getAll
+
 GET     /api/v1/assets              controllers.admin.api.AssetsController.all
 GET     /api/v1/assets/:id          controllers.admin.api.AssetsController.getById(id:Long)
 GET     /api/v1/assets/:id/childs   controllers.admin.api.AssetsController.getByParentId(id:Long)
