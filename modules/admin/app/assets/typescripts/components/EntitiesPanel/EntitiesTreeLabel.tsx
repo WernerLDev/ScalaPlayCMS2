@@ -113,7 +113,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     getIcon(entity:Api.Entity) {
         switch(entity.discriminator) {
             case 'home':
-                return "home";
+                return "cubes";
             case 'folder':
                 return "folder";
             default:

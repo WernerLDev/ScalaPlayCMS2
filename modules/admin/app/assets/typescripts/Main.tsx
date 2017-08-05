@@ -20,16 +20,15 @@ import { Dropdown, Icon, Menu, Segment, LabelProps } from 'semantic-ui-react'
 export interface MainProps {
 }
 
-type MainState = {
+
+
+export interface MainState {
     section : string,
     selected : string,
     emitter : fbemitter.EventEmitter
     pagepropertieDocument : Api.Document
     assetpropetiesAsset : Api.Asset
-    tabbar: {
-        tabs: Immutable.List<Tabs.Tab>
-        active: Tabs.Tab
-     }
+    tabbar: Tabs.TabbarState
 }
 
 /**
@@ -77,19 +76,27 @@ class Main extends React.Component<MainProps, MainState> {
                 ...this.state,
                 tabbar: {
                     ...this.state.tabbar,
-                    tabs: this.state.tabbar.tabs.map(tab => {
-                        if(tab.key == doc.id + "doc") {
-                            return {
-                                key: tab.key,
-                                title: doc.name,
-                                content: tab.content
-                            }
-                        }
-                        return tab;
-                    }).toList()
+                    tabs: TabActions.tabRenamed(doc.id + "doc", doc.name, this.state.tabbar.tabs)
                 }
             });
         });
+
+        this.state.emitter.addListener("assetChanged", (asset:Api.Asset) => {
+             this.setState({
+                ...this.state,
+                tabbar: {
+                    ...this.state.tabbar,
+                    tabs: TabActions.tabRenamed(asset.id + "asset", asset.name, this.state.tabbar.tabs)
+                }
+            });
+        });
+
+        this.state.emitter.addListener("documentRemoved", (doc:Api.Document) => {
+            this.setState({
+                ...this.state,
+                tabbar: TabActions.tabRemoved(doc.id + "doc", this.state.tabbar)
+            });
+        })
     }
 
     switchSection(s:string) {

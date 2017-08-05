@@ -102,6 +102,7 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
          this.setState({ working: true }, () => {
             Api.deleteDocument(doc).then(x => {
                 this.refresh();
+                this.props.emitter.emit("documentRemoved", doc);
             });
         });
     }

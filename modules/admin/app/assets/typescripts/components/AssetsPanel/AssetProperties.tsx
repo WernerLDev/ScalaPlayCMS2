@@ -22,7 +22,6 @@ class AssetProperties extends React.Component<AssetPropertiesProps, AssetPropert
     constructor(props:AssetPropertiesProps, context:any) {
         super(props, context);
         this.state = { activeItem: "properties", asset: props.asset, saving: false }
-        console.log(this.props.asset);
     }
 
     refresh() {

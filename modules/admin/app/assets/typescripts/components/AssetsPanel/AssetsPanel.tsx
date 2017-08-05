@@ -74,6 +74,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
         this.setState({ working: true }, () => {
             Api.renameAsset(asset).then(x => {
                 this.refresh();
+                this.props.emitter.emit("assetChanged", asset);
             })
         });
     }

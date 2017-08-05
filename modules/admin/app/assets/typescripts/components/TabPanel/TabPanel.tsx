@@ -17,6 +17,11 @@ export interface TabPanelProps {
     onSwitch: (tab:Tab) => void
 }
 
+export interface TabbarState {
+    tabs: Immutable.List<Tab>
+    active: Tab
+}
+
 class TabPanel extends React.Component<TabPanelProps, any> {
     
     constructor(props:TabPanelProps, context:any) {

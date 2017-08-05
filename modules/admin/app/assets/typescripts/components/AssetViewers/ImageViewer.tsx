@@ -23,6 +23,9 @@ export const ImageViewer = (props:ImageViewerProps) => {
                         }}> 
                         <Icon name='setting' />Properties
                     </Menu.Item>
+                    <Menu.Item name='Download' active={false} onClick={() => {}}>
+                        <Icon name='download' />Download
+                    </Menu.Item>
                     <Menu.Item position="right" name='deletething' active={false} onClick={handleItemClick}>
                         <Icon name='trash' />Remove
                     </Menu.Item>
