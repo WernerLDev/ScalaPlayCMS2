@@ -14,6 +14,14 @@ export const ImageViewer = (props:ImageViewerProps) => {
         alert("asdfasdf");
     }
 
+    let onDelete = () => {
+        if(confirm("Are you sure?")) {
+            Api.deleteAsset(props.asset).then(x => {
+                props.emitter.emit("assetRemoved", props.asset);
+            })
+        }
+    }
+
     return (
         <div className="imageviewerback">
             <Segment className="toolbar" inverted>
@@ -26,7 +34,7 @@ export const ImageViewer = (props:ImageViewerProps) => {
                     <Menu.Item name='Download' active={false} onClick={() => {}}>
                         <Icon name='download' />Download
                     </Menu.Item>
-                    <Menu.Item position="right" name='deletething' active={false} onClick={handleItemClick}>
+                    <Menu.Item position="right" name='deletething' active={false} onClick={() => onDelete()}>
                         <Icon name='trash' />Remove
                     </Menu.Item>
                 </Menu>

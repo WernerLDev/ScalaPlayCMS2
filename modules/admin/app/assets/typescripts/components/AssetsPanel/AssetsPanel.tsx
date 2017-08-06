@@ -50,6 +50,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
             this.setState({ assets: assets, treeItems: items });
         });
         this.props.emitter.addListener("assetChanged", this.refresh.bind(this));
+        this.props.emitter.addListener("assetRemoved", (asset:Api.Asset) => { this.refresh() });
     }
 
     refresh() {

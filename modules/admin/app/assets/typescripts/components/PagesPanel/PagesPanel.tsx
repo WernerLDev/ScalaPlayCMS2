@@ -63,7 +63,12 @@ class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
                 this.setState({ documents: documents, pagetypes: types, treeItems: items, working: false });
             });
         });
+
+        this.props.emitter.addListener("documentRemoved", (doc:Api.Document) => {
+            this.refresh();
+        })
     }
+
 
     onContextTriggered(n:TreeTypes.TreeViewItem<Api.DocumentTree>) {
     }

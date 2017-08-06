@@ -14,15 +14,25 @@ export interface DocumentEditModeState {
     loadtext: "Loading" | "saving"
 }
 
-class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
+class DocumentEditMode extends React.Component<DocumentEditModeProps, DocumentEditModeState> {
     
     constructor(props:DocumentEditModeProps, context:any) {
         super(props, context);
-        this.state = { iframeloaded: false, loadtext: "loading"  }
+        this.state = { iframeloaded: false, loadtext: "Loading"  }
     }
 
     handleItemClick() {
 
+    }
+
+    onDelete() {
+        if(confirm(`Are you sure you want to remove document '${this.props.document.name}'?`)) {
+            this.setState({ iframeloaded: false, loadtext: "saving" }, () => {
+                Api.deleteDocument(this.props.document).then(x => {
+                    this.props.emitter.emit("documentRemoved", this.props.document);
+                });
+            })
+        }
     }
 
     onProperties() {
@@ -74,7 +84,10 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, any> {
                     <Menu.Item name='properties' active={false} onClick={this.onProperties.bind(this)}>
                         <Icon name='setting' />Properties
                     </Menu.Item>
-                    <Menu.Item position="right" name='deletething' active={false} onClick={this.handleItemClick}>
+                    <Menu.Item name='properties' active={false} onClick={this.onProperties.bind(this)}>
+                        <Icon name='refresh' />Refresh
+                    </Menu.Item>
+                    <Menu.Item position="right" name='deletething' active={false} onClick={this.onDelete.bind(this)}>
                         <Icon name='trash' />Remove
                     </Menu.Item>
                 </Menu>

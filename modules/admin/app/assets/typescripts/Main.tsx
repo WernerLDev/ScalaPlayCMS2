@@ -97,6 +97,13 @@ class Main extends React.Component<MainProps, MainState> {
                 tabbar: TabActions.tabRemoved(doc.id + "doc", this.state.tabbar)
             });
         })
+
+        this.state.emitter.addListener("assetRemoved", (asset:Api.Asset) => {
+            this.setState({
+                ...this.state,
+                tabbar: TabActions.tabRemoved(asset.id + "asset", this.state.tabbar)
+            });
+        })
     }
 
     switchSection(s:string) {
