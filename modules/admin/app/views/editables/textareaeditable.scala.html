@@ -9,7 +9,8 @@
 
 @if(request.editmode) {
     <div id="@name" class="editable editabletextarea">
-    @Html(editable)</div>
+        @Html(editable)
+    </div>
 } else {
     @Html(editable)
 }

@@ -7,7 +7,8 @@ import * as Immutable from 'immutable'
 export interface Tab {
     key : string,
     title : string,
-    content : () => JSX.Element
+    content : () => JSX.Element,
+    unsavedContent?:boolean
 }
 
 export interface TabPanelProps {
@@ -41,7 +42,7 @@ class TabPanel extends React.Component<TabPanelProps, any> {
         const tabLabel = (t:Tab) => {
             return(
                 <p>
-                    {t.title} <i className="fa fa-window-close" aria-hidden="true"></i>
+                    {t.title + (t.unsavedContent ? "*" : "")} <i className="fa fa-window-close" aria-hidden="true"></i>
                 </p>
             )
         }

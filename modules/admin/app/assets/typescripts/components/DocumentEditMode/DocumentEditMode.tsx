@@ -39,6 +39,12 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, DocumentEd
         this.props.emitter.emit("pagepropertiesopened", this.props.document);
     }
 
+    onRefresh() {
+        this.setState({...this.state, iframeloaded: false}, () => {
+            (this.refs.docpage as HTMLIFrameElement).contentWindow.location.reload();
+        })
+    }
+
     saveEditables() {
         this.setState({ iframeloaded: false, loadtext: "saving" }, () => {
             let editableValues = (this.refs.docpage as HTMLIFrameElement).contentDocument.getElementsByClassName("editable");
@@ -84,7 +90,7 @@ class DocumentEditMode extends React.Component<DocumentEditModeProps, DocumentEd
                     <Menu.Item name='properties' active={false} onClick={this.onProperties.bind(this)}>
                         <Icon name='setting' />Properties
                     </Menu.Item>
-                    <Menu.Item name='properties' active={false} onClick={this.onProperties.bind(this)}>
+                    <Menu.Item name='properties' active={false} onClick={this.onRefresh.bind(this)}>
                         <Icon name='refresh' />Refresh
                     </Menu.Item>
                     <Menu.Item position="right" name='deletething' active={false} onClick={this.onDelete.bind(this)}>
