@@ -31,7 +31,7 @@ class TabPanel extends React.Component<TabPanelProps, any> {
 
     render() {
         const tabContent = (t:Tab) => {
-             let isActive = t.key == this.props.active.key;
+            let isActive = t.key == this.props.active.key;
             return(
                 <div key={t.key} style={{display: isActive ? "block" : "none"}}>
                     {t.content()}

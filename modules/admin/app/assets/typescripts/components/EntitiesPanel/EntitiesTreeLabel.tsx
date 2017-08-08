@@ -6,6 +6,7 @@ import AddMode from '../TreeView/partials/AddMode'
 import Draggable from '../TreeView/partials/draggable'
 import { Button } from 'semantic-ui-react'
 import * as fbemitter from 'fbemitter'
+import EntitiesContextMenu from './EntitiesContextMenu'
 
 export interface EntitiesTreeLabelProps {
     item: Tree.TreeViewItem<Api.Entity>,
@@ -17,6 +18,7 @@ export interface EntitiesTreeLabelState {
     contextMenuVisible : boolean
     menutarget : React.MouseEvent<HTMLElement>
     label : string
+    createMode: boolean
 }
 
 class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, EntitiesTreeLabelState> {
@@ -24,7 +26,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     constructor(props:EntitiesTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:null, label: props.item.item.name
+            contextMenuVisible: false, menutarget:null, label: props.item.item.name, createMode: false
         }
     }
 
@@ -43,19 +45,19 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
         })
     }
 
-    // renderAddForm() {
-    //     return(
-    //         <AddMode
-    //             icon="home"
-    //             onBlur={() => this.setState({ createmode: false })}
-    //             onSubmit={(val:string) => {
-    //                 this.setState({ createmode: false }, () => {
-    //                     this.props.onFolderAdded(this.props.item.item.id, val);
-    //                 })
-    //             }}
-    //         />
-    //     )
-    // }
+    renderAddForm() {
+        return(
+            <AddMode
+                icon="home"
+                onBlur={() => this.setState({ createMode: false })}
+                onSubmit={(val:string) => {
+                    this.setState({ createMode: false }, () => {
+                        //this.props.onFolderAdded(this.props.item.item.id, val);
+                    })
+                }}
+            />
+        )
+    }
     // renderEditForm() {
     //      return(
     //         <RenameMode
@@ -106,6 +108,24 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     //     )
     // }
 
+    renderContextMenu() {
+        return (
+            <EntitiesContextMenu 
+                canCreate={true}
+                canDelete={true}
+                canRename={true}
+                onAddEntity={() => {
+                    this.setState({ createMode: true })
+                }}
+                onAction={() => {
+
+                }}
+                onDismiss={this._onDismiss.bind(this)}
+                target={this.state.menutarget.nativeEvent}
+            />
+        )
+    }
+
     onParentChanged() {
 
     }
@@ -134,8 +154,9 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
                 onContextMenu={this.toggleContextMenu.bind(this)}
             >
                 <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
-                {/* {this.state.createmode ? this.renderAddForm() : this.renderMenuButton()}
-                {this.state.contextMenuVisible ? this.renderContextMenu() : null}     */}
+                {this.state.createMode ? this.renderAddForm() : this.renderMenuButton()}
+                    
+                {this.state.contextMenuVisible ? this.renderContextMenu() : null} 
             </Draggable>
         )
     }
