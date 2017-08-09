@@ -1,0 +1,24 @@
+@import utils.admin._
+@(name:String, width:Number, height:Number)(implicit request:PageRequest[AnyContent])
+
+@editable = @{
+    val es = request.editables.filter(_.name == name)
+    if(es.length > 0) es.head.value
+    else ""
+}
+
+@style = @{
+    "width: " + width + "px; height: "+ height +"px"
+}
+
+@if(request.editmode) {
+
+    <div style="@style" class="editable-youtube">
+        <iframe width="@width" height="@height" src="https://www.youtube.com/embed/@editable" frameborder="0" allowfullscreen></iframe>
+        <div class="overlay"></div>
+        <input type="text" placeholder="Youtube ID" class="editable" name="@name" value="@editable" />
+    </div>
+
+} else {
+    <iframe width="@width" height="@height" src="https://www.youtube.com/embed/@editable" frameborder="0" allowfullscreen></iframe>
+}

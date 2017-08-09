@@ -66,7 +66,7 @@ export function renameDocument(doc:Document) {
  */
 export function addDocument(parent_id:number, name:string, pagetype:string):Promise<Document> {
     var body = JSON.stringify({
-            "document" : {
+        "document" : {
             "parent_id" : parent_id,
             "name" : name,
             "pagetype": pagetype

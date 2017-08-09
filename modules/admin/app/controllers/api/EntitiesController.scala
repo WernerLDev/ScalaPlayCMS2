@@ -16,6 +16,8 @@ import scala.util.{Success, Failure}
 import java.io.File
 import models.admin._
 
+case class NewEntity(parent_id:Long, name:String, discriminator:String)
+
 @Singleton
 class EntitiesController @Inject()(
     entities:Entities,
@@ -24,11 +26,33 @@ class EntitiesController @Inject()(
 
     implicit val entityWrites = Json.writes[Entity]
     implicit val entityTreeWrites = Json.writes[EntityTree]
+    implicit val entityReads = Json.reads[NewEntity]
 
     def getAll = WithAuthAction.async {
       entities.getTree map (x => {
         Ok(Json.toJson(x))
-    })
-  }
+      })
+    }
+
+
+    def addEntity = WithAuthAction.async(parse.json) { request =>
+      {request.body \ "entity"}.asOpt[NewEntity].map(entity => {
+        val currentTime:Timestamp = new Timestamp((new Date).getTime());
+        val newEntity = Entity(
+          id = 0,
+          name = entity.name,
+          object_id = 0,
+          parent_id = entity.parent_id,
+          discriminator = entity.discriminator,
+          created_at = currentTime, updated_at = currentTime, published_at = currentTime
+        )
+        entities.insert(newEntity) map (x => {
+          Ok(Json.toJson(x))
+        })
+      }).getOrElse(Future(BadRequest("Wrong parameter")))
+    }
+
 
 }
+
+

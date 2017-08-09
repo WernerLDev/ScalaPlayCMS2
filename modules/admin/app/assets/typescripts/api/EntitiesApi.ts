@@ -19,3 +19,14 @@ export interface EntityTree {
 export function getEntities():Promise<EntityTree[]> {
     return ApiCall("/admin/api/v1/entities", "GET").then(r => r as EntityTree[]);
 }
+
+export function addEntity(parent_id:number, name:string, discriminator:string):Promise<Entity> {
+    var body = JSON.stringify({
+        'entity': {
+            'parent_id': parent_id,
+            'name': name,
+            'discriminator': discriminator
+        }
+    });
+    return ApiCall("/admin/api/v1/entities", "POST", body).then(r => r as Entity);
+}

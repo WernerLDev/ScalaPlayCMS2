@@ -90,7 +90,7 @@ class AssetsPanel extends React.Component<AssetPanelProps, AssetPanelState> {
                         name: x.name,
                         children: [],
                         collapsed: false,
-                        item: null
+                        item: x
                     }
                     this.setState({ assets: assets, treeItems: items, selected: newSelection, working: false });
                 });

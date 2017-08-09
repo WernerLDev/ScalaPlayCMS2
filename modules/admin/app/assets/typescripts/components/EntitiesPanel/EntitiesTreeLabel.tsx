@@ -11,6 +11,7 @@ import EntitiesContextMenu from './EntitiesContextMenu'
 export interface EntitiesTreeLabelProps {
     item: Tree.TreeViewItem<Api.Entity>,
     onContextTriggered: (n:Tree.TreeViewItem<Api.Entity>) => void,
+    onNewEntity: (parent_id:number, name:string, discriminator:string) => void 
     emitter: fbemitter.EventEmitter
 }
 
@@ -19,6 +20,7 @@ export interface EntitiesTreeLabelState {
     menutarget : React.MouseEvent<HTMLElement>
     label : string
     createMode: boolean
+    createType:string
 }
 
 class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, EntitiesTreeLabelState> {
@@ -26,7 +28,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     constructor(props:EntitiesTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:null, label: props.item.item.name, createMode: false
+            contextMenuVisible: false, menutarget:null, label: props.item.item.name, createMode: false, createType: ""
         }
     }
 
@@ -52,6 +54,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
                 onBlur={() => this.setState({ createMode: false })}
                 onSubmit={(val:string) => {
                     this.setState({ createMode: false }, () => {
+                        this.props.onNewEntity(this.props.item.item.id, val, this.state.createType);
                         //this.props.onFolderAdded(this.props.item.item.id, val);
                     })
                 }}
@@ -116,6 +119,9 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
                 canRename={true}
                 onAddEntity={() => {
                     this.setState({ createMode: true })
+                }}
+                onCreateFolder={() => {
+                    this.setState({ createMode: true, createType: "folder" })
                 }}
                 onAction={() => {
 

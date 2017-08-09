@@ -8,6 +8,7 @@ import { ContextMenuItem } from '../common/ContextMenu'
 export interface EntitiesContextMenuProps {
     onDismiss: () => void
     onAddEntity: () => void
+    onCreateFolder: () => void
     onAction: () => void,
     target: MouseEvent,
     canCreate : boolean,
@@ -58,7 +59,7 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
                     {
                         icon : "plus",
                         label : "Create folder  ",
-                        onClick: this.props.onAction,
+                        onClick: this.props.onCreateFolder,
                         children: [],
                         disabled: !this.props.canCreate
                     },

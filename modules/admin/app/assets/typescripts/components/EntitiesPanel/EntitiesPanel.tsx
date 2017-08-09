@@ -67,6 +67,29 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
             <EntitiesTreeLabel 
                 item={n} 
                 emitter={this.props.emitter}
+                onNewEntity={(parent_id:number, name:string, discriminator:string) => {
+                    this.setState({...this.state, working: true}, () => {
+                        Api.addEntity(parent_id, name, discriminator).then(entity => {
+                            Api.getEntities().then(entities => {
+                                let items = this.toTreeItems(entities);
+                                let newSelection:TreeTypes.TreeViewItem<Api.Entity> = {
+                                    key: entity.id.toString(),
+                                    name: entity.name,
+                                    children: [],
+                                    collapsed: false,
+                                    item: entity
+                                }
+                                this.setState({
+                                    ...this.state,
+                                    entities: entities,
+                                    treeItems: items,
+                                    selected: newSelection,
+                                    working: false
+                                })
+                            })
+                        });
+                    })
+                }}
                 onContextTriggered={this.onContextTriggered.bind(this)} /> )
     }
 
