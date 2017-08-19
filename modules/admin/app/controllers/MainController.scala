@@ -11,7 +11,12 @@ import utils.admin._
 import play.filters.csrf._
 
 @Singleton
-class MainController @Inject()(documents:Documents, editables:Editables, WithAuthAction:AuthAction, PageAction:PageAction) extends Controller {
+class MainController @Inject()(
+  documents:Documents, 
+  users:Users,
+  editables:Editables, 
+  WithAuthAction:AuthAction, 
+  PageAction:PageAction) extends Controller {
 
   implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
 
@@ -24,6 +29,15 @@ class MainController @Inject()(documents:Documents, editables:Editables, WithAut
   def index = WithAuthAction { implicit request =>
     val token = CSRF.getToken.get
     Ok(views.html.admin.index("Logged in as " + request.user.username, token.value))
+  }
+
+
+  def seedDatabase = Action { implicit request => 
+    
+    users.insert( User(0, "werner", "testing123", "blaat@bla.nl") )
+    users.insert( User(0, "admin", "test1234", "nogiemand@bla.nl") )
+
+    Ok("Database seeded")
   }
 
 }

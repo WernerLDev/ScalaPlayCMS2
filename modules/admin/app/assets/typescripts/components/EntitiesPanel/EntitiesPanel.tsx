@@ -16,6 +16,7 @@ export interface EntitiesPanelProps {
 
 export interface EntitiesPanelState {
     entities: Api.EntityTree[],
+    entityTypes: Api.EntityType[],
     treeItems : TreeTypes.TreeViewItem<Api.Entity>[],
     working : boolean
     selected : TreeTypes.TreeViewItem<Api.Entity>
@@ -26,7 +27,7 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
     constructor(props:EntitiesPanelProps, context:any) {
         super(props, context);
         this.state = {
-            entities: [], treeItems: [], working: false, selected: null
+            entities: [], entityTypes: [], treeItems: [], working: false, selected: null
         }
     }
  
@@ -44,8 +45,10 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
 
     componentDidMount() {
         Api.getEntities().then(entities => {
-            var items = this.toTreeItems(entities);
-            this.setState({ entities: entities, treeItems: items });
+            Api.getEntityTypes().then(types => {
+                var items = this.toTreeItems(entities);
+                this.setState({ entities: entities, entityTypes: types, treeItems: items });
+            })
         });
         this.props.emitter.addListener("entityChanged", this.refresh.bind(this));
     }
@@ -66,6 +69,7 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
         return( 
             <EntitiesTreeLabel 
                 item={n} 
+                entityTypes={this.state.entityTypes}
                 emitter={this.props.emitter}
                 onNewEntity={(parent_id:number, name:string, discriminator:string) => {
                     this.setState({...this.state, working: true}, () => {

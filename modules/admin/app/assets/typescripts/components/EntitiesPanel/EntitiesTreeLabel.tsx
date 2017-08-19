@@ -13,6 +13,7 @@ export interface EntitiesTreeLabelProps {
     onContextTriggered: (n:Tree.TreeViewItem<Api.Entity>) => void,
     onNewEntity: (parent_id:number, name:string, discriminator:string) => void 
     emitter: fbemitter.EventEmitter
+    entityTypes: Api.EntityType[]
 }
 
 export interface EntitiesTreeLabelState {
@@ -114,6 +115,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     renderContextMenu() {
         return (
             <EntitiesContextMenu 
+                entityTypes={this.props.entityTypes}
                 canCreate={true}
                 canDelete={true}
                 canRename={true}
@@ -138,7 +140,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
 
     getIcon(entity:Api.Entity) {
         switch(entity.discriminator) {
-            case 'home':
+            case 'entities':
                 return "cubes";
             case 'folder':
                 return "folder";

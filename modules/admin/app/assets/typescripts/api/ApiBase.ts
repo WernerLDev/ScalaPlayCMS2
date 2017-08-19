@@ -70,7 +70,7 @@ export default function ApiCall(call:string, method:RequestMethod, body?:string,
             }
         }
     }).catch(x => {
-        alert("Looks like you're not connected to the internet anymore, or the host is down.");
+        alert("Trouble connecting to the host. Host is down or you're not connected to the internet anymore.");
         return x;
     });
 }

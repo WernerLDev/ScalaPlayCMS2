@@ -1,0 +1,17 @@
+@import utils.admin._
+@(name:String)(implicit request:PageRequest[AnyContent])
+
+@editable = @{
+    val es = request.editables.filter(_.name == name)
+    if(es.length > 0) es.head.value
+    else ""
+}
+
+
+@if(request.editmode) {
+
+    <input type="text" placeholder="Not implemented yet" class="editable" name="@name" value="@editable" />
+
+} else {
+    @editable
+}

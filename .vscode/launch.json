@@ -6,7 +6,8 @@
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:9000",
-            "webRoot": "${workspaceRoot}/modules/admin/target/web/typescript/main/typescripts",
+            "cwd": "${workspaceRoot}/modules/admin/target/web/typescript/main/typescripts",
+            "trace": true,
             "sourceMaps": true
         }
     ]

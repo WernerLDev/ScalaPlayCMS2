@@ -2,6 +2,10 @@
 GET     /                           controllers.website.HomeController.index
 GET     /api/v1/pagetypes           controllers.website.api.DocumentsController.getPageTypes
 
+GET     /api/v1/entities            controllers.website.GeneratedController.getEntities
+GET     /api/v1/entities/:name      controllers.website.GeneratedController.getAll(name:String)
+POST     /api/v1/entities/:name      controllers.website.GeneratedController.insert(name:String)
+
 GET     /assets/*file               controllers.website.Assets.versioned(path="/public/lib/playcmswebsite", file:Asset)
 
 GET     /*path                      controllers.website.api.DocumentsController.page(path:String)

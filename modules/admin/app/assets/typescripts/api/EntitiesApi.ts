@@ -1,5 +1,10 @@
 import ApiCall from './ApiBase.js';
 
+export interface EntityType {
+    name:string
+    plural:string
+}
+
 export interface Entity {
     id : number,
     parent_id : number,
@@ -18,6 +23,10 @@ export interface EntityTree {
 
 export function getEntities():Promise<EntityTree[]> {
     return ApiCall("/admin/api/v1/entities", "GET").then(r => r as EntityTree[]);
+}
+
+export function getEntityTypes():Promise<EntityType[]> {
+    return ApiCall("/api/v1/entities", "GET").then(r => r as EntityType[])
 }
 
 export function addEntity(parent_id:number, name:string, discriminator:string):Promise<Entity> {

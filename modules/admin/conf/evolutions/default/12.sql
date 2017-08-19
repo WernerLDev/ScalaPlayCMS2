@@ -1,29 +1,19 @@
-
-# Code generated schema
+# entity schema
 
 # --- !Ups
 
-CREATE TABLE `blogs` ( 
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  `title` VARCHAR(255) NOT NULL,
-  `content` TEXT NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT NOW(),
-  `category_id` INT(11) NOT NULL,
+CREATE TABLE `entities` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `object_id` INT NULL,
+  `parent_id` INT NULL,
+  `name` VARCHAR(255) NULL,
+  `discriminator` VARCHAR(255) NULL,
+  `created_at` DATETIME NULL DEFAULT NOW(),
+  `published_at` DATETIME NULL DEFAULT NOW(),
+  `updated_at` DATETIME NULL DEFAULT NOW(),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
-);
-
-CREATE TABLE `categories` ( 
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
-);
-
-ALTER TABLE `blogs` ADD INDEX (category_id);
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC));
 
 
 # --- !Downs
-DROP TABLE `blogs`;
-DROP TABLE `categories`;
+drop table `entities`;

@@ -1,0 +1,37 @@
+{
+    "packageName" : "models.website",
+    "modelFolder" : "modules/website/app/models",
+    "migrationFile" : "modules/admin/conf/evolutions/default/13.sql",
+    "controllerPackage" : "controllers.website",
+    "controllerFile" : "modules/website/app/controllers/GeneratedControllers.scala",
+    "entities" : [
+        {
+            "name" : "post",
+            "plural" : "posts",
+            "attributes" : [
+                { "name" : "title", "atype" : "String"},
+                { "name" : "content", "atype" : "text" }
+            ],
+            "relations" : [
+                { "has" : "one", "of" : "category" }
+            ]
+        }, {
+            "name" : "Category",
+            "plural" : "Categories",
+            "attributes" : [
+                { "name" : "categoryname", "atype" : "string"}
+            ],
+            "relations": []
+        },
+        {
+            "name" : "Project",
+            "plural" : "Projects",
+            "attributes" : [
+                { "name" : "Projectname", "atype" : "string"},
+                { "name" : "Description", "atype" : "text"},
+                { "name" : "ProjectDate", "atype" : "timestamp"}
+            ],
+            "relations": []
+        }
+    ]
+}

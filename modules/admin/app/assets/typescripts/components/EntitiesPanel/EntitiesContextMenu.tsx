@@ -13,7 +13,8 @@ export interface EntitiesContextMenuProps {
     target: MouseEvent,
     canCreate : boolean,
     canDelete : boolean,
-    canRename : boolean
+    canRename : boolean,
+    entityTypes: Api.EntityType[]
 }
 
 class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any> {
@@ -24,6 +25,17 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
 
     private handleItemClick() {
 
+    }
+
+    entityTypes() {
+        return this.props.entityTypes.map(x => {
+            return {
+                icon : "cube",
+                label: x.name,
+                onClick: this.props.onAddEntity,
+                children: []
+            }
+        })
     }
 
     render() {
@@ -40,20 +52,7 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
                         icon : "plus",
                         label : "Create entity",
                         onClick: this.props.onAction,
-                        children: [
-                            {
-                                icon: "cube",
-                                label: "Some entity",
-                                onClick: this.props.onAddEntity,
-                                children: []
-                            },
-                            {
-                                icon: "cube",
-                                label: "Another entity",
-                                onClick: this.props.onAddEntity,
-                                children: []
-                            }
-                        ],
+                        children: this.entityTypes(),
                         disabled: !this.props.canCreate
                     },
                     {

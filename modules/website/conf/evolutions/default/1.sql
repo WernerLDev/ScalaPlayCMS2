@@ -21,21 +21,9 @@ CREATE TABLE `categories` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC)
 );
 
-CREATE TABLE `projects` ( 
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  `Projectname` VARCHAR(255) NOT NULL,
-  `Description` TEXT NOT NULL,
-  `ProjectDate` DATETIME NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
-);
-
 ALTER TABLE `posts` ADD INDEX (category_id);
-
 
 
 # --- !Downs
 DROP TABLE `posts`;
 DROP TABLE `categories`;
-DROP TABLE `projects`;
