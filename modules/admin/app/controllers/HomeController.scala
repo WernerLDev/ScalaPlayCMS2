@@ -33,4 +33,8 @@ class HomeController @Inject()(PageAction:PageAction) extends Controller {
     Ok("default template")
   }
 
+  def reactTest() = Action { implicit request =>
+    Ok(views.html.admin.react("", ""))
+  }
+
 }

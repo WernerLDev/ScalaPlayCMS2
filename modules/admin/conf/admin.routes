@@ -36,5 +36,7 @@ PUT     /api/v1/assets/:id/collapse controllers.admin.api.AssetsController.colla
 GET     /uploads/*name              controllers.admin.api.AssetsController.getUpload(name:String)
 
 
+GET     /reacttest                  controllers.admin.HomeController.reactTest
+
 
 GET     /assets/*file               controllers.admin.Assets.versioned(path="/public/lib/playcmsadmin", file:Asset)

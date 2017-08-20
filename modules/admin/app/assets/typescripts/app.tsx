@@ -2,12 +2,23 @@ import "babel-polyfill"
 import * as  React from 'react'
 import * as  ReactDOM from 'react-dom'
 import Main from './Main'
-import { createStore } from 'redux'
+import * as Monadic from './MonadForms/MonadForms'
 
 
-ReactDOM.render(
-  <Main />,
-  document.getElementById('react-app')
-);
 
 
+
+export let renderAdmin = () => {
+  ReactDOM.render(
+    <Main />,
+    document.getElementById('react-app')
+  );
+} 
+
+
+export let renderReactTest = () => {
+  ReactDOM.render(
+    <Monadic.ReactForms />,
+    document.getElementById('react-app')
+  );
+}

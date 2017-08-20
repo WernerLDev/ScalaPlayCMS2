@@ -10,6 +10,8 @@ module.exports = {
   output: {
     filename: 'app.bundle.js',
     path: path.join(__dirname, '/app/assets/javascripts'),
+    libraryTarget: 'var',
+    library: 'App'
   },
 
   devtool: 'source-map',
