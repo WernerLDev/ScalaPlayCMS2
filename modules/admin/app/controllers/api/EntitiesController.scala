@@ -33,7 +33,7 @@ class EntitiesController @Inject()(
         Ok(Json.toJson(x))
       })
     }
-
+    
 
     def addEntity = WithAuthAction.async(parse.json) { request =>
       {request.body \ "entity"}.asOpt[NewEntity].map(entity => {
@@ -51,7 +51,6 @@ class EntitiesController @Inject()(
         })
       }).getOrElse(Future(BadRequest("Wrong parameter")))
     }
-
 
 }
 

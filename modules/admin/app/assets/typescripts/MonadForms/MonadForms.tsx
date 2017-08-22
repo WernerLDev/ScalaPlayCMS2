@@ -1,80 +1,20 @@
 import * as React from 'react'
+import { Button, Form, Dropdown } from 'semantic-ui-react'
+import * as moment from 'moment'
+import {DatePickerInput} from 'rc-datepicker';
+import { FormElement, Element, Fold, InitElem } from './Core'
+import { 
+    SementicInputElement, 
+    SementicNumberInputElement,
+    SemanticDatePickerElement,
+    SemanticButtonElement,
+    FormField
+} from './FormElements'
 
-
-type FormElement<T,A> = (
-    item:T,
-    getValue:(item:T) => A,
-    setValue:(v:A) => void
-) => JSX.Element
-
-
-const InputElement = function<T>(
-    item:T,
-    getValue:(item:T) => string,
-    setValue:(val:string) => void
-){
-    return (
-        <input 
-            type="text"
-            value={getValue(item)}
-            onChange={(e) => {
-                setValue(e.currentTarget.value)
-            }}
-        />
-    )
+const NonEmptyText = function(v:string) {
+    return v.length > 0;
 }
 
-const DateElement = function<T>(
-    item:T,
-    getValue:(item:T) => Date,
-    setValue:(val:Date) => void
-){
-    return (
-        <input 
-            type="date"
-            value={getValue(item).toTimeString()}
-            onChange={(e) => {
-                setValue(e.currentTarget.valueAsDate)
-            }}
-        />
-    )
-}
-
-const NumberElement = function<T>(
-    item:T,
-    getValue:(item:T) => number,
-    setValue:(val:number) => void
-){
-    return (
-        <input 
-            type="number"
-            value={getValue(item).toString()}
-            onChange={(e) => {
-                setValue(e.currentTarget.valueAsNumber)
-            }}
-        />
-    )
-}
-
-
-const FormField = function<T,A>(elem:FormElement<T,A>, label:string):FormElement<T,A> {
-    return (
-        item:T,
-        getValue:(item:T) => A,
-        setValue:(v:A) => void
-    ) => {
-        return (
-            <div>
-                <label>{label}</label><br />
-                {elem(item, getValue, setValue)}
-            </div>
-        )
-    }
-}
-
-const createFormField = function<T,A>(elem:FormElement<T,A>, label:string) {
-    return FormField<T,A>(elem, label);
-}
 
 type TestType = {
     name:string,
@@ -107,30 +47,50 @@ export class ReactForms extends React.Component<FormProps, FormState> {
 
     render() {
         return (
-            <div>
+            <div style={{padding: "25px"}}>
                 
-                {createFormField<TestType, string>(InputElement, "Name")(
-                    this.state.test,
-                    (x) => x.name,
-                    (x) => { this.setState({test: {...this.state.test, name: x}}) }
-                )}
-                {createFormField<TestType, string>(InputElement, "Email")(
-                    this.state.test,
-                    (x) => x.email,
-                    (x) => { this.setState({test: {...this.state.test, email: x}}) }
-                )}
-                {createFormField<TestType, Date>(DateElement, "Date of birth")(
-                    this.state.test,
-                    (x) => x.dob,
-                    (x) => { this.setState({test: {...this.state.test, dob: x}}) }
-                )}
-                {createFormField<TestType, number>(NumberElement, "Bla")(
-                    this.state.test,
-                    (x) => x.bla,
-                    (x) => { this.setState({test: {...this.state.test, bla: x}}) }
-                )}
+                {Fold<TestType>(
+                    [
+                        InitElem<TestType, string>(
+                            FormField(SementicInputElement, "Name"),
+                            (x) => x.name,
+                            (x,s) => { return{...s, name: x}},
+                            NonEmptyText
+                        ),
+                        InitElem<TestType, string>(
+                            FormField(SementicInputElement, "Email"),
+                            (x) => x.email,
+                            (x,s) => { return{...s, email: x}},
+                            NonEmptyText
+                        ),
+                        InitElem<TestType, number>(
+                            FormField(SementicNumberInputElement, "Bla"),
+                            (x) => x.bla,
+                            (x,s) => { return{...s, bla: x}},
+                            (v:number) => v > 0 && v < 20
+                        ),
+                        InitElem<TestType, Date>(
+                            FormField(SemanticDatePickerElement, "Date of birth"),
+                            (x) => x.dob,
+                            (x,s) => { return{...s, dob: x}}
+                        ),
+                        InitElem<TestType, string>(
+                            SemanticButtonElement,
+                            (x) => "Submit form",
+                            (x,s) => {
+                                alert("Email is " + s.email);
+                                return s;
+                            }
+                        ),
+                    ], (s) => {
+                        this.setState({test: s})
+                    }
+                    )(this.state.test)
+                }
+
 
                 <br /><br />
+                <hr />
                 {JSON.stringify(this.state.test)}
             </div>
         );
