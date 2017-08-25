@@ -2,20 +2,31 @@ import * as React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
-import { FormElement } from './Core'
+import { C } from './Core'
+
+
+export const TextElement = (txt:string) => function<T>(
+    state: T,
+    update?:(val:string) => void,
+    value?: (s:T) => string
+){
+    return (
+        <p>{txt}</p>
+    )
+}
 
 export const SementicInputElement = function<T>(
-    item:T,
-    getValue:(item:T) => string,
-    setValue:(val:string) => void
+    state: T,
+    update:(val:string) => void,
+    value: (s:T) => string
 ){
     return (
         <Form.Input 
             fluid
             type="text"
-            value={getValue(item)}
+            value={value(state)}
             onChange={(e) => {
-                setValue(e.currentTarget.value)
+                update(e.currentTarget.value)
             }}
         />
     )
@@ -23,116 +34,69 @@ export const SementicInputElement = function<T>(
 
 
 export const SementicNumberInputElement = function<T>(
-    item:T,
-    getValue:(item:T) => number,
-    setValue:(val:number) => void
+    state: T,
+    update:(val:number) => void,
+    value: (s:T) => number
 ){
     return (
         <Form.Input 
             fluid
             type="number"
-            value={getValue(item)}
+            value={value(state)}
             onChange={(e) => {
-                setValue(e.currentTarget.valueAsNumber)
+                update(e.currentTarget.valueAsNumber)
             }}
         />
     )
 }
 
 export const SemanticDatePickerElement = function<T>(
-    item:T,
-    getValue:(item:T) => Date,
-    setValue:(val:Date) => void
+    state: T,
+    update:(val:Date) => void,
+    value: (s:T) => Date
 ) {
     return (
         <DatePickerInput
             style={{background: "none"}}
             onChange={(date) => {
-                setValue(date)
+                update(date)
             }}
-            value={moment(getValue(item))}
+            value={moment(value(state))}
             displayFormat="MMMM Do YYYY, HH:MM"
             showOnInputClick
         />
     )
 }
 
-export const SemanticButtonElement = function<T>(
-    item:T,
-    getValue:(item:T) => string,
-    setValue:(val:string) => void
+export const SemanticButtonElement = (label:string) => function<T>(
+    state: T,
+    update?:(val:string) => void,
+    value?: (s:T) => string
 ) {
     return (
         <Button
             onClick={(e) => {
                 e.preventDefault();
-                setValue("saved")
+                if(update != null) update("clicked")
             }}
         >
-            {getValue(item)}
+            {label}
         </Button>
     )
 }
 
-export const InputElement = function<T>(
-    item:T,
-    getValue:(item:T) => string,
-    setValue:(val:string) => void
-){
-    return (
-        <input 
-            type="text"
-            value={getValue(item)}
-            onChange={(e) => {
-                setValue(e.currentTarget.value)
-            }}
-        />
-    )
-}
-
-export const DateElement = function<T>(
-    item:T,
-    getValue:(item:T) => Date,
-    setValue:(val:Date) => void
-){
-    return (
-        <input 
-            type="date"
-            value={getValue(item).toTimeString()}
-            onChange={(e) => {
-                setValue(e.currentTarget.valueAsDate)
-            }}
-        />
-    )
-}
-
-export const NumberElement = function<T>(
-    item:T,
-    getValue:(item:T) => number,
-    setValue:(val:number) => void
-){
-    return (
-        <input 
-            type="number"
-            value={getValue(item).toString()}
-            onChange={(e) => {
-                setValue(e.currentTarget.valueAsNumber)
-            }}
-        />
-    )
-}
 
 
-export const FormField = function<T,A>(elem:FormElement<T,A>, label:string):FormElement<T,A> {
+export const FormField = function<T,A>(elem:C<T,A>, label:string):C<T,A> {
     return (
-        item:T,
-        getValue:(item:T) => A,
-        setValue:(v:A) => void
+        state: T,
+        update:(v:A) => void,
+        value: (s:T) => A
     ) => {
         return (
             <div style={{marginBottom: "10px"}}>
                 <label>{label}</label><br />
-                {elem(item, getValue, setValue)}
+                {elem(state, update, value)}
             </div>
         )
     }

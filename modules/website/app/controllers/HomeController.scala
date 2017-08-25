@@ -29,8 +29,11 @@ class HomeController @Inject()(PageAction:PageAction) extends Controller {
   }
 
   def default(p:Document) = PageAction { implicit request =>
-    println(request.user)
     Ok(views.html.default(p))
+  }
+
+  def product(p:Document) = PageAction { implicit request =>
+    Ok(views.html.product(p))
   }
 
 }

@@ -2,8 +2,9 @@ import * as React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
-import { FormElement, Element, Fold, InitElem } from './Core'
+import { C, Comp, Fold, InitC, MapC, InitOnUpdate } from './Core'
 import { 
+    TextElement,
     SementicInputElement, 
     SementicNumberInputElement,
     SemanticDatePickerElement,
@@ -51,41 +52,42 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                 
                 {Fold<TestType>(
                     [
-                        InitElem<TestType, string>(
+                        InitC<TestType, string>(
                             FormField(SementicInputElement, "Name"),
-                            (x) => x.name,
                             (x,s) => { return{...s, name: x}},
-                            NonEmptyText
+                            (x) => x.name
                         ),
-                        InitElem<TestType, string>(
+                        InitC<TestType, string>(
                             FormField(SementicInputElement, "Email"),
-                            (x) => x.email,
                             (x,s) => { return{...s, email: x}},
-                            NonEmptyText
+                            (x) => x.email
                         ),
-                        InitElem<TestType, number>(
+                        InitC<TestType, number>(
                             FormField(SementicNumberInputElement, "Bla"),
-                            (x) => x.bla,
                             (x,s) => { return{...s, bla: x}},
-                            (v:number) => v > 0 && v < 20
+                            (x) => x.bla
                         ),
-                        InitElem<TestType, Date>(
+                        InitC<TestType, Date>(
                             FormField(SemanticDatePickerElement, "Date of birth"),
-                            (x) => x.dob,
-                            (x,s) => { return{...s, dob: x}}
+                            (x,s) => { return{...s, dob: x}},
+                            (x) => x.dob
                         ),
-                        InitElem<TestType, string>(
-                            SemanticButtonElement,
-                            (x) => "Submit form",
-                            (x,s) => {
-                                alert("Email is " + s.email);
-                                return s;
-                            }
-                        ),
-                    ], (s) => {
-                        this.setState({test: s})
-                    }
-                    )(this.state.test)
+                        InitC<TestType, TestType>(
+                            InitOnUpdate<TestType, string>(
+                                InitC<TestType, string>(
+                                    SemanticButtonElement("Submit")
+                                ),
+                                InitC<TestType, string>(
+                                    TextElement("Dit is wat tekst.")
+                                )
+                            ),
+                            (x, s) => s,
+                            (x) => x
+                        )
+                    ]
+                    )(this.state.test, (x) => {
+                        this.setState({test: x})
+                    }, (x => x))
                 }
 
 

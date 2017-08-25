@@ -16,7 +16,8 @@ class PageTemplates @Inject()(controller:HomeController, PageAction:PageAction) 
 
     val templates = Map(
         "default" -> PageType("Default page", controller.default ),
-        "test" -> PageType("Test page", controller.test )
+        "test" -> PageType("Test page", controller.test ),
+        "product" -> PageType("Product page", controller.product)
     )
 
     def getAction(page:Document):Action[AnyContent] = {
