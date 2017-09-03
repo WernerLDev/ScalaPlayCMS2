@@ -22,6 +22,7 @@ import models.website._
 trait TGenController {
     def getAll(request:AuthRequest[AnyContent]):Future[Result]
     def insert(request:AuthRequest[JsValue]):Future[Result]
+    def createNew(request:AuthRequest[AnyContent]):Future[Result]
 }
 
 @Singleton
@@ -46,6 +47,13 @@ class GeneratedPostsController @Inject() (
             })
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
+
+    def createNew(request:AuthRequest[AnyContent]) = {
+        posts.insert(Post(
+           0, "", "", "", 0 
+        )) map (x => Ok(Json.toJson(x)))
+    }
+
 }
 
 
@@ -71,6 +79,13 @@ class GeneratedCategoriesController @Inject() (
             })
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
+
+    def createNew(request:AuthRequest[AnyContent]) = {
+        categories.insert(Category(
+           0, "", "" 
+        )) map (x => Ok(Json.toJson(x)))
+    }
+
 }
 
 
@@ -96,6 +111,13 @@ class GeneratedProjectsController @Inject() (
             })
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
+
+    def createNew(request:AuthRequest[AnyContent]) = {
+        projects.insert(Project(
+           0, "", "", "", new Timestamp(new java.util.Date().getTime()) 
+        )) map (x => Ok(Json.toJson(x)))
+    }
+
 }
 
 @Singleton
@@ -130,6 +152,13 @@ class GeneratedController @Inject() (
     def insert(name:String) = WithAuthAction.async(parse.json) { request =>
         controllers.get(name) match {
             case Some(x) => x.insert(request)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }
+    }
+
+    def createNew(name:String) = WithAuthAction.async { request =>
+        controllers.get(name) match {
+            case Some(x) => x.createNew(request)
             case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
         }
     }

@@ -9,7 +9,7 @@ object Webpack {
       var watchProcess: Option[Process] = None
 
       override def afterStarted(addr: InetSocketAddress): Unit = {
-        watchProcess = Some(Process("webpack --config app.webpack.config.js -w --devtool=sourcemap", base).run)
+        watchProcess = Some(Process("webpack --config app.webpack.config.js --watch --devtool=sourcemap", base).run)
       }
 
       override def afterStopped(): Unit = {

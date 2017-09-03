@@ -78,7 +78,19 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                                     SemanticButtonElement("Submit")
                                 ),
                                 InitC<TestType, string>(
-                                    TextElement("Dit is wat tekst.")
+                                    MapC(
+                                        TextElement("Dit is wat tekst."),
+                                        (x) => {
+                                            return (s:TestType, update:(v:string) => void, value:(s:TestType) => string) => {
+                                                return (
+                                                    <div>
+                                                        {x(s, update, value)}
+                                                        <b>And some more tekst</b>
+                                                    </div>
+                                                )
+                                            }
+                                        }
+                                    )
                                 )
                             ),
                             (x, s) => s,

@@ -3,6 +3,8 @@
 @import _root_.views.html.editables._
 @(document:Document)(implicit request:PageRequest[AnyContent])
 
+
+
 @webmain(document.name) {
 <div class="row section-rowww">
     <div class="col-md-12">
@@ -10,6 +12,8 @@
         @inlineeditable("subheading", "h2", false)
         @inlineeditable("content", "div", true)
         @youtube("testvideo", 600, 400)
+
+        
     </div>
 </div>
 

@@ -138,8 +138,8 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
         this.setState({ editmode: !this.state.editmode });
     }
 
-    _onDismiss() {
-        this.setState({ contextMenuVisible: false })
+    _onDismiss(callback?:() => void) {
+        this.setState({ contextMenuVisible: false }, callback)
     }
 
     _onToggleSelect() {

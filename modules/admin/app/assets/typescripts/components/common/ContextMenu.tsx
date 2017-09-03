@@ -15,7 +15,7 @@ export interface IPoint {
 }
 
 export interface ContextMenuProps {
-    onDismiss: () => void,
+    onDismiss: (callback?:() => void) => void,
     target: IPoint,
     items: ContextMenuItem[]
 }
@@ -45,8 +45,9 @@ class ContextMenu extends React.Component<ContextMenuProps, any> {
 
     renderMenuItem(item:ContextMenuItem) {
         const itemClicked = () => {
-            this.props.onDismiss();
-            item.onClick();
+            this.props.onDismiss(() => {
+                item.onClick();
+            })
         }
         return(
              <Menu.Item key={item.label} disabled={item.disabled ? item.disabled : false} name={item.label} icon={item.icon} active={false} onClick={itemClicked} />

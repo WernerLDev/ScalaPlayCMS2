@@ -8,10 +8,14 @@ import { Button } from 'semantic-ui-react'
 import * as fbemitter from 'fbemitter'
 import EntitiesContextMenu from './EntitiesContextMenu'
 
+let entityColours = ["#ff00ff", "#ff0000", "#00ff00", "#0000ff"];
+
 export interface EntitiesTreeLabelProps {
     item: Tree.TreeViewItem<Api.Entity>,
     onContextTriggered: (n:Tree.TreeViewItem<Api.Entity>) => void,
-    onNewEntity: (parent_id:number, name:string, discriminator:string) => void 
+    onNewEntity: (parent_id:number, name:string, discriminator:Api.EntityType) => void 
+    onDeleted: (entity:Api.Entity) => void
+    onRenamed:(entity:Api.Entity) => void
     emitter: fbemitter.EventEmitter
     entityTypes: Api.EntityType[]
 }
@@ -21,7 +25,8 @@ export interface EntitiesTreeLabelState {
     menutarget : React.MouseEvent<HTMLElement>
     label : string
     createMode: boolean
-    createType:string
+    createType:Api.EntityType
+    editMode:boolean
 }
 
 class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, EntitiesTreeLabelState> {
@@ -29,7 +34,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     constructor(props:EntitiesTreeLabelProps, context:any) {
         super(props, context);
         this.state = {
-            contextMenuVisible: false, menutarget:null, label: props.item.item.name, createMode: false, createType: ""
+            contextMenuVisible: false, menutarget:null, label: props.item.item.name, createMode: false, createType: null, editMode: false
         }
     }
 
@@ -62,20 +67,21 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
             />
         )
     }
-    // renderEditForm() {
-    //      return(
-    //         <RenameMode
-    //             defaultValue={this.props.item.item.name}
-    //             icon={getAssetIcon(this.props.item.item.mimetype)}
-    //             onBlur={this._onToggleEdit.bind(this)}
-    //             onSubmit={(newname:string) => {
-    //                 this.setState({ ...this.state, label: newname, editmode: false }, () => {
-    //                     this.props.onRenamed({...this.props.item.item, name: newname});
-    //                 })
-    //             }}
-    //         />
-    //     )
-    // }
+
+    renderEditForm() {
+         return(
+            <RenameMode
+                defaultValue={this.props.item.item.name}
+                icon={this.getEntityIcon(this.props.item.item)}
+                onBlur={this._onToggleEdit.bind(this)}
+                onSubmit={(newname:string) => {
+                    this.setState({ ...this.state, label: newname, editMode: false }, () => {
+                        this.props.onRenamed({...this.props.item.item, name: newname});
+                    })
+                }}
+            />
+        )
+    }
 
     renderMenuButton() {
         return(
@@ -119,11 +125,17 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
                 canCreate={true}
                 canDelete={true}
                 canRename={true}
-                onAddEntity={() => {
-                    this.setState({ createMode: true })
+                onAddEntity={(discriminator) => {
+                    this.setState({ ...this.state, contextMenuVisible: false, createMode: true, createType: discriminator })
                 }}
                 onCreateFolder={() => {
-                    this.setState({ createMode: true, createType: "folder" })
+                    this.setState({ ...this.state, contextMenuVisible: false, createMode: true, createType: {name: "folder", plural: "folders" } })
+                }}
+                onDelete={() => {
+                    this.props.onDeleted(this.props.item.item);
+                }}
+                onRename={() => {
+                    this._onToggleEdit();
                 }}
                 onAction={() => {
 
@@ -138,21 +150,35 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
 
     }
 
+    getEntityIcon(entity:Api.Entity) {
+        switch(entity.discriminator) {
+            case 'home':
+                return 'cubes'
+            case 'folder':
+                return 'folder';
+            default:
+                return 'cube';
+        }
+    }
+
     getIcon(entity:Api.Entity) {
         switch(entity.discriminator) {
-            case 'entities':
-                return "cubes";
+            case 'home':
+                return <i className="fa fa-cubes fileicon" aria-hidden="true"></i>
             case 'folder':
-                return "folder";
+                return <i className="fa fa-folder fileicon" aria-hidden="true"></i>
             default:
-                return "cube"
+                let typeIndex = this.props.entityTypes.findIndex(x => x.name.toLowerCase() == entity.discriminator);
+                let color = entityColours[typeIndex];
+
+                return <i style={{color: color }} className="fa fa-cube fileicon" aria-hidden="true"></i>
         }
     }
 
     render() {
         let discriminator = this.props.item.item.discriminator;
         let icon = this.getIcon(this.props.item.item);
-        //if(this.state.editmode) return this.renderEditForm();
+        if(this.state.editMode) return this.renderEditForm();
         return(
             <Draggable 
                 isDropTarget={discriminator == "folder" || discriminator == "home"}
@@ -161,7 +187,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
                 className={"dragitem"} 
                 onContextMenu={this.toggleContextMenu.bind(this)}
             >
-                <i className={"fa fa-"+icon+" fileicon"} aria-hidden="true"></i> {this.state.label}
+                {icon} {this.state.label}
                 {this.state.createMode ? this.renderAddForm() : this.renderMenuButton()}
                     
                 {this.state.contextMenuVisible ? this.renderContextMenu() : null} 
@@ -169,12 +195,12 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
         )
     }
 
-    //  _onToggleEdit() {
-    //     this.setState({ editmode: !this.state.editmode });
-    // }
+     _onToggleEdit() {
+        this.setState({ editMode: !this.state.editMode });
+    }
 
-    _onDismiss() {
-        this.setState({ contextMenuVisible: false })
+    _onDismiss(callback?:() => void) {
+        this.setState({ contextMenuVisible: false }, callback)
     }
 
     _onToggleSelect() {

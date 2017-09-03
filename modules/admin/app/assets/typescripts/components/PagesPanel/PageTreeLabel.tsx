@@ -132,8 +132,8 @@ class PageTreeLabel extends React.Component<PageTreeLabelProps, PageTreeLabelSta
         )
     }
 
-    _onDismiss() {
-        this.setState({ contextMenuVisible: false })
+    _onDismiss(callback?:() => void) {
+        this.setState({ contextMenuVisible: false }, callback)
     }
 
     _onToggleSelect() {

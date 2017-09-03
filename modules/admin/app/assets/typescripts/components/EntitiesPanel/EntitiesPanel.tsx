@@ -71,7 +71,17 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
                 item={n} 
                 entityTypes={this.state.entityTypes}
                 emitter={this.props.emitter}
-                onNewEntity={(parent_id:number, name:string, discriminator:string) => {
+                onDeleted={(entity) => {
+                    Api.deleteEntity(entity).then(x => {
+                        this.refresh();
+                    })
+                }}
+                onRenamed={(e:Api.Entity) => {
+                    Api.renameEntity(e).then(x => {
+                        this.refresh();
+                    });
+                }}
+                onNewEntity={(parent_id:number, name:string, discriminator:Api.EntityType) => {
                     this.setState({...this.state, working: true}, () => {
                         Api.addEntity(parent_id, name, discriminator).then(entity => {
                             Api.getEntities().then(entities => {

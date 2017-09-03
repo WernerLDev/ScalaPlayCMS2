@@ -6,9 +6,11 @@ import ContextMenu from '../common/ContextMenu'
 import { ContextMenuItem } from '../common/ContextMenu'
 
 export interface EntitiesContextMenuProps {
-    onDismiss: () => void
-    onAddEntity: () => void
+    onDismiss: (callback?:() => void) => void
+    onAddEntity: (discriminator:Api.EntityType) => void
     onCreateFolder: () => void
+    onDelete: () => void
+    onRename: () => void
     onAction: () => void,
     target: MouseEvent,
     canCreate : boolean,
@@ -32,7 +34,7 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
             return {
                 icon : "cube",
                 label: x.name,
-                onClick: this.props.onAddEntity,
+                onClick: () => this.props.onAddEntity(x),
                 children: []
             }
         })
@@ -65,14 +67,14 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
                     {
                         icon : "write",
                         label : "Rename",
-                        onClick: this.props.onAction,
+                        onClick: this.props.onRename,
                         children: [],
                         disabled: !this.props.canRename
                     },
                     {
                         icon : "trash",
                         label : "Remove",
-                        onClick: this.props.onAction,
+                        onClick: this.props.onDelete,
                         children: [],
                         disabled: !this.props.canDelete
                     },

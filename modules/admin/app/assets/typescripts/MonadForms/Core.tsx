@@ -104,51 +104,11 @@ export const Fold = function<T>(elements:Comp<T,any>[]) {
 }
 
 
-type MapCompProps<T,A> = {
-    element: Comp<T,A>
-    map: (elem:Comp<T,A>) => Comp<T,A>
-    initialState: T
-    cont:(s:T) => void
-}
 
-type MapCompState<T> = {
-    state: T
-}
-class MapComp<T,A> extends React.Component<MapCompProps<T,A>, MapCompState<T>> {
-    constructor(props:MapCompProps<T,A>, context:any) {
-        super(props, context);
-        this.state = { state: props.initialState }
-    }
 
-    render() {
-        let keyindex = 0;
-        return(
-            this.props
-                .map(this.props.element)
-                .comp(
-                    this.state.state, 
-                    (x) => {
-                        this.setState({state: this.props.element.update(x, this.state.state)}, () => {
-                            this.props.cont(this.state.state)
-                        })
-                    },
-                    this.props.element.value
-                )
-        )
-    }
-}
 
-export const MapC = function<T,A>(element:Comp<T,A>, mapFunc:(elem:Comp<T,A>) => Comp<T,A>) {
-    type MapType = new() => MapComp<T,A>;
-    const NewComp = MapComp as MapType;
-
-    let ret = {
-        comp: (s:T, update:(s:T) => void, value:(s:T) => T) => <NewComp map={mapFunc} element={element} initialState={value(s)} cont={update} />,
-        update: element.update,
-        value: element.value
-    }
-
-    return ret;
+export const MapC = function<T,A>(element:C<T,A>, mapFunc:(elem:C<T,A>) => C<T,A>) {
+    return mapFunc(element);
 }
 
 
@@ -206,3 +166,5 @@ export const InitOnUpdate = function<T,A>(element:Comp<T,A>, elem2:Comp<T,A>) {
 
     return (s:T, update:(s:T) => void, value:(s:T) => T) => <NewComp element={element} element2={elem2} initialState={value(s)} cont={update} />
 }
+
+
