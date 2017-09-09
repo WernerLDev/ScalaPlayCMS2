@@ -129,11 +129,11 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
                 <TreeView 
                     items={this.state.treeItems} 
                     selected={this.state.selected}
-                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.Asset>) => {
+                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.Entity>) => {
                         this.props.onOpenTab({
-                            key: n.item.id + "asset",
+                            key: n.item.id + "entity",
                             title: n.item.name,
-                            content: () => ViewerFactory(n.item, this.props.emitter)
+                            content: () => (<div>{n.item.name}</div>)
                         })
                     }}
                     onRenderLabel={this.renderLabel.bind(this)}

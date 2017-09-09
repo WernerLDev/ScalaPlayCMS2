@@ -23,6 +23,7 @@ export const SementicInputElement = function<T>(
     return (
         <Form.Input 
             fluid
+            error={true}
             type="text"
             value={value(state)}
             onChange={(e) => {
@@ -87,14 +88,18 @@ export const SemanticButtonElement = (label:string) => function<T>(
 
 
 
-export const FormField = function<T,A>(elem:C<T,A>, label:string):C<T,A> {
+export const FormField = function<T,A>(elem:C<T,A>, label:string, isValid?:(v:A) => boolean):C<T,A> {
     return (
         state: T,
         update:(v:A) => void,
         value: (s:T) => A
     ) => {
+        let borderColor = "";
+        if(isValid != null) {
+            borderColor = isValid(value(state)) ? "" : "1px solid red";
+        }
         return (
-            <div style={{marginBottom: "10px"}}>
+            <div style={{marginBottom: "10px", border: borderColor}}>
                 <label>{label}</label><br />
                 {elem(state, update, value)}
             </div>

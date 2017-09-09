@@ -2,12 +2,6 @@ import * as React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import {List} from 'immutable'
 
-// export type FormElement<T,A> = (
-//     item:T,
-//     getValue:(item:T) => A,
-//     setValue:(v:A) => void
-// ) => JSX.Element
-
 
 export type C<T,A> = (
     state: T,
@@ -17,51 +11,66 @@ export type C<T,A> = (
 
 
 export type FormElem<T,A> = (value: (s:T) => A, update: (v:A) => void) => (s:T) => JSX.Element
-
-export type Comp<T,A> = { 
-    comp: C<T,A>,
-    update: (val:A, oldS:T) => T,
-    value: (s:T) => A
+export type FieldValue<A> = {
+    value: A,
+    isValid: (v:A) => boolean
 }
+
+
+export class CompC<T,A> {
+
+    comp:C<T,A>;
+    update:(v:A, oldS:T) => T;
+    value:(s:T) => A
+    renderCondition:(s:T) => boolean
+
+    constructor(
+        c:C<T,A>,
+        update?:(v:A, oldS:T) => T,
+        value?:(s:T) => A
+    ) {
+        this.comp = c;
+        this.update = update;
+        this.value = value;
+        this.renderCondition = (v) => true;
+    }
+
+    map(f:(c:C<T,A>) => C<T,A>) {
+        return new CompC<T,A>(f(this.comp), this.update, this.value);
+    }
+
+    visibleIf(f:(s:T) => boolean) {
+        this.renderCondition = f;
+        return this;
+    }
+
+    render(s:T, callback?:(s:T) => void) {
+        if(this.renderCondition(s)) {
+            return this.comp(s, (v) => {
+                if(callback != null && this.update != null) callback(this.update(v,s));
+            }, this.value);
+        } else {
+            return null;
+        }
+    }
+}
+
 
 export function InitC<T,A>(
     c:C<T,A>,
     update?:(v:A, oldS:T) => T,
     value?:(s:T) => A
-) {
-    return {
-        comp: c,
-        update: update != null ? update : (v:A, oldS:T) => oldS,
-        value: value,
-    }
+):CompC<T,A> {
+    let updateF = update != null ? update : (v:A, oldS:T) => oldS;
+    return new CompC<T,A>(c, updateF, value);
 }
 
 
-// export type Element<T,A> = {
-//     comp: FormElement<T,A>,
-//     getValue:(item:T) => A,
-//     setValue:(v:A, oldState:T) => T,
-//     isValid?:(v:A) => boolean
-// }
-
-// export function InitElem<T,A>(
-//     elem:FormElement<T,A>, 
-//     getValue:(i:T) => A, 
-//     setValue:(x:A, s:T) => T, 
-//     isValid?:(v:A) => boolean  
-// ):Element<T,A> {
-//     return {
-//         comp: elem,
-//         getValue: getValue,
-//         setValue: setValue,
-//         isValid: isValid
-//     }
-// }
 
 
 
 type CombineCompProps<T,A> = {
-    elements: Comp<T,A>[]
+    elements: CompC<T,A>[]
     initialState: T
     cont:(s:T) => void
 }
@@ -75,19 +84,21 @@ class CombineComp<T,A> extends React.Component<CombineCompProps<T,A>, CombineCom
         this.state = { state: props.initialState }
     }
 
+    componentWillReceiveProps(nextProps:CombineCompProps<T,A>) {
+        if(JSON.stringify(nextProps.initialState) != JSON.stringify(this.state.state)) {
+            this.setState({ state: nextProps.initialState });
+        }
+    }
+
     render() {
         let keyindex = 0;
         return(
             <Form>
                 {this.props.elements.map(elem =>
                     <div key={++keyindex}>
-                    {elem.comp(
-                        this.state.state,
-                        (x) => this.setState( {state: elem.update(x, this.state.state) }, () => {
-                            this.props.cont(this.state.state)
-                        }),
-                        elem.value
-                    )}
+                        {elem.render(this.state.state, (s) => {
+                            this.setState({state: s}, () => this.props.cont(s))
+                        })}
                     </div>
                 )}
             </Form>
@@ -95,7 +106,7 @@ class CombineComp<T,A> extends React.Component<CombineCompProps<T,A>, CombineCom
     }
 }
 
-export const Fold = function<T>(elements:Comp<T,any>[]) {
+export const Fold = function<T>(elements:CompC<T,any>[]) {
     type CompType = new() => CombineComp<T,any>;
     const NewComp = CombineComp as CompType;
 
@@ -107,22 +118,12 @@ export const Fold = function<T>(elements:Comp<T,any>[]) {
 
 
 
-export const MapC = function<T,A>(element:C<T,A>, mapFunc:(elem:C<T,A>) => C<T,A>) {
-    return mapFunc(element);
-}
-
-
-
-
-
-
-
 
 
 
 type UpdateCompProps<T,A> = {
-    element: Comp<T,A>
-    element2: Comp<T,A>
+    element: CompC<T,A>
+    element2: CompC<T,A>
     initialState: T
     cont:(s:T) => void
 }
@@ -137,29 +138,36 @@ class UpdateComp<T,A> extends React.Component<UpdateCompProps<T,A>, UpdateCompSt
         this.state = { state: props.initialState, updated: false }
     }
 
+    componentWillReceiveProps(nextProps:UpdateCompProps<T,A>) {
+        if(JSON.stringify(nextProps.initialState) != JSON.stringify(this.state.state)) {
+            this.setState({ ...this.state, state: nextProps.initialState });
+        }
+    }
+
     render() {
         let keyindex = 0;
         return(
             <div>
-                {this.props.element.comp(this.state.state, (x) => {
-                    this.setState({updated: true, state: this.props.element.update(x, this.state.state)}, () => {
-                        this.props.cont(this.state.state)
+                {this.props.element.render(this.state.state, (s) => {
+                    console.log("Received update");
+                    this.setState({updated: true, state: s}, () => {
+                        this.props.cont(s);
                     })
-                }, this.props.element.value)}
-
-                {this.state.updated ? 
-                    this.props.element2.comp(this.state.state, (x) => {
-                        this.setState({ state: this.props.element2.update(x, this.state.state)}, () => {
-                            this.props.cont(this.state.state)
+                })}
+                {this.state.updated}
+                {this.state.updated ?
+                    this.props.element2.render(this.state.state, (s) => {
+                        this.setState({...this.state, state: s}, () => {
+                            this.props.cont(s)
                         })
-                    }, this.props.element2.value)
+                    })
                 : null}
             </div>
         )
     }
 }
 
-export const InitOnUpdate = function<T,A>(element:Comp<T,A>, elem2:Comp<T,A>) {
+export const InitOnUpdate = function<T,A>(element:CompC<T,A>, elem2:CompC<T,A>) {
     type CompType = new() => UpdateComp<T,A>;
     const NewComp = UpdateComp as CompType;
 

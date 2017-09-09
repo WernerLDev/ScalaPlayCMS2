@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
-import { C, Comp, Fold, InitC, MapC, InitOnUpdate } from './Core'
+import { C, CompC, Fold, InitC, MapC, InitOnUpdate } from './Core'
 import { 
     TextElement,
     SementicInputElement, 
@@ -53,12 +53,17 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                 {Fold<TestType>(
                     [
                         InitC<TestType, string>(
-                            FormField(SementicInputElement, "Name"),
+                            FormField(SementicInputElement, "Name", (s) => s == "werner"),
                             (x,s) => { return{...s, name: x}},
                             (x) => x.name
-                        ),
+                        ).map(x => (s,u,v) => (
+                            <div>
+                                {x(s,u,v)}
+                                Some message
+                            </div>
+                        )),
                         InitC<TestType, string>(
-                            FormField(SementicInputElement, "Email"),
+                            FormField(SementicInputElement, "Email", (s) => s.endsWith("@gmail.com")),
                             (x,s) => { return{...s, email: x}},
                             (x) => x.email
                         ),
@@ -73,34 +78,37 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                             (x) => x.dob
                         ),
                         InitC<TestType, TestType>(
-                            InitOnUpdate<TestType, string>(
+                            InitOnUpdate(
                                 InitC<TestType, string>(
                                     SemanticButtonElement("Submit")
-                                ),
-                                InitC<TestType, string>(
-                                    MapC(
-                                        TextElement("Dit is wat tekst."),
-                                        (x) => {
-                                            return (s:TestType, update:(v:string) => void, value:(s:TestType) => string) => {
-                                                return (
-                                                    <div>
-                                                        {x(s, update, value)}
-                                                        <b>And some more tekst</b>
-                                                    </div>
-                                                )
-                                            }
-                                        }
+                                ).map(btn => {
+                                    return (s, u, v) => (
+                                        <div>
+                                            {btn(s,u,v)}
+                                            <hr />
+                                        </div>
                                     )
-                                )
+                                }),
+                                InitC<TestType, string>(
+                                    TextElement("Dit is wat tekst.")
+                                ).map(x => {
+                                    return (s, u, v) => (
+                                        <div>
+                                            <h3>Mapping component to something new</h3>
+                                            {x(s,u,v)}
+                                        </div>
+                                    )
+                                })
                             ),
                             (x, s) => s,
                             (x) => x
-                        )
+                        ).visibleIf(x => x.name == "werner")
                     ]
                     )(this.state.test, (x) => {
                         this.setState({test: x})
                     }, (x => x))
                 }
+
 
 
                 <br /><br />
