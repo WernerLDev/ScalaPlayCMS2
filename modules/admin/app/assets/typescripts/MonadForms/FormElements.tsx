@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
-import { C } from './Core'
+import { C, FieldValue } from './Core'
 
 
 export const TextElement = (txt:string) => function<T>(
@@ -17,17 +17,18 @@ export const TextElement = (txt:string) => function<T>(
 
 export const SementicInputElement = function<T>(
     state: T,
-    update:(val:string) => void,
-    value: (s:T) => string
+    update?:(val:FieldValue<string>) => void,
+    value?: (s:T) => FieldValue<string>
 ){
+    let val = value(state);
     return (
         <Form.Input 
             fluid
-            error={true}
+            error={!val.isValid(val.value)}
             type="text"
-            value={value(state)}
+            value={val.value}
             onChange={(e) => {
-                update(e.currentTarget.value)
+                update({...val, value: e.currentTarget.value})
             }}
         />
     )
@@ -36,16 +37,18 @@ export const SementicInputElement = function<T>(
 
 export const SementicNumberInputElement = function<T>(
     state: T,
-    update:(val:number) => void,
-    value: (s:T) => number
+    update:(val:FieldValue<number>) => void,
+    value: (s:T) => FieldValue<number>
 ){
+    let val = value(state);
     return (
         <Form.Input 
             fluid
+            error={!val.isValid(val.value)}
             type="number"
-            value={value(state)}
+            value={val.value}
             onChange={(e) => {
-                update(e.currentTarget.valueAsNumber)
+                update({...val, value: e.currentTarget.valueAsNumber})
             }}
         />
     )
@@ -53,16 +56,17 @@ export const SementicNumberInputElement = function<T>(
 
 export const SemanticDatePickerElement = function<T>(
     state: T,
-    update:(val:Date) => void,
-    value: (s:T) => Date
+    update:(val:FieldValue<Date>) => void,
+    value: (s:T) => FieldValue<Date>
 ) {
+    let val = value(state);
     return (
         <DatePickerInput
             style={{background: "none"}}
             onChange={(date) => {
-                update(date)
+                update({...val, value: date})
             }}
-            value={moment(value(state))}
+            value={moment(val.value)}
             displayFormat="MMMM Do YYYY, HH:MM"
             showOnInputClick
         />
@@ -88,18 +92,14 @@ export const SemanticButtonElement = (label:string) => function<T>(
 
 
 
-export const FormField = function<T,A>(elem:C<T,A>, label:string, isValid?:(v:A) => boolean):C<T,A> {
+export const FormField = function<T,A>(elem:C<T,A>, label:string):C<T,A> {
     return (
         state: T,
         update:(v:A) => void,
         value: (s:T) => A
     ) => {
-        let borderColor = "";
-        if(isValid != null) {
-            borderColor = isValid(value(state)) ? "" : "1px solid red";
-        }
         return (
-            <div style={{marginBottom: "10px", border: borderColor}}>
+            <div style={{marginBottom: "10px"}}>
                 <label>{label}</label><br />
                 {elem(state, update, value)}
             </div>

@@ -15,14 +15,17 @@ export type FieldValue<A> = {
     value: A,
     isValid: (v:A) => boolean
 }
-
+export function InitFieldValue<A>(v:A, valid?:((v:A) => boolean)) {
+    let isValid = valid == null ? (v:A) => true : valid;
+    return { value: v, isValid: isValid } 
+}
 
 export class CompC<T,A> {
 
     comp:C<T,A>;
     update:(v:A, oldS:T) => T;
     value:(s:T) => A
-    renderCondition:(s:T) => boolean
+    private renderCondition:(s:T) => boolean
 
     constructor(
         c:C<T,A>,
@@ -36,7 +39,8 @@ export class CompC<T,A> {
     }
 
     map(f:(c:C<T,A>) => C<T,A>) {
-        return new CompC<T,A>(f(this.comp), this.update, this.value);
+        this.comp = f(this.comp);
+        return this;
     }
 
     visibleIf(f:(s:T) => boolean) {

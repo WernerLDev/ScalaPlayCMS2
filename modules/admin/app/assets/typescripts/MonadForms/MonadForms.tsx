@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
-import { C, CompC, Fold, InitC, MapC, InitOnUpdate } from './Core'
+import { C, CompC, Fold, InitC, InitFieldValue, FieldValue, InitOnUpdate } from './Core'
 import { 
     TextElement,
     SementicInputElement, 
@@ -18,18 +18,18 @@ const NonEmptyText = function(v:string) {
 
 
 type TestType = {
-    name:string,
-    email:string,
-    dob:Date,
-    bla:number,
+    name:FieldValue<string>,
+    email:FieldValue<string>,
+    dob:FieldValue<Date>,
+    bla:FieldValue<number>,
     password:string
 }
 
 const testData = {
-    name: "Werner",
-    email: "werner@test.nl",
-    dob: new Date(),
-    bla: 2,
+    name: InitFieldValue<string>("", (v) => v == "werner"),
+    email: InitFieldValue<string>("", (v) => v.endsWith("gmail.com")),
+    dob: InitFieldValue<Date>(new Date()),
+    bla: InitFieldValue<number>(0, (v) => v > 10),
     password: "test123"
 }
 
@@ -52,31 +52,26 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                 
                 {Fold<TestType>(
                     [
-                        InitC<TestType, string>(
-                            FormField(SementicInputElement, "Name", (s) => s == "werner"),
+                        InitC<TestType, FieldValue<string>>(
+                            FormField(SementicInputElement, "Name"),
                             (x,s) => { return{...s, name: x}},
                             (x) => x.name
-                        ).map(x => (s,u,v) => (
-                            <div>
-                                {x(s,u,v)}
-                                Some message
-                            </div>
-                        )),
-                        InitC<TestType, string>(
-                            FormField(SementicInputElement, "Email", (s) => s.endsWith("@gmail.com")),
+                        ),
+                        InitC<TestType, FieldValue<string>>(
+                            FormField(SementicInputElement, "Email"),
                             (x,s) => { return{...s, email: x}},
                             (x) => x.email
-                        ),
-                        InitC<TestType, number>(
+                        ).visibleIf(x => x.name.value != ""),
+                        InitC<TestType, FieldValue<number>>(
                             FormField(SementicNumberInputElement, "Bla"),
                             (x,s) => { return{...s, bla: x}},
                             (x) => x.bla
-                        ),
-                        InitC<TestType, Date>(
+                        ).visibleIf(x => x.email.value != ""),
+                        InitC<TestType, FieldValue<Date>>(
                             FormField(SemanticDatePickerElement, "Date of birth"),
                             (x,s) => { return{...s, dob: x}},
                             (x) => x.dob
-                        ),
+                        ).visibleIf(x => x.bla.value > 0),
                         InitC<TestType, TestType>(
                             InitOnUpdate(
                                 InitC<TestType, string>(
@@ -102,7 +97,7 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                             ),
                             (x, s) => s,
                             (x) => x
-                        ).visibleIf(x => x.name == "werner")
+                        ).visibleIf(x => x.bla.value > 0)
                     ]
                     )(this.state.test, (x) => {
                         this.setState({test: x})
