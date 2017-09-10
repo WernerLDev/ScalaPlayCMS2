@@ -17,6 +17,7 @@ import models.admin._
 import java.sql.Timestamp
 import java.util.Date
 import play.api.libs.mailer._
+import play.filters.csrf._
 
 case class UserData(username:String, password:String)
 case class LostPassData(email:String)
@@ -157,5 +158,9 @@ class AdminController @Inject()(
   def logout = Action { implicit request =>
     request.session.get("skey") map (key => sessions.deleteByKey(key))
     Redirect(controllers.admin.routes.AdminController.login).withSession( request.session - "username" - "skey" )
+  }
+
+  def setup = Action { implicit request =>
+    Ok(views.html.admin.setup("blaat", CSRF.getToken.get.value))
   }
 }

@@ -11,21 +11,23 @@ export type C<T,A> = (
 
 
 export type FormElem<T,A> = (value: (s:T) => A, update: (v:A) => void) => (s:T) => JSX.Element
-export type FieldValue<A> = {
+export type FieldValue<T,A> = {
     value: A,
-    isValid: (v:A) => boolean
+    isValid: (v:A, s:T) => boolean
 }
-export function InitFieldValue<A>(v:A, valid?:((v:A) => boolean)) {
-    let isValid = valid == null ? (v:A) => true : valid;
+
+export function InitFieldValue<T,A>(v:A, valid?:((v:A, s:T) => boolean)) {
+    let isValid = valid == null ? (v:A, s:T) => true : valid;
     return { value: v, isValid: isValid } 
 }
 
 export class CompC<T,A> {
 
-    comp:C<T,A>;
-    update:(v:A, oldS:T) => T;
-    value:(s:T) => A
+    private comp:C<T,A>;
+    private update:(v:A, oldS:T) => T;
+    private value:(s:T) => A
     private renderCondition:(s:T) => boolean
+    private test:number
 
     constructor(
         c:C<T,A>,
@@ -36,6 +38,7 @@ export class CompC<T,A> {
         this.update = update;
         this.value = value;
         this.renderCondition = (v) => true;
+        this.test = 3;
     }
 
     map(f:(c:C<T,A>) => C<T,A>) {
@@ -48,11 +51,14 @@ export class CompC<T,A> {
         return this;
     }
 
-    render(s:T, callback?:(s:T) => void) {
-        if(this.renderCondition(s)) {
-            return this.comp(s, (v) => {
-                if(callback != null && this.update != null) callback(this.update(v,s));
-            }, this.value);
+    render(state:T, callback?:(s:T) => void) {
+        if(this.renderCondition(state)) {
+            return this.comp(
+                state, 
+                (value) => {
+                    if(callback != null && this.update != null) callback(this.update(value,state));
+                }, 
+                this.value);
         } else {
             return null;
         }
@@ -97,7 +103,7 @@ class CombineComp<T,A> extends React.Component<CombineCompProps<T,A>, CombineCom
     render() {
         let keyindex = 0;
         return(
-            <Form>
+            <div>
                 {this.props.elements.map(elem =>
                     <div key={++keyindex}>
                         {elem.render(this.state.state, (s) => {
@@ -105,7 +111,7 @@ class CombineComp<T,A> extends React.Component<CombineCompProps<T,A>, CombineCom
                         })}
                     </div>
                 )}
-            </Form>
+            </div>
         )
     }
 }
@@ -153,7 +159,6 @@ class UpdateComp<T,A> extends React.Component<UpdateCompProps<T,A>, UpdateCompSt
         return(
             <div>
                 {this.props.element.render(this.state.state, (s) => {
-                    console.log("Received update");
                     this.setState({updated: true, state: s}, () => {
                         this.props.cont(s);
                     })

@@ -26,8 +26,8 @@ export interface MainState {
     section : string,
     selected : string,
     emitter : fbemitter.EventEmitter
-    pagepropertieDocument : Api.Document
-    assetpropetiesAsset : Api.Asset
+    pagepropertieDocument : Api.Document | null
+    assetpropetiesAsset : Api.Asset | null
     tabbar: Tabs.TabbarState
 }
 
@@ -42,7 +42,7 @@ class Main extends React.Component<MainProps, MainState> {
     constructor(props:MainProps, context:any) {
         super(props, context);
         let initialTabbar = {
-            tabs: Immutable.List<Tabs.Tab>(),
+            tabs: Immutable.List<Tabs.Tab>([]),
             active: {
                 key: "", title: "", content: () => (<p></p>)
             }

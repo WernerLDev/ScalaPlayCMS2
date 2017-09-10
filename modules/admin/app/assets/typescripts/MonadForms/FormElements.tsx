@@ -17,15 +17,34 @@ export const TextElement = (txt:string) => function<T>(
 
 export const SementicInputElement = function<T>(
     state: T,
-    update?:(val:FieldValue<string>) => void,
-    value?: (s:T) => FieldValue<string>
+    update?:(val:FieldValue<T, string>) => void,
+    value?: (s:T) => FieldValue<T, string>
 ){
     let val = value(state);
     return (
         <Form.Input 
             fluid
-            error={!val.isValid(val.value)}
+            error={!val.isValid(val.value, state)}
             type="text"
+            value={val.value}
+            onChange={(e) => {
+                update({...val, value: e.currentTarget.value})
+            }}
+        />
+    )
+}
+
+export const SementicPasswordElement = function<T>(
+    state: T,
+    update?:(val:FieldValue<T, string>) => void,
+    value?: (s:T) => FieldValue<T, string>
+){
+    let val = value(state);
+    return (
+        <Form.Input 
+            fluid
+            error={!val.isValid(val.value, state)}
+            type="password"
             value={val.value}
             onChange={(e) => {
                 update({...val, value: e.currentTarget.value})
@@ -37,14 +56,14 @@ export const SementicInputElement = function<T>(
 
 export const SementicNumberInputElement = function<T>(
     state: T,
-    update:(val:FieldValue<number>) => void,
-    value: (s:T) => FieldValue<number>
+    update:(val:FieldValue<T, number>) => void,
+    value: (s:T) => FieldValue<T, number>
 ){
     let val = value(state);
     return (
         <Form.Input 
             fluid
-            error={!val.isValid(val.value)}
+            error={!val.isValid(val.value, state)}
             type="number"
             value={val.value}
             onChange={(e) => {
@@ -56,12 +75,13 @@ export const SementicNumberInputElement = function<T>(
 
 export const SemanticDatePickerElement = function<T>(
     state: T,
-    update:(val:FieldValue<Date>) => void,
-    value: (s:T) => FieldValue<Date>
+    update:(val:FieldValue<T, Date>) => void,
+    value: (s:T) => FieldValue<T, Date>
 ) {
     let val = value(state);
     return (
         <DatePickerInput
+            
             style={{background: "none"}}
             onChange={(date) => {
                 update({...val, value: date})
@@ -73,13 +93,14 @@ export const SemanticDatePickerElement = function<T>(
     )
 }
 
-export const SemanticButtonElement = (label:string) => function<T>(
+export const SemanticButtonElement = (label:string, disabled?:boolean) => function<T>(
     state: T,
     update?:(val:string) => void,
     value?: (s:T) => string
 ) {
     return (
         <Button
+            disabled={disabled ? disabled : false}
             onClick={(e) => {
                 e.preventDefault();
                 if(update != null) update("clicked")
@@ -99,10 +120,11 @@ export const FormField = function<T,A>(elem:C<T,A>, label:string):C<T,A> {
         value: (s:T) => A
     ) => {
         return (
-            <div style={{marginBottom: "10px"}}>
-                <label>{label}</label><br />
+            <Form.Field >
+                <label>{label}</label>
                 {elem(state, update, value)}
-            </div>
+                <br />
+            </Form.Field>
         )
     }
 }

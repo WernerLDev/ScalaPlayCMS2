@@ -1,0 +1,23 @@
+@(msg: String, token:String)(implicit request:RequestHeader)
+
+@views.html.admin.main(msg){
+    <div style="display: none" id="csrftoken">@token</div>
+
+    <div class="setup-wrapper">
+        
+        <div class="setup-page">
+            <div class="setupform">
+
+                <div id="react-app"></div>
+            </div>
+        </div>
+    </div>
+    <div id="errordiv"></div>
+    <script src="@controllers.admin.routes.Assets.versioned("javascripts/react.bundle.js")" type="text/javascript"></script>
+    <script src="@controllers.admin.routes.Assets.versioned("javascripts/app.bundle.js")" type="text/javascript"></script>
+
+    <script>
+        App.renderSetupWizard();
+    </script>
+
+}

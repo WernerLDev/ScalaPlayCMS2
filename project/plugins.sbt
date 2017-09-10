@@ -11,7 +11,7 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.10")
 
 // addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.4")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-rjs" % "1.0.8")
+addSbtPlugin("com.typesafe.sbt" % "sbt-rjs" % "1.0.9")
 
 // addSbtPlugin("net.ground5hark.sbt" % "sbt-closure" % "0.1.3")
 
@@ -21,8 +21,10 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
 
 // addSbtPlugin("com.typesafe.sbt" % "sbt-mocha" % "1.1.0")
 
-addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.6")
+addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.8")
 
-addSbtPlugin("com.arpnetworking" % "sbt-typescript" % "0.3.4")
+// addSbtPlugin("com.arpnetworking" % "sbt-typescript" % "0.3.4")
+
+addSbtPlugin("name.de-vries" % "sbt-typescript" % "2.5.2")
 
 addSbtPlugin("org.ensime" % "sbt-ensime" % "1.12.12")

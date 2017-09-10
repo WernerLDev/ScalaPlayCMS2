@@ -18,18 +18,18 @@ const NonEmptyText = function(v:string) {
 
 
 type TestType = {
-    name:FieldValue<string>,
-    email:FieldValue<string>,
-    dob:FieldValue<Date>,
-    bla:FieldValue<number>,
+    name:FieldValue<TestType,string>,
+    email:FieldValue<TestType, string>,
+    dob:FieldValue<TestType, Date>,
+    bla:FieldValue<TestType, number>,
     password:string
 }
 
 const testData = {
-    name: InitFieldValue<string>("", (v) => v == "werner"),
-    email: InitFieldValue<string>("", (v) => v.endsWith("gmail.com")),
-    dob: InitFieldValue<Date>(new Date()),
-    bla: InitFieldValue<number>(0, (v) => v > 10),
+    name: InitFieldValue<TestType, string>("", (v, s) => v == "werner"),
+    email: InitFieldValue<TestType, string>("", (v,s) => v.endsWith("gmail.com")),
+    dob: InitFieldValue<TestType, Date>(new Date()),
+    bla: InitFieldValue<TestType, number>(0, (v, s) => v > 10),
     password: "test123"
 }
 
@@ -52,22 +52,22 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                 
                 {Fold<TestType>(
                     [
-                        InitC<TestType, FieldValue<string>>(
+                        InitC<TestType, FieldValue<TestType,string>>(
                             FormField(SementicInputElement, "Name"),
                             (x,s) => { return{...s, name: x}},
                             (x) => x.name
                         ),
-                        InitC<TestType, FieldValue<string>>(
+                        InitC<TestType, FieldValue<TestType,string>>(
                             FormField(SementicInputElement, "Email"),
                             (x,s) => { return{...s, email: x}},
                             (x) => x.email
                         ).visibleIf(x => x.name.value != ""),
-                        InitC<TestType, FieldValue<number>>(
-                            FormField(SementicNumberInputElement, "Bla"),
+                        InitC<TestType, FieldValue<TestType,number>>(
+                            FormField(SementicNumberInputElement, "Enter some number"),
                             (x,s) => { return{...s, bla: x}},
                             (x) => x.bla
                         ).visibleIf(x => x.email.value != ""),
-                        InitC<TestType, FieldValue<Date>>(
+                        InitC<TestType, FieldValue<TestType,Date>>(
                             FormField(SemanticDatePickerElement, "Date of birth"),
                             (x,s) => { return{...s, dob: x}},
                             (x) => x.dob
@@ -76,7 +76,8 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                             InitOnUpdate(
                                 InitC<TestType, string>(
                                     SemanticButtonElement("Submit")
-                                ).map(btn => {
+                                )
+                                .map(btn => {
                                     return (s, u, v) => (
                                         <div>
                                             {btn(s,u,v)}
@@ -85,15 +86,20 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                                     )
                                 }),
                                 InitC<TestType, string>(
-                                    TextElement("Dit is wat tekst.")
-                                ).map(x => {
-                                    return (s, u, v) => (
-                                        <div>
-                                            <h3>Mapping component to something new</h3>
-                                            {x(s,u,v)}
-                                        </div>
-                                    )
-                                })
+                                    TextElement("Dit is wat tekst. asdfasdfasdf")
+                                ).map(x => (s, u, v) => {
+                                        let valid = s.bla.isValid(s.bla.value, s) 
+                                                    && s.dob.isValid(s.dob.value, s) 
+                                                    && s.email.isValid(s.email.value, s)
+                                                    && s.name.isValid(s.name.value, s);
+                                        return(
+                                            <div>
+                                                <h3>Mapping component to something new</h3>
+                                                {valid ? "Alle input is valide" : "Niet alles is correct ingevuld"}
+                                                {x(s,u,v)}
+                                            </div>
+                                    )}
+                                )
                             ),
                             (x, s) => s,
                             (x) => x
@@ -103,8 +109,6 @@ export class ReactForms extends React.Component<FormProps, FormState> {
                         this.setState({test: x})
                     }, (x => x))
                 }
-
-
 
                 <br /><br />
                 <hr />

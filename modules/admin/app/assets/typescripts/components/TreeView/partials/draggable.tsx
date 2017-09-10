@@ -31,6 +31,7 @@ class Draggable extends React.Component<DraggableProps, any> {
             (this.refs.draggable as HTMLElement).classList.add("dragover");
             return false;
         }
+        return false;
     }
 
     onDragLeave(e:DragEvent) {
@@ -39,6 +40,7 @@ class Draggable extends React.Component<DraggableProps, any> {
             (this.refs.draggable as HTMLElement).classList.remove("dragover");
             return false;
         }
+        return false;
     }
 
     onDrop(e:DragEvent) {

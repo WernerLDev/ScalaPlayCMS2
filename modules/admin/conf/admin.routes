@@ -8,6 +8,7 @@ GET     /logout                     controllers.admin.AdminController.logout
 GET     /login/retrievePassword     controllers.admin.AdminController.retrievePasswordForm
 POST    /login/retrievePassword     controllers.admin.AdminController.retrievePassword
 GET     /login/resetpassword/:token  controllers.admin.AdminController.resetPassword(token:String)
+GET     /setup                      controllers.admin.AdminController.setup
 
 GET     /api/v1/documents                  controllers.admin.api.DocumentsController.listDocuments
 GET     /api/v1/documents/:id              controllers.admin.api.DocumentsController.getDocument(id:Long)
