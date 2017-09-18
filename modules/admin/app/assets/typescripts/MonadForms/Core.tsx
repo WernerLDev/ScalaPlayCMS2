@@ -21,6 +21,14 @@ export function InitFieldValue<T,A>(v:A, valid?:((v:A, s:T) => boolean)) {
     return { value: v, isValid: isValid } 
 }
 
+export function validateField<T,A>(field:FieldValue<T,A>, state:T) {
+    return field.isValid(field.value, state);
+}
+
+export function validateFields<T,A>(fields:FieldValue<T,A>[], state:T) {
+    return fields.map(x => x.isValid(x.value, state)).filter(x => x == false).length == 0;
+}
+
 export class CompC<T,A> {
 
     private comp:C<T,A>;
@@ -185,3 +193,12 @@ export const InitOnUpdate = function<T,A>(element:CompC<T,A>, elem2:CompC<T,A>) 
 }
 
 
+
+
+
+
+
+
+export const PromiseElement = function<T,A>(element:C<T,A>, promise:(v:A) => Promise<A>) {
+
+}

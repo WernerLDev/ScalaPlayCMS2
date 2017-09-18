@@ -57,8 +57,21 @@ class Entities @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     entities.filter(_.id === entity.id).update(entity)
   }
 
-  def delete(id:Long) = dbConfig.db.run {
+  def delete2(id:Long) = dbConfig.db.run {
     entities.filter(_.id === id).delete
+  }
+
+  def delete(id:Long):Future[Int] = {
+    val subitems:Future[Seq[Entity]] = dbConfig.db.run(entities.filter(_.parent_id === id).result)
+    subitems.map(items => {
+      items.map(x => delete(x.id))
+    })
+
+    dbConfig.db.run(entities.filter(_.id === id).delete)    
+  }
+
+  def rename(id:Long, newname:String) = dbConfig.db.run {
+    entities.filter(_.id === id).map(_.name).update(newname)
   }
 
   def getById(id:Long) = dbConfig.db.run {

@@ -50,7 +50,7 @@ export function addEntity(parent_id:number, name:string, discriminator:EntityTyp
     if(discriminator.name == "folder") {
         return createEntity(0);
     } else {
-        return ApiCall("/api/v1/entities/" + discriminator.plural + "/init", "GET").then(entity => {
+        return ApiCall("/api/v1/entities/" + discriminator.plural + "/init", "POST", "{}").then(entity => {
             let e = entity as BaseEntity;
             return createEntity(e.id);
         });
@@ -59,7 +59,9 @@ export function addEntity(parent_id:number, name:string, discriminator:EntityTyp
 
 export function deleteEntity(entity:Entity):Promise<Entity> {
     if(entity.object_id != 0) {
-        ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id, "DELETE");
+        return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id, "DELETE").then(x => {
+            return ApiCall("/admin/api/v1/entities/" + entity.id, "DELETE").then(r => r as Entity);        
+        });
     }
     return ApiCall("/admin/api/v1/entities/" + entity.id, "DELETE").then(r => r as Entity);
 }
@@ -68,5 +70,5 @@ export function renameEntity(entity:Entity):Promise<Entity> {
     var body = JSON.stringify({
         "name" : entity.name
     });
-    return ApiCall("/api/v1/entities/" + entity.id + "/rename", "PUT", body).then(r => r as Entity);
+    return ApiCall("/admin/api/v1/entities/" + entity.id + "/rename", "PUT", body).then(r => r as Entity);
 }

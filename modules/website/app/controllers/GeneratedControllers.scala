@@ -22,6 +22,7 @@ import models.website._
 trait TGenController {
     def getAll(request:AuthRequest[AnyContent]):Future[Result]
     def insert(request:AuthRequest[JsValue]):Future[Result]
+    def delete(id:Long, request:AuthRequest[AnyContent]):Future[Result]
     def createNew(request:AuthRequest[AnyContent]):Future[Result]
 }
 
@@ -46,6 +47,10 @@ class GeneratedPostsController @Inject() (
                 Ok(Json.toJson( Map("id" -> JsNumber(x.id)) ))
             })
         }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
+    def delete(id:Long, request:AuthRequest[AnyContent]) = {
+      posts.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
     def createNew(request:AuthRequest[AnyContent]) = {
@@ -80,6 +85,10 @@ class GeneratedCategoriesController @Inject() (
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
 
+    def delete(id:Long, request:AuthRequest[AnyContent]) = {
+      categories.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
+    }
+
     def createNew(request:AuthRequest[AnyContent]) = {
         categories.insert(Category(
            0, "", "" 
@@ -110,6 +119,10 @@ class GeneratedProjectsController @Inject() (
                 Ok(Json.toJson( Map("id" -> JsNumber(x.id)) ))
             })
         }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
+    def delete(id:Long, request:AuthRequest[AnyContent]) = {
+      projects.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
     def createNew(request:AuthRequest[AnyContent]) = {
@@ -152,6 +165,13 @@ class GeneratedController @Inject() (
     def insert(name:String) = WithAuthAction.async(parse.json) { request =>
         controllers.get(name) match {
             case Some(x) => x.insert(request)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }
+    }
+
+    def delete(name:String, id:Long) = WithAuthAction.async { request =>
+        controllers.get(name) match {
+            case Some(x) => x.delete(id, request)
             case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
         }
     }

@@ -56,7 +56,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
     renderAddForm() {
         return(
             <AddMode
-                icon="home"
+                icon={this.getEntityTypeIcon(this.state.createType)}
                 onBlur={() => this.setState({ createMode: false })}
                 onSubmit={(val:string) => {
                     this.setState({ createMode: false }, () => {
@@ -122,9 +122,9 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
         return (
             <EntitiesContextMenu 
                 entityTypes={this.props.entityTypes}
-                canCreate={true}
-                canDelete={true}
-                canRename={true}
+                canCreate={this.props.item.item.discriminator == "home" || this.props.item.item.discriminator == "folder"}
+                canDelete={this.props.item.item.discriminator != "home"}
+                canRename={this.props.item.item.discriminator != "home"}
                 onAddEntity={(discriminator) => {
                     this.setState({ ...this.state, contextMenuVisible: false, createMode: true, createType: discriminator })
                 }}
@@ -152,6 +152,17 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
 
     getEntityIcon(entity:Api.Entity) {
         switch(entity.discriminator) {
+            case 'home':
+                return 'cubes'
+            case 'folder':
+                return 'folder';
+            default:
+                return 'cube';
+        }
+    }
+
+    getEntityTypeIcon(entity:Api.EntityType) {
+        switch(entity.name) {
             case 'home':
                 return 'cubes'
             case 'folder':

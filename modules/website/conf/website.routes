@@ -5,7 +5,7 @@ GET     /api/v1/pagetypes           controllers.website.api.DocumentsController.
 GET     /api/v1/entities            controllers.website.GeneratedController.getEntities
 GET     /api/v1/entities/:name      controllers.website.GeneratedController.getAll(name:String)
 POST     /api/v1/entities/:name      controllers.website.GeneratedController.insert(name:String)
-GET      /api/v1/entities/:name/init  controllers.website.GeneratedController.createNew(name:String)
+POST      /api/v1/entities/:name/init  controllers.website.GeneratedController.createNew(name:String)
 
 GET     /assets/*file               controllers.website.Assets.versioned(path="/public/lib/playcmswebsite", file:Asset)
 

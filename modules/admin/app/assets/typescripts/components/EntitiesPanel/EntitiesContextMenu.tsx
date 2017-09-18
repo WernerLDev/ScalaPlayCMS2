@@ -54,7 +54,7 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
                         icon : "plus",
                         label : "Create entity",
                         onClick: this.props.onAction,
-                        children: this.entityTypes(),
+                        children: this.props.canCreate ? this.entityTypes() : [],
                         disabled: !this.props.canCreate
                     },
                     {

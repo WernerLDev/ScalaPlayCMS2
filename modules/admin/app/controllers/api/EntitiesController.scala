@@ -16,7 +16,7 @@ import scala.util.{Success, Failure}
 import java.io.File
 import models.admin._
 
-case class NewEntity(parent_id:Long, name:String, discriminator:String)
+case class NewEntity(parent_id:Long, object_id:Long, name:String, discriminator:String)
 
 @Singleton
 class EntitiesController @Inject()(
@@ -41,7 +41,7 @@ class EntitiesController @Inject()(
         val newEntity = Entity(
           id = 0,
           name = entity.name,
-          object_id = 0,
+          object_id = entity.object_id,
           parent_id = entity.parent_id,
           discriminator = entity.discriminator,
           created_at = currentTime, updated_at = currentTime, published_at = currentTime
@@ -50,6 +50,21 @@ class EntitiesController @Inject()(
           Ok(Json.toJson(x))
         })
       }).getOrElse(Future(BadRequest("Wrong parameter")))
+    }
+
+
+    def deleteEntity(id:Long) = WithAuthAction.async { request =>
+      entities.delete(id) map (x => {
+        Ok(Json.toJson( Map("success" -> JsBoolean(true))))
+      })
+    }
+
+    def renameEntity(id:Long) = WithAuthAction.async(parse.json) { request => 
+      ((request.body \ "name").asOpt[String].map{ name =>
+        entities.rename(id, name) map { x =>
+          Ok(Json.toJson(Map("success" -> JsNumber(x))))
+        }
+      }).getOrElse( Future(BadRequest("Error: missing parameter [name]")) )
     }
 
 }
