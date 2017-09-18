@@ -132,7 +132,9 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
                     this.setState({ ...this.state, contextMenuVisible: false, createMode: true, createType: {name: "folder", plural: "folders" } })
                 }}
                 onDelete={() => {
-                    this.props.onDeleted(this.props.item.item);
+                    if(confirm("Are you sure?")) {
+                        this.props.onDeleted(this.props.item.item);
+                    }
                 }}
                 onRename={() => {
                     this._onToggleEdit();

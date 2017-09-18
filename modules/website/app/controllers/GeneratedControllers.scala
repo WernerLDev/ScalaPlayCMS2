@@ -143,9 +143,9 @@ class GeneratedController @Inject() (
 
 
     val controllers = Map(
-        "posts" -> posts,
-        "categories" -> categories,
-        "projects" -> projects
+        "post" -> posts,
+        "category" -> categories,
+        "project" -> projects
     )
  
     val entityTypes = Map(

@@ -6,6 +6,7 @@ GET     /api/v1/entities            controllers.website.GeneratedController.getE
 GET     /api/v1/entities/:name      controllers.website.GeneratedController.getAll(name:String)
 POST     /api/v1/entities/:name      controllers.website.GeneratedController.insert(name:String)
 POST      /api/v1/entities/:name/init  controllers.website.GeneratedController.createNew(name:String)
+DELETE   /api/v1/entities/:name/:id    controllers.website.GeneratedController.delete(name:String, id:Long)
 
 GET     /assets/*file               controllers.website.Assets.versioned(path="/public/lib/playcmswebsite", file:Asset)
 
