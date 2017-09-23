@@ -5,7 +5,7 @@ import * as TreeTypes from '../TreeView/TreeViewTypes'
 import * as Api from '../../api/Api'
 import EntitiesTreeLabel from './EntitiesTreeLabel'
 import { Icon, Menu, Dropdown, Loader } from 'semantic-ui-react'
-
+import EntityTabPanel from './EntityTabPanel'
 import * as Tabs from '../TabPanel/TabPanel'
 import ViewerFactory from '../AssetViewers/ViewerFactory'
 import * as fbemitter from 'fbemitter'
@@ -133,7 +133,24 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
                         this.props.onOpenTab({
                             key: n.item.id + "entity",
                             title: n.item.name,
-                            content: () => (<div>{n.item.name}</div>)
+                            content: () => (
+                                <EntityTabPanel 
+                                    item={n.item}
+                                    fields={[
+                                        { name: "name", value: "", type: "text" },
+                                        { name: "lastname", value: "", type: "text" },
+                                        { name: "isActive", value: true, type: "bool" },
+                                        { name: "age", value: 0, type: "number" },
+                                        { name: "email", value: "", type: "text" },
+                                        { name: "test", value: new Date(), type: "date" },
+                                        { name: "Info", value: "", type: "textarea" },
+                                        { name: "Language", value: "", type: "radio", options: [
+                                            { value: "en", text: "English" },
+                                            { value: "nl", text: "Dutch" }
+                                        ]}
+                                    ]}
+                                />
+                            )
                         })
                     }}
                     onRenderLabel={this.renderLabel.bind(this)}
