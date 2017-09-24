@@ -122,3 +122,10 @@ box-shadow: 6px 6px 33px -9px rgba(0,0,0,0.75);
     padding: 15px;
     font-size: 14px;
 }
+
+
+.entityEditPane {
+    position: absolute; top: 145px; left: 0; right: 0; bottom: 0;
+    overflow: auto;
+    padding: 25px;
+}

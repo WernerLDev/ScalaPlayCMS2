@@ -24,6 +24,7 @@ trait TGenController {
     def insert(request:AuthRequest[JsValue]):Future[Result]
     def delete(id:Long, request:AuthRequest[AnyContent]):Future[Result]
     def createNew(request:AuthRequest[AnyContent]):Future[Result]
+    def getFormById(id:Long, request:AuthRequest[AnyContent]):Future[Result]
 }
 
 @Singleton
@@ -38,7 +39,7 @@ class GeneratedPostsController @Inject() (
     implicit val categoryWrites = Json.writes[Category]
 
     def getAll(request:AuthRequest[AnyContent]) = {
-        posts.getAll.map(entities => Ok(Json.toJson(entities.map(x => Map( "id" -> JsNumber(x._1.id), "name"-> JsString(x._1.name), "title"-> JsString(x._1.title), "content"-> JsString(x._1.content), "category_id" -> JsNumber(x._1.category_id), "category" -> Json.toJson(x._2)) ))))
+        posts.getAll.map(x => Ok(Json.toJson(x)))
     }
 
     def insert(request:AuthRequest[JsValue]) = {
@@ -57,6 +58,23 @@ class GeneratedPostsController @Inject() (
         posts.insert(Post(
            0, "", "", "", 0 
         )) map (x => Ok(Json.toJson(x)))
+    }
+
+     def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
+        posts.getById(id).map(x => x match {
+            case Some(p) => {
+                Ok(Json.toJson(
+                    List(
+                        Map("name" -> JsString("id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                        Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
+                        Map("name" -> JsString("title"), "type" -> JsString("text"), "value" -> JsString(p.title)),
+                        Map("name" -> JsString("content"), "type" -> JsString("textarea"), "value" -> JsString(p.content)),
+                        Map("name" -> JsString("category_id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.category_id))
+                    )
+                ))
+            }
+            case None => BadRequest("Invalid posts id provided.")
+        })
     }
 
 }
@@ -95,6 +113,21 @@ class GeneratedCategoriesController @Inject() (
         )) map (x => Ok(Json.toJson(x)))
     }
 
+     def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
+        categories.getById(id).map(x => x match {
+            case Some(p) => {
+                Ok(Json.toJson(
+                    List(
+                        Map("name" -> JsString("id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                        Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
+                        Map("name" -> JsString("categoryname"), "type" -> JsString("text"), "value" -> JsString(p.categoryname))
+                    )
+                ))
+            }
+            case None => BadRequest("Invalid categories id provided.")
+        })
+    }
+
 }
 
 
@@ -129,6 +162,23 @@ class GeneratedProjectsController @Inject() (
         projects.insert(Project(
            0, "", "", "", new Timestamp(new java.util.Date().getTime()) 
         )) map (x => Ok(Json.toJson(x)))
+    }
+
+     def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
+        projects.getById(id).map(x => x match {
+            case Some(p) => {
+                Ok(Json.toJson(
+                    List(
+                        Map("name" -> JsString("id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                        Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
+                        Map("name" -> JsString("Projectname"), "type" -> JsString("text"), "value" -> JsString(p.Projectname)),
+                        Map("name" -> JsString("Description"), "type" -> JsString("textarea"), "value" -> JsString(p.Description)),
+                        Map("name" -> JsString("ProjectDate"), "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
+                    )
+                ))
+            }
+            case None => BadRequest("Invalid projects id provided.")
+        })
     }
 
 }
@@ -189,4 +239,12 @@ class GeneratedController @Inject() (
         }}.toSeq
         Ok( Json.toJson(JsArray(entities)) )
     }
+    
+    def getFormById(name:String, id:Long) = WithAuthAction.async { request =>
+        controllers.get(name) match {
+            case Some(x) => x.getFormById(id, request)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }
+    }
+
 }

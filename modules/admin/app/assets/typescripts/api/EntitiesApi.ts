@@ -1,4 +1,5 @@
 import ApiCall from './ApiBase.js';
+import { EntityField } from '../components/EntitiesPanel/EntityTabPanel'
 
 export interface EntityType {
     name:string
@@ -24,6 +25,7 @@ export interface EntityTree {
     entity:Entity,
     children: EntityTree[]
 }
+
 
 export function getEntities():Promise<EntityTree[]> {
     return ApiCall("/admin/api/v1/entities", "GET").then(r => r as EntityTree[]);
@@ -71,4 +73,8 @@ export function renameEntity(entity:Entity):Promise<Entity> {
         "name" : entity.name
     });
     return ApiCall("/admin/api/v1/entities/" + entity.id + "/rename", "PUT", body).then(r => r as Entity);
+}
+
+export function getEntityForm(entity:Entity):Promise<EntityField[]> {
+    return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id + "/form", "GET").then(r => r as EntityField[]);
 }

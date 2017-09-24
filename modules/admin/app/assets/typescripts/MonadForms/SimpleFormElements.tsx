@@ -2,7 +2,16 @@ import * as React from 'react'
 import { Button, Dropdown, Checkbox, Form, Input, Radio, Select, TextArea, Grid } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
+import TinyMCE from 'react-mce';
 
+
+export function ReadonlyInput<T>(
+    label:string,
+    value:T,
+    onChange:(v:T) => void
+) {
+    return <p>{value}</p>
+}
 
 export function TextInput(
     label:string,
@@ -133,9 +142,26 @@ export function BoolInput(
         <Form.Radio
             toggle
             checked={value}
-            onChange={(e) => {
-                onChange(e.currentTarget.checked)
+            onChange={(e, data) => {
+               onChange(data.checked)
             }}
+        />
+    )
+}
+
+export function TinyMCEInput(
+    label:string,
+    value:string,
+    onChange:(v:string) => void
+) {
+    return (
+        <TinyMCE
+            content={value}
+            config={{
+            plugins: 'link code',
+            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
+            }}
+            onChange={(e) => onChange(e.target.getContent())}
         />
     )
 }

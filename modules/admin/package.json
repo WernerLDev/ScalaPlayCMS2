@@ -25,6 +25,7 @@
     "test": "test"
   },
   "dependencies": {
+    "@types/react-mce": "^0.6.0",
     "babel-polyfill": "^6.23.0",
     "fbemitter": "^2.1.1",
     "fixed-data-table": "^0.6.4",
@@ -33,6 +34,7 @@
     "rc-datepicker": "^5.0.7",
     "react": "^15.4.2",
     "react-dom": "^15.5.4",
+    "react-mce": "^0.6.1",
     "react-split-pane": "^0.1.59",
     "react-tap-event-plugin": "^2.0.1",
     "semantic-ui-react": "^0.68.3"

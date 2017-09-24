@@ -44,11 +44,11 @@ trait TPosts extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
   def getById(id:Long) = dbConfig.db.run {
-    posts.join(categories).on(_.category_id === _.id).filter(_._1.id === id).result.headOption
+    posts.filter(_.id === id).result.headOption
   }
 
   def getAll = dbConfig.db.run {
-    posts.join(categories).on(_.category_id === _.id).result
+    posts.result
   }
 
 }

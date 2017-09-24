@@ -136,19 +136,6 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
                             content: () => (
                                 <EntityTabPanel 
                                     item={n.item}
-                                    fields={[
-                                        { name: "name", value: "", type: "text" },
-                                        { name: "lastname", value: "", type: "text" },
-                                        { name: "isActive", value: true, type: "bool" },
-                                        { name: "age", value: 0, type: "number" },
-                                        { name: "email", value: "", type: "text" },
-                                        { name: "test", value: new Date(), type: "date" },
-                                        { name: "Info", value: "", type: "textarea" },
-                                        { name: "Language", value: "", type: "radio", options: [
-                                            { value: "en", text: "English" },
-                                            { value: "nl", text: "Dutch" }
-                                        ]}
-                                    ]}
                                 />
                             )
                         })
@@ -167,3 +154,21 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
 }
 
 export default EntitiesPanel;
+
+/*
+fields={[
+                                        { name: "id", value: 123, type: "readonly" },
+                                        { name: "name", value: "", type: "text" },
+                                        { name: "lastname", value: "", type: "text" },
+                                        { name: "isActive", value: true, type: "bool" },
+                                        { name: "age", value: 0, type: "number" },
+                                        { name: "email", value: "", type: "text" },
+                                        { name: "test", value: new Date(), type: "date" },
+                                        { name: "Info", value: "", type: "textarea" },
+                                        { name: "Richtexttest", value: "", type: "text" },
+                                        { name: "Language", value: "", type: "dropdown", options: [
+                                            { value: "en", text: "English" },
+                                            { value: "nl", text: "Dutch" }
+                                        ]}
+                                    ]}
+                                    */

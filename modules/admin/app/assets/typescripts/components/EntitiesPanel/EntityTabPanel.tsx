@@ -7,10 +7,17 @@ import {
     DropdownInput, 
     RadioInput, 
     BoolInput,
+    TinyMCEInput,
+    ReadonlyInput,
     FormInput 
 } from '../../MonadForms/SimpleFormElements'
 import * as Api from '../../api/Api'
-import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button } from 'semantic-ui-react'
+import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button, List, Grid } from 'semantic-ui-react'
+
+
+interface MyType {
+    [name: string]: any;
+}
 
 export type EntityField = {
     name:string,
@@ -21,6 +28,10 @@ export type EntityField = {
     value:string,
     type:"textarea"
 } | {
+    name:string,
+    value:string,
+    type:"richtext"
+} | {  
     name:string,
     value:Date,
     type:"date"
@@ -42,22 +53,32 @@ export type EntityField = {
     name:string,
     value:boolean,
     type:"bool"
+} | {
+    name: string,
+    value:any,
+    type:"readonly"
 }
 
 export interface EntityTabPanelProps {
-    fields:EntityField[]
     item: Api.Entity
 }
 
 export interface EntityTabPanelState {
-    fields:EntityField[]
+    fields:EntityField[],
+    working:boolean
 }
 
 export default class EntityTabPanel extends React.Component<EntityTabPanelProps, EntityTabPanelState> {
     
     constructor(props:EntityTabPanelProps, context:any) {
         super(props, context);
-        this.state = { fields: props.fields}
+        this.state = { fields: [], working: true }
+    }
+
+    componentWillMount() {
+        Api.getEntityForm(this.props.item).then(fields => {
+            this.setState({ fields: fields, working: false });
+        })
     }
 
     renderFormField(f:EntityField, index:number) {
@@ -159,17 +180,50 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         }
                     )}
                 </div>
+            )  
+        } else if(f.type == "richtext") {
+            return (
+                <div className={isEven ? "evenRow" : ""} key={index}>
+                    {FormInput(TinyMCEInput)(
+                        f.name,
+                        f.value,
+                        (v) => {
+                            let oldFields = this.state.fields;
+                            oldFields[index].value = v;
+                            this.setState({...this.state, fields: oldFields });
+                        }
+                    )}
+                </div>
             )
+        } else if(f.type == "readonly") {
+            return (
+                <div className={isEven ? "evenRow" : ""} key={index}>
+                    {FormInput(ReadonlyInput)(
+                        f.name,
+                        f.value,
+                        (v) => {}
+                    )}
+                </div>
+            );
         } else {
             return null;
         }
     }
 
     handleItemClick() {
-
+        var entity:MyType = {};
+        this.state.fields.forEach(x => {
+            entity[x.name] = x.value;
+        })
+        console.log(entity);
     }
 
     render() {
+        if(this.state.working) return (
+            <Dimmer active inverted>
+                <Loader inverted content="Loading..." />
+            </Dimmer> 
+        )
         return (
         <div>
             <Segment inverted className="toolbar">
@@ -186,13 +240,50 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                     </Menu.Item>
                 </Menu>
             </Segment>
-            <div style={{margin: "25px", overflow: "auto"}}>
-                {this.props.item.name}
-                {this.state.fields.map((field, index) => this.renderFormField(field, index))}
-                <hr />
-                <div style={{whiteSpace: "pre"}}>
-                {JSON.stringify(this.state, null, 2)}
-                </div>
+            <div className="entityEditPane">
+                <Grid columns={2} divided>
+                    <Grid.Column width={12}>
+                    {this.state.fields.map((field, index) => this.renderFormField(field, index))}
+                    
+                    <div style={{marginTop: "15px", whiteSpace: "pre"}}>
+                        {JSON.stringify(this.state, null, 2)}
+                    </div>
+                    </Grid.Column>
+                    <Grid.Column width={4}>
+                        <Segment color="green">
+                        <h3>Categories</h3>
+                        <List divided verticalAlign='middle'>
+                            <List.Item verticalAlign="middle">
+                                <List.Content floated='right'>
+                                    <Button size="mini">Unlink</Button>
+                                </List.Content>
+                                
+                                <List.Content verticalAlign="middle">
+                                    Lena
+                                </List.Content>
+                            </List.Item>
+                            <List.Item verticalAlign="middle">
+                                <List.Content floated='right'>
+                                    <Button size="mini">Unlink</Button>
+                                </List.Content>
+                                
+                                <List.Content verticalAlign="middle">
+                                    test
+                                </List.Content>
+                            </List.Item>
+                            <List.Item verticalAlign="middle">
+                                <List.Content floated='right'>
+                                    <Button size="mini">Unlink</Button>
+                                </List.Content>
+                                
+                                <List.Content verticalAlign="middle">
+                                    Blaat
+                                </List.Content>
+                            </List.Item>
+                        </List>
+                        </Segment>
+                    </Grid.Column>
+                </Grid>
             </div>
         </div>
         );
