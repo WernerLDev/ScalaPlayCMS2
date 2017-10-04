@@ -78,3 +78,11 @@ export function renameEntity(entity:Entity):Promise<Entity> {
 export function getEntityForm(entity:Entity):Promise<EntityField[]> {
     return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id + "/form", "GET").then(r => r as EntityField[]);
 }
+
+export function getEntitiesByType(type:string):Promise<Entity[]> {
+    return ApiCall("/admin/api/v1/entities/type/" + type, "GET").then(x => x as Entity[]);
+}
+
+export function getEntityById(id:number):Promise<Entity> {
+    return ApiCall("/admin/api/v1/entities/" + id, "GET").then(x => x as Entity);
+}

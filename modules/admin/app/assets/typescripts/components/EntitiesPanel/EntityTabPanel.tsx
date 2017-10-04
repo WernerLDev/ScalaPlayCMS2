@@ -13,7 +13,7 @@ import {
 } from '../../MonadForms/SimpleFormElements'
 import * as Api from '../../api/Api'
 import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button, List, Grid } from 'semantic-ui-react'
-
+import { EntityDropDown } from './EntityDropdown'
 
 interface MyType {
     [name: string]: any;
@@ -33,8 +33,8 @@ export type EntityField = {
     type:"richtext"
 } | {  
     name:string,
-    value:Date,
-    type:"date"
+    value:number,
+    type:"datetime"
 } | {
     name:string,
     value:number,
@@ -81,12 +81,15 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
         })
     }
 
+    bgcolor(isEven:boolean) {
+        return isEven ? "#fbfbfb" : "white";
+    }
+
     renderFormField(f:EntityField, index:number) {
         let isEven = index % 2 == 0;
         if(f.type == "text") {
             return(
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(TextInput)(
+               FormInput(TextInput, this.bgcolor(isEven))(
                         f.name, 
                         f.value,
                         (v) => {
@@ -94,13 +97,12 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
                         }
-                    )}
-                </div>
+                    )
             );
         } else if(f.type == "textarea") {
             return(
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                {FormInput(TextareaInput)(
+                
+                FormInput(TextareaInput, this.bgcolor(isEven))(
                     f.name,
                     f.value,
                     (v) => {
@@ -108,13 +110,12 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         oldFields[index].value = v;
                         this.setState({...this.state, fields: oldFields });
                     }
-                )}
-            </div>
+                )
+            
             )
-        } else if(f.type == "date") {
+        } else if(f.type == "datetime") {
             return(
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(DateInput)(
+               FormInput(DateInput, this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -122,13 +123,11 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
                         }
-                    )}
-                </div>
+                    )
             );
         } else if(f.type == "number") {
             return(
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(NumberInput)(
+                FormInput(NumberInput, this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -136,13 +135,11 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
                         }
-                    )}
-                </div>
+                    )
             ); 
         } else if(f.type == "dropdown") {
             return (
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(DropdownInput(f.options))(
+                FormInput(DropdownInput(f.options), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -150,13 +147,11 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
                         }
-                    )}
-                </div>
+                    )
             );
         }  else if(f.type == "radio") {
             return (
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(RadioInput(f.options))(
+                FormInput(RadioInput(f.options), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -164,13 +159,11 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
                         }
-                    )}
-                </div>
+                    )
             );
         } else if(f.type == "bool") {
             return (
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(BoolInput)(
+                FormInput(BoolInput, this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -178,8 +171,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
                         }
-                    )}
-                </div>
+                    )
             )  
         } else if(f.type == "richtext") {
             return (
@@ -197,13 +189,11 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             )
         } else if(f.type == "readonly") {
             return (
-                <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(ReadonlyInput)(
+                FormInput(ReadonlyInput, this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {}
-                    )}
-                </div>
+                    )
             );
         } else {
             return null;
@@ -243,11 +233,27 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             <div className="entityEditPane">
                 <Grid columns={2} divided>
                     <Grid.Column width={12}>
-                    {this.state.fields.map((field, index) => this.renderFormField(field, index))}
+                    <Segment color="blue">
+                        {this.state.fields.map((field, index) => this.renderFormField(field, index))}
+                        
+                        {FormInput(EntityDropDown("category"))(
+                            "Category",
+                            "",
+                            (v) => {}
+                        )}
+                        
+                        {FormInput(EntityDropDown("post"), this.bgcolor(true))(
+                            "Post",
+                            "",
+                            (v) => {}
+                        )}
                     
-                    <div style={{marginTop: "15px", whiteSpace: "pre"}}>
-                        {JSON.stringify(this.state, null, 2)}
-                    </div>
+                    </Segment>
+                    {/* <Segment>
+                        <div style={{marginTop: "15px", whiteSpace: "pre"}}>
+                            {JSON.stringify(this.state, null, 2)}
+                        </div>
+                    </Segment> */}
                     </Grid.Column>
                     <Grid.Column width={4}>
                         <Segment color="green">

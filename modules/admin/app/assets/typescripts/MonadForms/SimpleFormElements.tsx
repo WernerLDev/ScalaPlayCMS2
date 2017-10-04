@@ -37,14 +37,15 @@ export function TextareaInput(
 ) {
     return (
         <Form>
-        <TextArea 
-            autoHeight
-            value={value}
-            placeholder={label}
-            onChange={(e) => {
-                onChange(e.currentTarget.value)
-            }}
-        />
+            <Form.TextArea 
+                autoHeight
+                style={{minHeight: 400}}
+                value={value}
+                placeholder={label}
+                onChange={(e) => {
+                    onChange(e.currentTarget.value)
+                }}
+            />
         </Form>
     );
 }
@@ -69,16 +70,16 @@ export function NumberInput(
 
 export function DateInput(
     label:string,
-    value:Date,
-    onChange:(v:Date) => void
+    value:number,
+    onChange:(v:number) => void
 ) {
     return (
         <DatePickerInput
             style={{background: "none"}}
             onChange={(date) => {
-                onChange(date)
+                onChange(date.getTime())
             }}
-            value={moment(value)}
+            value={moment(new Date(value))}
             displayFormat="MMMM Do YYYY, HH:MM"
             showOnInputClick
         />
@@ -96,6 +97,7 @@ export function DropdownInput(
     ) => {
         return (
             <Dropdown 
+                loading={options.length == 0}
                 placeholder={"Select " + label} 
                 value={value} 
                 fluid selection 
@@ -167,14 +169,16 @@ export function TinyMCEInput(
 }
 
 export function FormInput<T>(
-    inputElem:(l:string, v:T, u:(v:T) => void) => JSX.Element
+    inputElem:(l:string, v:T, u:(v:T) => void) => JSX.Element,
+    background?:string
 ) {
+    let bgcolor = background ? background : "white";
     return (
         label:string,
         value:T,
         onChange:(v:T) => void
     ) => (
-        <Grid columns={2} divided>
+        <Grid style={{background: bgcolor}} columns={2} divided>
             <Grid.Column width={2} textAlign="right" verticalAlign="middle">
                 {label}
             </Grid.Column>

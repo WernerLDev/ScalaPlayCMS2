@@ -33,7 +33,19 @@ class EntitiesController @Inject()(
         Ok(Json.toJson(x))
       })
     }
+
+    def getById(id:Long) = WithAuthAction.async {
+      entities.getById(id).map(x => x match {
+        case Some(x) => Ok(Json.toJson(x))
+        case None => NotFound(Json.toJson(Map("msg" -> JsString("No entity found with id " + id.toString))))
+      })
+    }
     
+    def getByType(entityType:String) = WithAuthAction.async {
+      entities.getByType(entityType).map(result => {
+        Ok(Json.toJson(result))
+      })
+    }
 
     def addEntity = WithAuthAction.async(parse.json) { request =>
       {request.body \ "entity"}.asOpt[NewEntity].map(entity => {

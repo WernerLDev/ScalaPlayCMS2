@@ -57,10 +57,6 @@ class Entities @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     entities.filter(_.id === entity.id).update(entity)
   }
 
-  def delete2(id:Long) = dbConfig.db.run {
-    entities.filter(_.id === id).delete
-  }
-
   def delete(id:Long):Future[Int] = {
     val subitems:Future[Seq[Entity]] = dbConfig.db.run(entities.filter(_.parent_id === id).result)
     subitems.map(items => {
@@ -76,6 +72,10 @@ class Entities @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   def getById(id:Long) = dbConfig.db.run {
     entities.filter(_.id === id).result.headOption
+  }
+
+  def getByType(entityType:String) = dbConfig.db.run {
+    entities.filter(_.discriminator === entityType).result
   }
 
   def getAll = dbConfig.db.run {

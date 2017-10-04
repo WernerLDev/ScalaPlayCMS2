@@ -69,7 +69,7 @@ class GeneratedPostsController @Inject() (
                         Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
                         Map("name" -> JsString("title"), "type" -> JsString("text"), "value" -> JsString(p.title)),
                         Map("name" -> JsString("content"), "type" -> JsString("textarea"), "value" -> JsString(p.content)),
-                        Map("name" -> JsString("category_id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.category_id))
+                        Map("name" -> JsString("category_id"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id))
                     )
                 ))
             }
