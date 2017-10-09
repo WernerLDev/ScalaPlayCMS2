@@ -19,6 +19,7 @@ class DocumentsController @Inject()(
 ) extends Controller {
   
   def getPageTypes = WithAuthAction {
+  
     val pagetypes = templates.templates.map { case (k,v) => {
       Json.toJson(Map( "typekey" -> JsString(k), "typename" -> JsString(v.name)))
      }}.toSeq

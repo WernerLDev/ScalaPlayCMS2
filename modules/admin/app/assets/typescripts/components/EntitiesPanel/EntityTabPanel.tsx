@@ -57,6 +57,11 @@ export type EntityField = {
     name: string,
     value:any,
     type:"readonly"
+} | {
+    name: string,
+    relation: string,
+    value: number,
+    type: "relation"
 }
 
 export interface EntityTabPanelProps {
@@ -195,6 +200,18 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         (v) => {}
                     )
             );
+        } else if(f.type == "relation") {
+            return (
+                FormInput(EntityDropDown(f.relation))(
+                    f.relation,
+                    f.value,
+                    (v) => {
+                        let oldFields = this.state.fields;
+                        oldFields[index].value = v;
+                        this.setState({...this.state, fields: oldFields });
+                    }
+                )
+            )
         } else {
             return null;
         }
@@ -236,7 +253,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                     <Segment color="blue">
                         {this.state.fields.map((field, index) => this.renderFormField(field, index))}
                         
-                        {FormInput(EntityDropDown("category"))(
+                        {/* {FormInput(EntityDropDown("category"))(
                             "Category",
                             "",
                             (v) => {}
@@ -246,7 +263,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             "Post",
                             "",
                             (v) => {}
-                        )}
+                        )} */}
                     
                     </Segment>
                     {/* <Segment>

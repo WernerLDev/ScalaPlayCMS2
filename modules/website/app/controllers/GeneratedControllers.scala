@@ -65,11 +65,11 @@ class GeneratedPostsController @Inject() (
             case Some(p) => {
                 Ok(Json.toJson(
                     List(
-                        Map("name" -> JsString("id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                        Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
-                        Map("name" -> JsString("title"), "type" -> JsString("text"), "value" -> JsString(p.title)),
-                        Map("name" -> JsString("content"), "type" -> JsString("textarea"), "value" -> JsString(p.content)),
-                        Map("name" -> JsString("category_id"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id))
+                        Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                        Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
+                        Map("name" -> JsString("title"),  "type" -> JsString("text"), "value" -> JsString(p.title)),
+                        Map("name" -> JsString("content"),  "type" -> JsString("textarea"), "value" -> JsString(p.content)),
+                        Map("name" -> JsString("category_id"), "relation" -> JsString("category"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id))
                     )
                 ))
             }
@@ -118,9 +118,9 @@ class GeneratedCategoriesController @Inject() (
             case Some(p) => {
                 Ok(Json.toJson(
                     List(
-                        Map("name" -> JsString("id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                        Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
-                        Map("name" -> JsString("categoryname"), "type" -> JsString("text"), "value" -> JsString(p.categoryname))
+                        Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                        Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
+                        Map("name" -> JsString("categoryname"),  "type" -> JsString("text"), "value" -> JsString(p.categoryname))
                     )
                 ))
             }
@@ -169,11 +169,11 @@ class GeneratedProjectsController @Inject() (
             case Some(p) => {
                 Ok(Json.toJson(
                     List(
-                        Map("name" -> JsString("id"), "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                        Map("name" -> JsString("name"), "type" -> JsString("text"), "value" -> JsString(p.name)),
-                        Map("name" -> JsString("Projectname"), "type" -> JsString("text"), "value" -> JsString(p.Projectname)),
-                        Map("name" -> JsString("Description"), "type" -> JsString("textarea"), "value" -> JsString(p.Description)),
-                        Map("name" -> JsString("ProjectDate"), "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
+                        Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                        Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
+                        Map("name" -> JsString("Projectname"),  "type" -> JsString("text"), "value" -> JsString(p.Projectname)),
+                        Map("name" -> JsString("Description"),  "type" -> JsString("textarea"), "value" -> JsString(p.Description)),
+                        Map("name" -> JsString("ProjectDate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
                     )
                 ))
             }

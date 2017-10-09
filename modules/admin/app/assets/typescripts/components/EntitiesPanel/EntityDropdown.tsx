@@ -49,13 +49,15 @@ export const EntityDropDown = (
     entityType:string
 ) => (
     label:string,
-    value:string,
-    onChange:(v:string) => void
+    value:number,
+    onChange:(v:number) => void
 ) => (
     <EntityDropdownComp
         entityType={entityType}
         label={label}
-        onChange={onChange}
-        value={value}
+        onChange={(v => {
+            onChange(parseInt(v))
+        })}
+        value={value.toString()}
     />
 )

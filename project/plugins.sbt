@@ -26,3 +26,7 @@ addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.8")
 // addSbtPlugin("com.arpnetworking" % "sbt-typescript" % "0.3.4")
 
 addSbtPlugin("name.de-vries" % "sbt-typescript" % "2.5.2")
+
+addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.2.2")
+
+addSbtPlugin("org.ensime" % "sbt-ensime" % "2.0.1")
