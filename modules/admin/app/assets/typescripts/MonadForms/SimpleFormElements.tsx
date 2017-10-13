@@ -97,6 +97,7 @@ export function DropdownInput(
         return (
             <Dropdown 
                 loading={options.length == 0}
+                search
                 placeholder={"Select " + label} 
                 value={value} 
                 fluid selection 
@@ -107,6 +108,30 @@ export function DropdownInput(
             />
         );
     }
+}
+
+export function multipleSelect(
+    options:{value:string, text:string}[]
+) {
+    return (
+        label:string,
+        values:string[],
+        onChange:(v:string[]) => void
+    ) => (
+        <Dropdown 
+            multiple 
+            search 
+            selection 
+            fluid 
+            options={options} 
+            placeholder='Make selection' 
+            defaultValue={values}
+            onChange={(e, {value}) => {
+                console.log(value);
+                onChange(value as string[])
+            }}
+        />
+    )
 }
 
 export function RadioInput(

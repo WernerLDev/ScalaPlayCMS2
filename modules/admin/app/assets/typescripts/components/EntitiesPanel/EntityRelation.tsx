@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as Api from '../../api/Api'
-import { DropdownInput } from '../../MonadForms/SimpleFormElements' 
-import { Segment, Icon, Dimmer, Loader, Button, List } from 'semantic-ui-react'
+import { DropdownInput, multipleSelect } from '../../MonadForms/SimpleFormElements' 
+import { Segment, Icon, Dimmer, Loader, Button, List, Header } from 'semantic-ui-react'
 
 export interface EntityRelationProps {
     relationname:string,
@@ -10,8 +10,8 @@ export interface EntityRelationProps {
 }
 
 export interface EntityRelationState {
-    entities:{value:number, text:string}[]
-    relations:number[]
+    entities:{value:string, text:string}[]
+    relations:string[]
     loading:boolean
 }
 
@@ -21,7 +21,7 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
     
     constructor(props:EntityRelationProps, context:any) {
         super(props, context);
-        this.state = { entities: [], relations: [], loading: true }   
+        this.state = { entities: [], relations: [],loading: true }   
     }
 
     componentWillMount() {
@@ -31,18 +31,18 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
                     ...this.state, 
                     entities: entities.map(x => {
                         return {
-                            value: x.id,
+                            value: x.id.toString(),
                             text: x.name
                         }
                     }),
-                    relations: relations.map(x => x.target_id),
+                    relations: relations.map(x => x.target_id.toString()),
                     loading: false
                 })
             })
         })
     }
 
-    renderSingleRelation(relation:number) {
+    renderSingleRelation(relation:string) {
         return (
             <List.Item key={relation}>
                 <List.Content floated='right'>
@@ -50,7 +50,7 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
                 </List.Content>
                 
                 <List.Content verticalAlign="middle">
-                    {this.state.entities.filter(x => x.value == relation)[0]}
+                    {this.state.entities.filter(x => x.value == relation)[0].text}
                 </List.Content>
             </List.Item>
         )
@@ -59,11 +59,21 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
     render() {
         return (
             <Segment color="green" loading={this.state.loading}>
-                <h3>{this.props.relation}</h3>
-                <List divided verticalAlign='middle'>
+                <Header as="h5">{this.props.relation}</Header>
+                {/* <List divided verticalAlign='middle'>
                     {this.state.relations.map(x => this.renderSingleRelation(x))}
                     
-                </List>
+                </List> */}
+
+                <div>
+
+                
+                {multipleSelect(this.state.entities)(
+                    this.props.relation,
+                    this.state.relations,
+                    (v) => this.setState({...this.state, relations: v})
+                )}
+                </div>
             </Segment>
         )
     }

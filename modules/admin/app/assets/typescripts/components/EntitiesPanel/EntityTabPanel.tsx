@@ -8,7 +8,7 @@ import {
     RadioInput, 
     BoolInput,
     ReadonlyInput,
-    FormInput 
+    FormInput
 } from '../../MonadForms/SimpleFormElements'
 import * as Api from '../../api/Api'
 import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button, List, Grid } from 'semantic-ui-react'
@@ -267,7 +267,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         <Loader inverted content="Saving..." />
                     </Dimmer>
                 : null }
-                <Grid columns={2} divided>
+                <Grid columns={this.state.relations.length > 0 ? 2 : 1} divided>
                     <Grid.Column width={12}>
                     <Segment color="blue">
                         {this.state.fields.map((field, index) => this.renderFormField(field, index))}
@@ -291,15 +291,18 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         </div>
                     </Segment> */}
                     </Grid.Column>
-                    <Grid.Column width={4}>
-                        {this.state.relations.map(x => 
-                            <EntityRelation
-                                entityid={this.props.item.object_id}
-                                relation={x.relation}
-                                relationname={x.relationname}
-                            />
-                        )}
-                    </Grid.Column>
+                    {this.state.relations.length > 0 ?
+                        <Grid.Column width={4}>
+                            {this.state.relations.map(x => 
+                                <EntityRelation
+                                    key={x.relationname}
+                                    entityid={this.props.item.object_id}
+                                    relation={x.relation}
+                                    relationname={x.relationname}
+                                />
+                            )}
+                        </Grid.Column>
+                    : null }
                 </Grid>
             </div>
         </div>
