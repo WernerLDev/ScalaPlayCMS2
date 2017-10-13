@@ -152,7 +152,7 @@ class Main extends React.Component<MainProps, MainState> {
                             onClick={() => this.switchSection("pages")} >Pages</SideMenuItem>
                         <SideMenuItem 
                             active={this.state.section == "entities"} icon="cubes"
-                            onClick={() => this.switchSection("entities")} >Entities</SideMenuItem>
+                            onClick={() => this.switchSection("entities")} >Data</SideMenuItem>
                         <SideMenuItem 
                             active={this.state.section == "assets"} icon="picture-o"
                             onClick={() => this.switchSection("assets")} >Assets</SideMenuItem>

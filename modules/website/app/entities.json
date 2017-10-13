@@ -31,7 +31,9 @@
                 { "name" : "Description", "atype" : "text"},
                 { "name" : "ProjectDate", "atype" : "timestamp"}
             ],
-            "relations": []
+            "relations": [
+                { "has": "many", "of": "category" }
+            ]
         }
     ]
 }

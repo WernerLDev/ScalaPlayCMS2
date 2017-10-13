@@ -7,13 +7,13 @@ import {
     DropdownInput, 
     RadioInput, 
     BoolInput,
-    TinyMCEInput,
     ReadonlyInput,
     FormInput 
 } from '../../MonadForms/SimpleFormElements'
 import * as Api from '../../api/Api'
 import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button, List, Grid } from 'semantic-ui-react'
 import { EntityDropDown } from './EntityDropdown'
+import EntityRelation from './EntityRelation'
 
 interface MyType {
     [name: string]: any;
@@ -70,20 +70,40 @@ export interface EntityTabPanelProps {
 
 export interface EntityTabPanelState {
     fields:EntityField[],
-    working:boolean
+    relations:{relationname:string, relation:string}[],
+    working:boolean,
+    saving:boolean
 }
 
 export default class EntityTabPanel extends React.Component<EntityTabPanelProps, EntityTabPanelState> {
     
     constructor(props:EntityTabPanelProps, context:any) {
         super(props, context);
-        this.state = { fields: [], working: true }
+        this.state = { fields: [], relations: [], working: true, saving: false }
     }
 
     componentWillMount() {
         Api.getEntityForm(this.props.item).then(fields => {
-            this.setState({ fields: fields, working: false });
+            this.setState({ fields: fields.attributes, relations: fields.relations, working: false });
         })
+    }
+
+    saveEntity() {
+        var entity:MyType = {};
+        this.state.fields.forEach(x => {
+            entity[x.name] = x.value;
+        })
+        this.setState({...this.state, saving: true}, () => {
+            Api.updateEntity(entity, this.props.item.discriminator).then(x => {
+                setTimeout(() => {
+                    this.setState({...this.state, saving: false})
+                }, 1000)
+            })
+        })
+    }
+
+    handleItemClick() {
+
     }
 
     bgcolor(isEven:boolean) {
@@ -94,7 +114,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
         let isEven = index % 2 == 0;
         if(f.type == "text") {
             return(
-               FormInput(TextInput, this.bgcolor(isEven))(
+               FormInput(TextInput, index.toString(), this.bgcolor(isEven))(
                         f.name, 
                         f.value,
                         (v) => {
@@ -107,7 +127,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
         } else if(f.type == "textarea") {
             return(
                 
-                FormInput(TextareaInput, this.bgcolor(isEven))(
+                FormInput(TextareaInput, index.toString(), this.bgcolor(isEven))(
                     f.name,
                     f.value,
                     (v) => {
@@ -120,7 +140,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             )
         } else if(f.type == "datetime") {
             return(
-               FormInput(DateInput, this.bgcolor(isEven))(
+               FormInput(DateInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -132,7 +152,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             );
         } else if(f.type == "number") {
             return(
-                FormInput(NumberInput, this.bgcolor(isEven))(
+                FormInput(NumberInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -144,7 +164,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             ); 
         } else if(f.type == "dropdown") {
             return (
-                FormInput(DropdownInput(f.options), this.bgcolor(isEven))(
+                FormInput(DropdownInput(f.options), index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -156,7 +176,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             );
         }  else if(f.type == "radio") {
             return (
-                FormInput(RadioInput(f.options), this.bgcolor(isEven))(
+                FormInput(RadioInput(f.options), index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -168,7 +188,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             );
         } else if(f.type == "bool") {
             return (
-                FormInput(BoolInput, this.bgcolor(isEven))(
+                FormInput(BoolInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -181,7 +201,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
         } else if(f.type == "richtext") {
             return (
                 <div className={isEven ? "evenRow" : ""} key={index}>
-                    {FormInput(TinyMCEInput)(
+                    {FormInput(TextareaInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {
@@ -194,7 +214,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             )
         } else if(f.type == "readonly") {
             return (
-                FormInput(ReadonlyInput, this.bgcolor(isEven))(
+                FormInput(ReadonlyInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
                         (v) => {}
@@ -202,7 +222,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             );
         } else if(f.type == "relation") {
             return (
-                FormInput(EntityDropDown(f.relation))(
+                FormInput(EntityDropDown(f.relation), index.toString())(
                     f.relation,
                     f.value,
                     (v) => {
@@ -217,13 +237,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
         }
     }
 
-    handleItemClick() {
-        var entity:MyType = {};
-        this.state.fields.forEach(x => {
-            entity[x.name] = x.value;
-        })
-        console.log(entity);
-    }
+   
 
     render() {
         if(this.state.working) return (
@@ -235,7 +249,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
         <div>
             <Segment inverted className="toolbar">
                 <Menu inverted icon="labeled" size="massive">
-                    <Menu.Item name='properties' active={false} onClick={this.handleItemClick.bind(this)}>
+                    <Menu.Item name='properties' active={false} onClick={this.saveEntity.bind(this)}>
                         <Icon name='save' />Save
                     </Menu.Item>
 
@@ -248,6 +262,11 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                 </Menu>
             </Segment>
             <div className="entityEditPane">
+                {this.state.saving ?
+                    <Dimmer active inverted>
+                        <Loader inverted content="Saving..." />
+                    </Dimmer>
+                : null }
                 <Grid columns={2} divided>
                     <Grid.Column width={12}>
                     <Segment color="blue">
@@ -273,38 +292,13 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                     </Segment> */}
                     </Grid.Column>
                     <Grid.Column width={4}>
-                        <Segment color="green">
-                        <h3>Categories</h3>
-                        <List divided verticalAlign='middle'>
-                            <List.Item verticalAlign="middle">
-                                <List.Content floated='right'>
-                                    <Button size="mini">Unlink</Button>
-                                </List.Content>
-                                
-                                <List.Content verticalAlign="middle">
-                                    Lena
-                                </List.Content>
-                            </List.Item>
-                            <List.Item verticalAlign="middle">
-                                <List.Content floated='right'>
-                                    <Button size="mini">Unlink</Button>
-                                </List.Content>
-                                
-                                <List.Content verticalAlign="middle">
-                                    test
-                                </List.Content>
-                            </List.Item>
-                            <List.Item verticalAlign="middle">
-                                <List.Content floated='right'>
-                                    <Button size="mini">Unlink</Button>
-                                </List.Content>
-                                
-                                <List.Content verticalAlign="middle">
-                                    Blaat
-                                </List.Content>
-                            </List.Item>
-                        </List>
-                        </Segment>
+                        {this.state.relations.map(x => 
+                            <EntityRelation
+                                entityid={this.props.item.object_id}
+                                relation={x.relation}
+                                relationname={x.relationname}
+                            />
+                        )}
                     </Grid.Column>
                 </Grid>
             </div>

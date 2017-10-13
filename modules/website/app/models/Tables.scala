@@ -13,17 +13,16 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.SqlType
 import models.website._
 
-case class Post (id:Long, name:String, title:String, content:String, category_id:Long) 
+case class Post (id:Long, title:String, content:String, category_id:Long) 
 
 class PostTableDef(tag:Tag) extends Table[Post](tag, "posts") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
-  def name = column[String]("name")
   def title = column[String]("title")
   def content = column[String]("content")
   def category_id = column[Long]("category_id")
 
-  override def * = (id, name, title, content, category_id) <>(Post.tupled, Post.unapply)
+  override def * = (id, title, content, category_id) <>(Post.tupled, Post.unapply)
 }
 
 
@@ -52,15 +51,14 @@ trait TPosts extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Category (id:Long, name:String, categoryname:String) 
+case class Category (id:Long, categoryname:String) 
 
 class CategoryTableDef(tag:Tag) extends Table[Category](tag, "categories") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
-  def name = column[String]("name")
   def categoryname = column[String]("categoryname")
 
-  override def * = (id, name, categoryname) <>(Category.tupled, Category.unapply)
+  override def * = (id, categoryname) <>(Category.tupled, Category.unapply)
 }
 
 
@@ -89,24 +87,49 @@ trait TCategories extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Project (id:Long, name:String, Projectname:String, Description:String, ProjectDate:Timestamp) 
+case class Projectcategory (source_id:Long, target_id:Long) 
+
+class ProjectcategoryTableDef(tag:Tag) extends Table[Projectcategory](tag, "projectcategories") {
+  
+  def source_id = column[Long]("source_id")
+  def target_id = column[Long]("target_id")
+
+  override def * = (source_id, target_id) <>(Projectcategory.tupled, Projectcategory.unapply)
+}
+
+
+trait TProjectcategories extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val projectcategories = TableQuery[ProjectcategoryTableDef]
+
+  def link(projectcategory:Projectcategory) = dbConfig.db.run(projectcategories += projectcategory)
+  
+  def unlink(projectcategory:Projectcategory) = dbConfig.db.run {
+    projectcategories.filter(x => x.source_id === projectcategory.source_id && x.target_id === projectcategory.target_id).delete
+  }
+
+  def getBySourceId(id:Long) = dbConfig.db.run {
+    projectcategories.filter(_.source_id === id).result
+  }
+
+}
+case class Project (id:Long, Projectname:String, Description:String, ProjectDate:Timestamp) 
 
 class ProjectTableDef(tag:Tag) extends Table[Project](tag, "projects") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
-  def name = column[String]("name")
   def Projectname = column[String]("Projectname")
   def Description = column[String]("Description")
   def ProjectDate = column[Timestamp]("ProjectDate")
 
-  override def * = (id, name, Projectname, Description, ProjectDate) <>(Project.tupled, Project.unapply)
+  override def * = (id, Projectname, Description, ProjectDate) <>(Project.tupled, Project.unapply)
 }
 
 
 trait TProjects extends HasDatabaseConfigProvider[JdbcProfile] {
 
   val projects = TableQuery[ProjectTableDef]
-   
+  val categories = TableQuery[CategoryTableDef] 
   val insertQuery = projects returning projects.map(_.id) into ((project, id) => project.copy(id = id))
 
   def insert(project:Project) = dbConfig.db.run(insertQuery += project)

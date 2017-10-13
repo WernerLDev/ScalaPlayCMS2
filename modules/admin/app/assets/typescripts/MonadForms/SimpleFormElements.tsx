@@ -2,7 +2,6 @@ import * as React from 'react'
 import { Button, Dropdown, Checkbox, Form, Input, Radio, Select, TextArea, Grid } from 'semantic-ui-react'
 import * as moment from 'moment'
 import {DatePickerInput} from 'rc-datepicker';
-import TinyMCE from 'react-mce';
 
 
 export function ReadonlyInput<T>(
@@ -151,25 +150,26 @@ export function BoolInput(
     )
 }
 
-export function TinyMCEInput(
-    label:string,
-    value:string,
-    onChange:(v:string) => void
-) {
-    return (
-        <TinyMCE
-            content={value}
-            config={{
-            plugins: 'link code',
-            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
-            }}
-            onChange={(e) => onChange(e.target.getContent())}
-        />
-    )
-}
+// export function TinyMCEInput(
+//     label:string,
+//     value:string,
+//     onChange:(v:string) => void
+// ) {
+//     return (
+//         <TinyMCE
+//             content={value}
+//             config={{
+//             plugins: 'link code',
+//             toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
+//             }}
+//             onChange={(e) => onChange(e.target.getContent())}
+//         />
+//     )
+// }
 
 export function FormInput<T>(
     inputElem:(l:string, v:T, u:(v:T) => void) => JSX.Element,
+    key?:string,
     background?:string
 ) {
     let bgcolor = background ? background : "white";
@@ -178,7 +178,7 @@ export function FormInput<T>(
         value:T,
         onChange:(v:T) => void
     ) => (
-        <Grid style={{background: bgcolor}} columns={2} divided>
+        <Grid key={key} style={{background: bgcolor}} columns={2} divided>
             <Grid.Column width={2} textAlign="right" verticalAlign="middle">
                 {label}
             </Grid.Column>

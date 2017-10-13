@@ -6,8 +6,14 @@ GET     /api/v1/entities                controllers.website.GeneratedController.
 GET     /api/v1/entities/:name          controllers.website.GeneratedController.getAll(name:String)
 GET     /api/v1/entities/:name/:id/form controllers.website.GeneratedController.getFormById(name:String, id:Long)
 POST     /api/v1/entities/:name         controllers.website.GeneratedController.insert(name:String)
+PUT     /api/v1/entities/:name           controllers.website.GeneratedController.update(name:String)
 POST      /api/v1/entities/:name/init   controllers.website.GeneratedController.createNew(name:String)
 DELETE   /api/v1/entities/:name/:id     controllers.website.GeneratedController.delete(name:String, id:Long)
+
+GET      /api/v1/entities/link/:name/:sourceid/:targetid    controllers.website.GeneratedController.link(name:String, sourceid:Long, targetid:Long)
+GET      /api/v1/entities/unlink/:name/:sourceid/:targetid    controllers.website.GeneratedController.unlink(name:String, sourceid:Long, targetid:Long)
+GET      /api/v1/entities/relations/:name/:sourceid    controllers.website.GeneratedController.getRelationsBySourceId(name:String, sourceid:Long)
+
 
 GET     /assets/*file               controllers.website.Assets.versioned(path="/public/lib/playcmswebsite", file:Asset)
 

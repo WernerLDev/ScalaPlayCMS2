@@ -22,6 +22,7 @@ import models.website._
 trait TGenController {
     def getAll(request:AuthRequest[AnyContent]):Future[Result]
     def insert(request:AuthRequest[JsValue]):Future[Result]
+    def update(request:AuthRequest[JsValue]):Future[Result]
     def delete(id:Long, request:AuthRequest[AnyContent]):Future[Result]
     def createNew(request:AuthRequest[AnyContent]):Future[Result]
     def getFormById(id:Long, request:AuthRequest[AnyContent]):Future[Result]
@@ -50,13 +51,21 @@ class GeneratedPostsController @Inject() (
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
 
+    def update(request:AuthRequest[JsValue]) = {
+        (request.body \ "entity").asOpt[Post].map( entity => {
+             posts.update(entity).map(x => {
+                 Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+             })
+        }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
     def delete(id:Long, request:AuthRequest[AnyContent]) = {
       posts.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
     def createNew(request:AuthRequest[AnyContent]) = {
         posts.insert(Post(
-           0, "", "", "", 0 
+           0, "", "", 0 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -64,12 +73,16 @@ class GeneratedPostsController @Inject() (
         posts.getById(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
-                    List(
-                        Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                        Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
-                        Map("name" -> JsString("title"),  "type" -> JsString("text"), "value" -> JsString(p.title)),
-                        Map("name" -> JsString("content"),  "type" -> JsString("textarea"), "value" -> JsString(p.content)),
-                        Map("name" -> JsString("category_id"), "relation" -> JsString("category"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id))
+                    Map(
+                       "attributes" -> List(
+                           Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("title"),  "type" -> JsString("text"), "value" -> JsString(p.title)),
+                           Map("name" -> JsString("content"),  "type" -> JsString("textarea"), "value" -> JsString(p.content)),
+                           Map("name" -> JsString("category_id"), "relation" -> JsString("category"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id))
+                       ),
+                       "relations" -> List(
+
+                       )
                     )
                 ))
             }
@@ -103,13 +116,21 @@ class GeneratedCategoriesController @Inject() (
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
 
+    def update(request:AuthRequest[JsValue]) = {
+        (request.body \ "entity").asOpt[Category].map( entity => {
+             categories.update(entity).map(x => {
+                 Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+             })
+        }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
     def delete(id:Long, request:AuthRequest[AnyContent]) = {
       categories.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
     def createNew(request:AuthRequest[AnyContent]) = {
         categories.insert(Category(
-           0, "", "" 
+           0, "" 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -117,10 +138,14 @@ class GeneratedCategoriesController @Inject() (
         categories.getById(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
-                    List(
-                        Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                        Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
-                        Map("name" -> JsString("categoryname"),  "type" -> JsString("text"), "value" -> JsString(p.categoryname))
+                    Map(
+                       "attributes" -> List(
+                           Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("categoryname"),  "type" -> JsString("text"), "value" -> JsString(p.categoryname))
+                       ),
+                       "relations" -> List(
+
+                       )
                     )
                 ))
             }
@@ -140,7 +165,7 @@ class GeneratedProjectsController @Inject() (
     implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
     implicit val ProjectWrites = Json.writes[Project]
     implicit val ProjectReads = Json.reads[Project]
-
+    implicit val categoryWrites = Json.writes[Category]
 
     def getAll(request:AuthRequest[AnyContent]) = {
         projects.getAll.map(x => Ok(Json.toJson(x)))
@@ -154,13 +179,21 @@ class GeneratedProjectsController @Inject() (
         }).getOrElse(Future(BadRequest("Parameter missing")))
     }
 
+    def update(request:AuthRequest[JsValue]) = {
+        (request.body \ "entity").asOpt[Project].map( entity => {
+             projects.update(entity).map(x => {
+                 Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+             })
+        }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
     def delete(id:Long, request:AuthRequest[AnyContent]) = {
       projects.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
     def createNew(request:AuthRequest[AnyContent]) = {
         projects.insert(Project(
-           0, "", "", "", new Timestamp(new java.util.Date().getTime()) 
+           0, "", "", new Timestamp(new java.util.Date().getTime()) 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -168,12 +201,16 @@ class GeneratedProjectsController @Inject() (
         projects.getById(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
-                    List(
-                        Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                        Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
-                        Map("name" -> JsString("Projectname"),  "type" -> JsString("text"), "value" -> JsString(p.Projectname)),
-                        Map("name" -> JsString("Description"),  "type" -> JsString("textarea"), "value" -> JsString(p.Description)),
-                        Map("name" -> JsString("ProjectDate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
+                    Map(
+                       "attributes" -> List(
+                           Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("Projectname"),  "type" -> JsString("text"), "value" -> JsString(p.Projectname)),
+                           Map("name" -> JsString("Description"),  "type" -> JsString("textarea"), "value" -> JsString(p.Description)),
+                           Map("name" -> JsString("ProjectDate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
+                       ),
+                       "relations" -> List(
+                           Map("relationname" -> JsString("projectcategory"), "relation" -> JsString("category"))
+                       )
                     )
                 ))
             }
@@ -183,12 +220,48 @@ class GeneratedProjectsController @Inject() (
 
 }
 
+trait TGenRelationController {
+    def link(source_id:Long, target_id:Long):Future[Result]
+    def unlink(source_id:Long, target_id:Long):Future[Result]
+    def getBySourceId(id:Long):Future[Result]
+}
+
+@Singleton
+class GeneratedProjectcategoriesController @Inject() (
+    WithAuthAction:AuthAction,
+    projectcategories:Projectcategories
+    ) extends Controller with TGenRelationController {
+    
+    implicit val ProjectcategoryWrites = Json.writes[Projectcategory]
+
+    def link(source_id:Long, target_id:Long) = {
+        projectcategories.link(Projectcategory(source_id, target_id)).map(x => {
+            Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+    }
+
+    def unlink(source_id:Long, target_id:Long) = {
+        projectcategories.unlink(Projectcategory(source_id, target_id)).map(x => {
+            Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+    }
+
+    def getBySourceId(source_id:Long) = {
+        projectcategories.getBySourceId(source_id).map(x => {
+            Ok(Json.toJson(x))
+        })
+    }
+
+}
+
+
 @Singleton
 class GeneratedController @Inject() (
     WithAuthAction:AuthAction,
     posts:GeneratedPostsController,
     categories:GeneratedCategoriesController,
-    projects:GeneratedProjectsController
+    projects:GeneratedProjectsController,
+    projectcategories:GeneratedProjectcategoriesController
 ) extends Controller {
 
 
@@ -204,6 +277,9 @@ class GeneratedController @Inject() (
         "project" -> "projects"
     )
 
+    val relations = Map(
+        "projectcategory" -> projectcategories
+    )
 
     def getAll(name:String) = WithAuthAction.async { request =>
         controllers.get(name) match {
@@ -215,6 +291,13 @@ class GeneratedController @Inject() (
     def insert(name:String) = WithAuthAction.async(parse.json) { request =>
         controllers.get(name) match {
             case Some(x) => x.insert(request)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }
+    }
+
+    def update(name:String) = WithAuthAction.async(parse.json) { request =>
+        controllers.get(name) match {
+            case Some(x) => x.update(request)
             case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
         }
     }
@@ -246,5 +329,27 @@ class GeneratedController @Inject() (
             case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
         }
     }
+
+    def link(name:String, source_id:Long, target_id:Long) = WithAuthAction.async { request =>
+        relations.get(name) match {
+            case Some(x) => x.link(source_id, target_id)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }    
+    }
+
+    def unlink(name:String, source_id:Long, target_id:Long) = WithAuthAction.async { request =>
+        relations.get(name) match {
+            case Some(x) => x.unlink(source_id, target_id)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }
+    }
+
+    def getRelationsBySourceId(name:String, source_id:Long) = WithAuthAction.async { request =>
+        relations.get(name) match {
+            case Some(x) => x.getBySourceId(source_id)
+            case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+        }    
+    }
+
 
 }

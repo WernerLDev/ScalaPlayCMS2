@@ -1,6 +1,7 @@
 import ApiCall from './ApiBase.js';
 import { EntityField } from '../components/EntitiesPanel/EntityTabPanel'
 
+
 export interface EntityType {
     name:string
     plural:string
@@ -24,6 +25,14 @@ export interface BaseEntity {
 export interface EntityTree {
     entity:Entity,
     children: EntityTree[]
+}
+
+export interface EntityForm  {
+    attributes: EntityField[],
+    relations: {
+        relationname:string,
+        relation:string
+    }[]
 }
 
 
@@ -75,8 +84,8 @@ export function renameEntity(entity:Entity):Promise<Entity> {
     return ApiCall("/admin/api/v1/entities/" + entity.id + "/rename", "PUT", body).then(r => r as Entity);
 }
 
-export function getEntityForm(entity:Entity):Promise<EntityField[]> {
-    return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id + "/form", "GET").then(r => r as EntityField[]);
+export function getEntityForm(entity:Entity):Promise<EntityForm> {
+    return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id + "/form", "GET").then(r => r as EntityForm);
 }
 
 export function getEntitiesByType(type:string):Promise<Entity[]> {
@@ -85,4 +94,25 @@ export function getEntitiesByType(type:string):Promise<Entity[]> {
 
 export function getEntityById(id:number):Promise<Entity> {
     return ApiCall("/admin/api/v1/entities/" + id, "GET").then(x => x as Entity);
+}
+
+export function updateEntity(entity:Object, discriminator:string):Promise<{success:boolean}> {
+    return ApiCall("/api/v1/entities/" + discriminator, "PUT", JSON.stringify({'entity': entity}));
+}
+
+export function linkEntities(relation:string, source_id:number, target_id:number):Promise<{}> {
+    return ApiCall("/api/v1/entities/link/" + relation + "/" + source_id + "/" + target_id, "GET")
+}
+
+export function unlinkEntities(relation:string, source_id:number, target_id:number):Promise<{}> {
+    return ApiCall("/api/v1/entities/unlink/" + relation + "/" + source_id + "/" + target_id, "GET")
+}
+
+
+type EntityRelation = {
+    source_id:number,
+    target_id:number
+}
+export function getRelations(relation:string, source_id:number):Promise<EntityRelation[]> {
+    return ApiCall("/api/v1/entities/relations/" + relation + "/" + source_id, "GET")
 }
