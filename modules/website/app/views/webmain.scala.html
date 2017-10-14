@@ -30,7 +30,9 @@
 
 	@if(request.editmode) {
 		<link rel="stylesheet" media="screen" href="@controllers.admin.routes.Assets.versioned("stylesheets/editables.css")">
-		<script src="@controllers.website.routes.Assets.versioned("vendor/tinymce/tinymce.min.js")"></script>
+		<script src="@controllers.admin.routes.Assets.versioned("vendor/tinymce/tinymce.min.js")"></script>
+
+		
 		<script>
 		tinymce.init({
 			selector: '.multiline',

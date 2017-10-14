@@ -42,7 +42,7 @@ export function TextareaInput(
         <Form>
             <Form.TextArea 
                 autoHeight
-                style={{minHeight: 400}}
+                className="entity-textarea"
                 tabIndex={tabIndex}
                 value={value}
                 placeholder={label}
@@ -53,6 +53,7 @@ export function TextareaInput(
         </Form>
     );
 }
+
 
 export function NumberInput(
     label:string,

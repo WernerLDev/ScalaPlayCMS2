@@ -20,4 +20,5 @@ pc.stdout.log
 /uploads
 modules/admin/app/assets/javascripts/*
 modules/website/app/assets/vendor
+modules/admin/app/assets/vendor
 !modules/admin/app/assets/javascripts/editables
