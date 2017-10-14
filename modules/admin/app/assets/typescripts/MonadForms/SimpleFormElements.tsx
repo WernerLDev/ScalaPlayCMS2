@@ -7,7 +7,8 @@ import {DatePickerInput} from 'rc-datepicker';
 export function ReadonlyInput<T>(
     label:string,
     value:T,
-    onChange:(v:T) => void
+    onChange:(v:T) => void,
+    tabIndex:number
 ) {
     return <p>{value}</p>
 }
@@ -15,11 +16,13 @@ export function ReadonlyInput<T>(
 export function TextInput(
     label:string,
     value:string,
-    onChange:(v:string) => void
+    onChange:(v:string) => void,
+    tabIndex:number
 ) {
     return (
         <Form.Input 
             fluid
+            tabIndex={tabIndex}
             value={value}
             placeholder={label}
             onChange={(e) => {
@@ -32,13 +35,15 @@ export function TextInput(
 export function TextareaInput(
     label:string,
     value:string,
-    onChange:(v:string) => void
+    onChange:(v:string) => void,
+    tabIndex:number
 ) {
     return (
         <Form>
             <Form.TextArea 
                 autoHeight
                 style={{minHeight: 400}}
+                tabIndex={tabIndex}
                 value={value}
                 placeholder={label}
                 onChange={(e) => {
@@ -52,12 +57,14 @@ export function TextareaInput(
 export function NumberInput(
     label:string,
     value:number,
-    onChange:(v:number) => void
+    onChange:(v:number) => void,
+    tabIndex:number
 ) {
     return (
         <Form.Input 
             fluid
             type="number"
+            tabIndex={tabIndex}
             value={value}
             placeholder={label}
             onChange={(e) => {
@@ -70,7 +77,8 @@ export function NumberInput(
 export function DateInput(
     label:string,
     value:number,
-    onChange:(v:number) => void
+    onChange:(v:number) => void,
+    tabIndex:number
 ) {
     return (
         <DatePickerInput
@@ -92,10 +100,12 @@ export function DropdownInput(
     return (
         label:string,
         value:string,
-        onChange:(v:string) => void
+        onChange:(v:string) => void,
+        tabIndex:number
     ) => {
         return (
             <Dropdown 
+                tabIndex={tabIndex}
                 loading={options.length == 0}
                 search
                 placeholder={"Select " + label} 
@@ -116,18 +126,21 @@ export function multipleSelectInput(
     return (
         label:string,
         values:string[],
-        onChange:(v:string[]) => void
+        onChange:(v:string[]) => void,
+        tabIndex:number
     ) => (
         <Dropdown 
             multiple 
             search 
             selection 
             fluid 
+            openOnFocus
+            defaultOpen={false}
+            tabIndex={tabIndex}
             options={options} 
             placeholder='Make selection' 
             value={values}
             onChange={(e, {value}) => {
-                console.log(value);
                 onChange(value as string[])
             }}
             onLabelClick={(e, {value}) => {
@@ -143,7 +156,8 @@ export function RadioInput(
     return (
         label:string,
         value:string,
-        onChange:(v:string) => void
+        onChange:(v:string) => void,
+        tabIndex:number
     ) => {
         return (
             <Form>
@@ -165,10 +179,12 @@ export function RadioInput(
 export function BoolInput(
     label:string,
     value:boolean,
-    onChange:(v:boolean) => void
+    onChange:(v:boolean) => void,
+    tabIndex:number
 ) {
     return (
         <Form.Radio
+            tabIndex={tabIndex}
             toggle
             checked={value}
             onChange={(e, data) => {
@@ -196,7 +212,7 @@ export function BoolInput(
 // }
 
 export function FormInput<T>(
-    inputElem:(l:string, v:T, u:(v:T) => void) => JSX.Element,
+    inputElem:(l:string, v:T, u:(v:T) => void, ti:number) => JSX.Element,
     key?:string,
     background?:string
 ) {
@@ -204,14 +220,15 @@ export function FormInput<T>(
     return (
         label:string,
         value:T,
-        onChange:(v:T) => void
+        onChange:(v:T) => void,
+        tabIndex:number
     ) => (
         <Grid key={key} style={{background: bgcolor}} columns={2} divided>
             <Grid.Column width={4} textAlign="right" verticalAlign="middle">
                 {label}
             </Grid.Column>
             <Grid.Column width={12}>
-                {inputElem(label, value, onChange)}
+                {inputElem(label, value, onChange, tabIndex)}
             </Grid.Column>
         </Grid>
     );

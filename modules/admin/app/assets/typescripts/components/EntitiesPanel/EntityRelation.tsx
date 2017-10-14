@@ -7,7 +7,8 @@ import * as Immutable  from 'immutable'
 export interface EntityRelationProps {
     relationname:string,
     relation:string,
-    entityid:number
+    entityid:number,
+    tabIndex:number
 }
 
 export interface EntityRelationState {
@@ -53,7 +54,7 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
                     ...this.state, 
                     entities: entities.map(x => {
                         return {
-                            value: x.id.toString(),
+                            value: x.object_id.toString(),
                             text: x.name
                         }
                     }),
@@ -97,7 +98,8 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
                         this.add_or_delete_relation(v).then(x => {
                             this.setState({...this.state, relations: v})
                         })
-                    }
+                    },
+                    this.props.tabIndex
                 )}
                 </div>
             </Segment>

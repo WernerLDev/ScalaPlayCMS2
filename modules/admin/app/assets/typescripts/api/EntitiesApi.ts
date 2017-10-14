@@ -101,11 +101,11 @@ export function updateEntity(entity:Object, discriminator:string):Promise<{succe
 }
 
 export function linkEntities(relation:string, source_id:number, target_id:number):Promise<{}> {
-    return ApiCall("/api/v1/entities/link/" + relation + "/" + source_id + "/" + target_id, "GET")
+    return ApiCall("/api/v1/entities/link/" + relation + "/" + source_id + "/" + target_id, "POST", "{}")
 }
 
 export function unlinkEntities(relation:string, source_id:number, target_id:number):Promise<{}> {
-    return ApiCall("/api/v1/entities/unlink/" + relation + "/" + source_id + "/" + target_id, "GET")
+    return ApiCall("/api/v1/entities/unlink/" + relation + "/" + source_id + "/" + target_id, "DELETE")
 }
 
 

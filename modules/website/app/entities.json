@@ -13,13 +13,23 @@
                 { "name" : "content", "atype" : "text" }
             ],
             "relations" : [
-                { "has" : "one", "of" : "category" }
+                { "has" : "one", "of" : "category" },
+                { "has": "many", "of": "comment" }
             ]
         }, {
             "name" : "Category",
             "plural" : "Categories",
             "attributes" : [
                 { "name" : "categoryname", "atype" : "string"}
+            ],
+            "relations": []
+        },
+        {
+            "name": "comment",
+            "plural": "comments",
+            "attributes": [
+                { "name": "author", "atype": "string" },
+                { "name": "message", "atype": "text" }
             ],
             "relations": []
         },

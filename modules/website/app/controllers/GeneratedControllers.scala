@@ -38,6 +38,7 @@ class GeneratedPostsController @Inject() (
     implicit val PostWrites = Json.writes[Post]
     implicit val PostReads = Json.reads[Post]
     implicit val categoryWrites = Json.writes[Category]
+    implicit val commentWrites = Json.writes[Comment]
 
     def getAll(request:AuthRequest[AnyContent]) = {
         posts.getAll.map(x => Ok(Json.toJson(x)))
@@ -81,7 +82,7 @@ class GeneratedPostsController @Inject() (
                            Map("name" -> JsString("category_id"), "relation" -> JsString("category"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id))
                        ),
                        "relations" -> List(
-
+                           Map("relationname" -> JsString("postcomment"), "relation" -> JsString("comment"))
                        )
                     )
                 ))
@@ -150,6 +151,70 @@ class GeneratedCategoriesController @Inject() (
                 ))
             }
             case None => BadRequest("Invalid categories id provided.")
+        })
+    }
+
+}
+
+
+@Singleton
+class GeneratedCommentsController @Inject() (
+    WithAuthAction:AuthAction,
+    comments:Comments
+    ) extends Controller with TGenController {
+
+    implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
+    implicit val CommentWrites = Json.writes[Comment]
+    implicit val CommentReads = Json.reads[Comment]
+
+
+    def getAll(request:AuthRequest[AnyContent]) = {
+        comments.getAll.map(x => Ok(Json.toJson(x)))
+    }
+
+    def insert(request:AuthRequest[JsValue]) = {
+        {request.body \ "entity"}.asOpt[Comment].map( entity => {
+            comments.insert(entity).map(x => {
+                Ok(Json.toJson( Map("id" -> JsNumber(x.id)) ))
+            })
+        }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
+    def update(request:AuthRequest[JsValue]) = {
+        (request.body \ "entity").asOpt[Comment].map( entity => {
+             comments.update(entity).map(x => {
+                 Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+             })
+        }).getOrElse(Future(BadRequest("Parameter missing")))
+    }
+
+    def delete(id:Long, request:AuthRequest[AnyContent]) = {
+      comments.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
+    }
+
+    def createNew(request:AuthRequest[AnyContent]) = {
+        comments.insert(Comment(
+           0, "", "" 
+        )) map (x => Ok(Json.toJson(x)))
+    }
+
+     def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
+        comments.getById(id).map(x => x match {
+            case Some(p) => {
+                Ok(Json.toJson(
+                    Map(
+                       "attributes" -> List(
+                           Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("author"),  "type" -> JsString("text"), "value" -> JsString(p.author)),
+                           Map("name" -> JsString("message"),  "type" -> JsString("textarea"), "value" -> JsString(p.message))
+                       ),
+                       "relations" -> List(
+
+                       )
+                    )
+                ))
+            }
+            case None => BadRequest("Invalid comments id provided.")
         })
     }
 
@@ -227,6 +292,36 @@ trait TGenRelationController {
 }
 
 @Singleton
+class GeneratedPostcommentsController @Inject() (
+    WithAuthAction:AuthAction,
+    postcomments:Postcomments
+    ) extends Controller with TGenRelationController {
+    
+    implicit val PostcommentWrites = Json.writes[Postcomment]
+
+    def link(source_id:Long, target_id:Long) = {
+        postcomments.link(Postcomment(source_id, target_id)).map(x => {
+            Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+    }
+
+    def unlink(source_id:Long, target_id:Long) = {
+        postcomments.unlink(Postcomment(source_id, target_id)).map(x => {
+            Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+    }
+
+    def getBySourceId(source_id:Long) = {
+        postcomments.getBySourceId(source_id).map(x => {
+            Ok(Json.toJson(x))
+        })
+    }
+
+}
+
+
+
+@Singleton
 class GeneratedProjectcategoriesController @Inject() (
     WithAuthAction:AuthAction,
     projectcategories:Projectcategories
@@ -260,7 +355,9 @@ class GeneratedController @Inject() (
     WithAuthAction:AuthAction,
     posts:GeneratedPostsController,
     categories:GeneratedCategoriesController,
+    comments:GeneratedCommentsController,
     projects:GeneratedProjectsController,
+    postcomments:GeneratedPostcommentsController,
     projectcategories:GeneratedProjectcategoriesController
 ) extends Controller {
 
@@ -268,16 +365,19 @@ class GeneratedController @Inject() (
     val controllers = Map(
         "post" -> posts,
         "category" -> categories,
+        "comment" -> comments,
         "project" -> projects
     )
  
     val entityTypes = Map(
         "post" -> "posts",
         "category" -> "categories",
+        "comment" -> "comments",
         "project" -> "projects"
     )
 
     val relations = Map(
+        "postcomment" -> postcomments,
         "projectcategory" -> projectcategories
     )
 

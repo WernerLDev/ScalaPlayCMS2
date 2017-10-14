@@ -121,7 +121,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )
             );
         } else if(f.type == "textarea") {
@@ -134,7 +135,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         let oldFields = this.state.fields;
                         oldFields[index].value = v;
                         this.setState({...this.state, fields: oldFields });
-                    }
+                    },
+                    index
                 )
             
             )
@@ -147,7 +149,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )
             );
         } else if(f.type == "number") {
@@ -159,7 +162,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )
             ); 
         } else if(f.type == "dropdown") {
@@ -171,7 +175,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )
             );
         }  else if(f.type == "radio") {
@@ -183,7 +188,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )
             );
         } else if(f.type == "bool") {
@@ -195,7 +201,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )
             )  
         } else if(f.type == "richtext") {
@@ -208,7 +215,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             let oldFields = this.state.fields;
                             oldFields[index].value = v;
                             this.setState({...this.state, fields: oldFields });
-                        }
+                        },
+                        index
                     )}
                 </div>
             )
@@ -217,7 +225,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                 FormInput(ReadonlyInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
                         f.value,
-                        (v) => {}
+                        (v) => {},
+                        index
                     )
             );
         } else if(f.type == "relation") {
@@ -229,7 +238,8 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         let oldFields = this.state.fields;
                         oldFields[index].value = v;
                         this.setState({...this.state, fields: oldFields });
-                    }
+                    },
+                    index
                 )
             )
         } else {
@@ -293,12 +303,13 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                     </Grid.Column>
                     {this.state.relations.length > 0 ?
                         <Grid.Column width={4}>
-                            {this.state.relations.map(x => 
+                            {this.state.relations.map((x, index) => 
                                 <EntityRelation
                                     key={x.relationname}
                                     entityid={this.props.item.object_id}
                                     relation={x.relation}
                                     relationname={x.relationname}
+                                    tabIndex={index + this.state.fields.length}
                                 />
                             )}
                         </Grid.Column>

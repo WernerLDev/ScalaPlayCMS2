@@ -13,6 +13,32 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.SqlType
 import models.website._
 
+case class Postcomment (source_id:Long, target_id:Long) 
+
+class PostcommentTableDef(tag:Tag) extends Table[Postcomment](tag, "postcomments") {
+  
+  def source_id = column[Long]("source_id")
+  def target_id = column[Long]("target_id")
+
+  override def * = (source_id, target_id) <>(Postcomment.tupled, Postcomment.unapply)
+}
+
+
+trait TPostcomments extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val postcomments = TableQuery[PostcommentTableDef]
+
+  def link(postcomment:Postcomment) = dbConfig.db.run(postcomments += postcomment)
+  
+  def unlink(postcomment:Postcomment) = dbConfig.db.run {
+    postcomments.filter(x => x.source_id === postcomment.source_id && x.target_id === postcomment.target_id).delete
+  }
+
+  def getBySourceId(id:Long) = dbConfig.db.run {
+    postcomments.filter(_.source_id === id).result
+  }
+
+}
 case class Post (id:Long, title:String, content:String, category_id:Long) 
 
 class PostTableDef(tag:Tag) extends Table[Post](tag, "posts") {
@@ -29,7 +55,8 @@ class PostTableDef(tag:Tag) extends Table[Post](tag, "posts") {
 trait TPosts extends HasDatabaseConfigProvider[JdbcProfile] {
 
   val posts = TableQuery[PostTableDef]
-  val categories = TableQuery[CategoryTableDef] 
+  val categories = TableQuery[CategoryTableDef]
+val comments = TableQuery[CommentTableDef] 
   val insertQuery = posts returning posts.map(_.id) into ((post, id) => post.copy(id = id))
 
   def insert(post:Post) = dbConfig.db.run(insertQuery += post)
@@ -84,6 +111,43 @@ trait TCategories extends HasDatabaseConfigProvider[JdbcProfile] {
 
   def getAll = dbConfig.db.run {
     categories.result
+  }
+
+}
+case class Comment (id:Long, author:String, message:String) 
+
+class CommentTableDef(tag:Tag) extends Table[Comment](tag, "comments") {
+  
+  def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+  def author = column[String]("author")
+  def message = column[String]("message")
+
+  override def * = (id, author, message) <>(Comment.tupled, Comment.unapply)
+}
+
+
+trait TComments extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val comments = TableQuery[CommentTableDef]
+   
+  val insertQuery = comments returning comments.map(_.id) into ((comment, id) => comment.copy(id = id))
+
+  def insert(comment:Comment) = dbConfig.db.run(insertQuery += comment)
+    
+  def update(comment:Comment) = dbConfig.db.run {
+    comments.filter(_.id === comment.id).update(comment)
+  }
+
+  def delete(id:Long) = dbConfig.db.run {
+    comments.filter(_.id === id).delete
+  }
+
+  def getById(id:Long) = dbConfig.db.run {
+    comments.filter(_.id === id).result.headOption
+  }
+
+  def getAll = dbConfig.db.run {
+    comments.result
   }
 
 }

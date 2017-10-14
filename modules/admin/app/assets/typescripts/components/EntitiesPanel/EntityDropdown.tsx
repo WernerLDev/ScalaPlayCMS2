@@ -6,7 +6,8 @@ export interface EntityDropdownCompProps {
     entityType:string,
     label:string,
     value:string,
-    onChange:(v:string) => void
+    onChange:(v:string) => void,
+    tabIndex:number
 }
 
 export interface EntityDropdownCompState {
@@ -39,7 +40,8 @@ export class EntityDropdownComp extends React.Component<EntityDropdownCompProps,
         return DropdownInput(this.state.entities)(
             this.props.label,
             this.props.value,
-            this.props.onChange
+            this.props.onChange,
+            this.props.tabIndex
         )
     }
 }
@@ -50,7 +52,8 @@ export const EntityDropDown = (
 ) => (
     label:string,
     value:number,
-    onChange:(v:number) => void
+    onChange:(v:number) => void,
+    tabIndex:number
 ) => (
     <EntityDropdownComp
         entityType={entityType}
@@ -59,5 +62,6 @@ export const EntityDropDown = (
             onChange(parseInt(v))
         })}
         value={value.toString()}
+        tabIndex={tabIndex}
     />
 )
