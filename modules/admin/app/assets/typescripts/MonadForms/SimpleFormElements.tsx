@@ -110,7 +110,7 @@ export function DropdownInput(
     }
 }
 
-export function multipleSelect(
+export function multipleSelectInput(
     options:{value:string, text:string}[]
 ) {
     return (
@@ -125,10 +125,13 @@ export function multipleSelect(
             fluid 
             options={options} 
             placeholder='Make selection' 
-            defaultValue={values}
+            value={values}
             onChange={(e, {value}) => {
                 console.log(value);
                 onChange(value as string[])
+            }}
+            onLabelClick={(e, {value}) => {
+                console.log("Clicked on " + value)
             }}
         />
     )
@@ -204,10 +207,10 @@ export function FormInput<T>(
         onChange:(v:T) => void
     ) => (
         <Grid key={key} style={{background: bgcolor}} columns={2} divided>
-            <Grid.Column width={2} textAlign="right" verticalAlign="middle">
+            <Grid.Column width={4} textAlign="right" verticalAlign="middle">
                 {label}
             </Grid.Column>
-            <Grid.Column width={14}>
+            <Grid.Column width={12}>
                 {inputElem(label, value, onChange)}
             </Grid.Column>
         </Grid>
