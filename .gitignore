@@ -18,5 +18,6 @@ modules/admin/node_modules
 .ensime
 pc.stdout.log
 /uploads
-modules/admin/app/assets/javascripts
+modules/admin/app/assets/javascripts/*
 modules/website/app/assets/vendor
+!modules/admin/app/assets/javascripts/editables
