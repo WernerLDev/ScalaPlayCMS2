@@ -6,6 +6,15 @@
     "controllerFile" : "modules/website/app/controllers/GeneratedControllers.scala",
     "entities" : [
         {
+            "name": "author",
+            "plural": "authors",
+            "attributes": [
+                { "name": "name", "atype": "string" },
+                { "name": "email", "atype": "string" }
+            ],
+            "relations": []
+        },
+        {
             "name" : "post",
             "plural" : "posts",
             "attributes" : [
@@ -14,7 +23,9 @@
             ],
             "relations" : [
                 { "has" : "one", "of" : "category" },
-                { "has": "many", "of": "comment" }
+                { "has" : "one", "of": "author" },
+                { "has": "many", "of": "comment" },
+                { "has": "many", "of": "project" }
             ]
         }, {
             "name" : "Category",
@@ -28,10 +39,11 @@
             "name": "comment",
             "plural": "comments",
             "attributes": [
-                { "name": "author", "atype": "string" },
                 { "name": "message", "atype": "text" }
             ],
-            "relations": []
+            "relations": [
+                { "has": "one", "of" : "author" }
+            ]
         },
         {
             "name" : "Project",

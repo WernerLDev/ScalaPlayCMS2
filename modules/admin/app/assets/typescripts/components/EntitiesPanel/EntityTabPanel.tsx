@@ -306,6 +306,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             {this.state.relations.map((x, index) => 
                                 <EntityRelation
                                     key={x.relationname}
+                                    colorIndex={index}
                                     entityid={this.props.item.object_id}
                                     relation={x.relation}
                                     relationname={x.relationname}

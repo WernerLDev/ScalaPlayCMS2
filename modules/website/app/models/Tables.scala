@@ -13,6 +13,43 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.SqlType
 import models.website._
 
+case class Author (id:Long, name:String, email:String) 
+
+class AuthorTableDef(tag:Tag) extends Table[Author](tag, "authors") {
+  
+  def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+  def name = column[String]("name")
+  def email = column[String]("email")
+
+  override def * = (id, name, email) <>(Author.tupled, Author.unapply)
+}
+
+
+trait TAuthors extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val authors = TableQuery[AuthorTableDef]
+   
+  val insertQuery = authors returning authors.map(_.id) into ((author, id) => author.copy(id = id))
+
+  def insert(author:Author) = dbConfig.db.run(insertQuery += author)
+    
+  def update(author:Author) = dbConfig.db.run {
+    authors.filter(_.id === author.id).update(author)
+  }
+
+  def delete(id:Long) = dbConfig.db.run {
+    authors.filter(_.id === id).delete
+  }
+
+  def getById(id:Long) = dbConfig.db.run {
+    authors.filter(_.id === id).result.headOption
+  }
+
+  def getAll = dbConfig.db.run {
+    authors.result
+  }
+
+}
 case class Postcomment (source_id:Long, target_id:Long) 
 
 class PostcommentTableDef(tag:Tag) extends Table[Postcomment](tag, "postcomments") {
@@ -39,7 +76,33 @@ trait TPostcomments extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Post (id:Long, title:String, content:String, category_id:Long) 
+case class Postproject (source_id:Long, target_id:Long) 
+
+class PostprojectTableDef(tag:Tag) extends Table[Postproject](tag, "postprojects") {
+  
+  def source_id = column[Long]("source_id")
+  def target_id = column[Long]("target_id")
+
+  override def * = (source_id, target_id) <>(Postproject.tupled, Postproject.unapply)
+}
+
+
+trait TPostprojects extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val postprojects = TableQuery[PostprojectTableDef]
+
+  def link(postproject:Postproject) = dbConfig.db.run(postprojects += postproject)
+  
+  def unlink(postproject:Postproject) = dbConfig.db.run {
+    postprojects.filter(x => x.source_id === postproject.source_id && x.target_id === postproject.target_id).delete
+  }
+
+  def getBySourceId(id:Long) = dbConfig.db.run {
+    postprojects.filter(_.source_id === id).result
+  }
+
+}
+case class Post (id:Long, title:String, content:String, category_id:Long, author_id:Long) 
 
 class PostTableDef(tag:Tag) extends Table[Post](tag, "posts") {
   
@@ -47,8 +110,9 @@ class PostTableDef(tag:Tag) extends Table[Post](tag, "posts") {
   def title = column[String]("title")
   def content = column[String]("content")
   def category_id = column[Long]("category_id")
+  def author_id = column[Long]("author_id")
 
-  override def * = (id, title, content, category_id) <>(Post.tupled, Post.unapply)
+  override def * = (id, title, content, category_id, author_id) <>(Post.tupled, Post.unapply)
 }
 
 
@@ -56,7 +120,9 @@ trait TPosts extends HasDatabaseConfigProvider[JdbcProfile] {
 
   val posts = TableQuery[PostTableDef]
   val categories = TableQuery[CategoryTableDef]
-val comments = TableQuery[CommentTableDef] 
+val authors = TableQuery[AuthorTableDef]
+val comments = TableQuery[CommentTableDef]
+val projects = TableQuery[ProjectTableDef] 
   val insertQuery = posts returning posts.map(_.id) into ((post, id) => post.copy(id = id))
 
   def insert(post:Post) = dbConfig.db.run(insertQuery += post)
@@ -114,22 +180,22 @@ trait TCategories extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Comment (id:Long, author:String, message:String) 
+case class Comment (id:Long, message:String, author_id:Long) 
 
 class CommentTableDef(tag:Tag) extends Table[Comment](tag, "comments") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
-  def author = column[String]("author")
   def message = column[String]("message")
+  def author_id = column[Long]("author_id")
 
-  override def * = (id, author, message) <>(Comment.tupled, Comment.unapply)
+  override def * = (id, message, author_id) <>(Comment.tupled, Comment.unapply)
 }
 
 
 trait TComments extends HasDatabaseConfigProvider[JdbcProfile] {
 
   val comments = TableQuery[CommentTableDef]
-   
+  val authors = TableQuery[AuthorTableDef] 
   val insertQuery = comments returning comments.map(_.id) into ((comment, id) => comment.copy(id = id))
 
   def insert(comment:Comment) = dbConfig.db.run(insertQuery += comment)

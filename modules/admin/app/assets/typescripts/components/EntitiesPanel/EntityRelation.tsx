@@ -8,7 +8,8 @@ export interface EntityRelationProps {
     relationname:string,
     relation:string,
     entityid:number,
-    tabIndex:number
+    tabIndex:number,
+    colorIndex:number
 }
 
 export interface EntityRelationState {
@@ -17,6 +18,8 @@ export interface EntityRelationState {
     loading:boolean
 }
 
+type Color = "green" | "olive" | "orange" | "pink" | "purple" | "red"
+
 
 
 export default class EntityDropdownComp extends React.Component<EntityRelationProps, EntityRelationState> {
@@ -24,6 +27,11 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
     constructor(props:EntityRelationProps, context:any) {
         super(props, context);
         this.state = { entities: [], relations: [],loading: true }   
+    }
+
+    getColor():Color {
+        let colors:Color[] = ["green", "olive", "orange", "pink", "purple", "red"]
+        return colors[this.props.colorIndex]
     }
 
     add_or_delete_relation(relations:string[]){
@@ -81,7 +89,7 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
 
     render() {
         return (
-            <Segment color="green" loading={this.state.loading}>
+            <Segment color={this.getColor()} loading={this.state.loading}>
                 <Header as="h5">{this.props.relation}</Header>
                 {/* <List divided verticalAlign='middle'>
                     {this.state.relations.map(x => this.renderSingleRelation(x))}
