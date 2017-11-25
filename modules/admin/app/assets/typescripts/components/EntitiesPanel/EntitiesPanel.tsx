@@ -141,8 +141,8 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
                         })
                     }}
                     onRenderLabel={this.renderLabel.bind(this)}
-                    onCollapse={(i:TreeTypes.TreeViewItem<Api.Asset>, state:boolean) => {
-                        Api.collapseAsset(i.item.id, state);
+                    onCollapse={(i:TreeTypes.TreeViewItem<Api.Entity>, state:boolean) => {
+                        //Api.collapseAsset(i.item.id, state);
                     }}
                 />
 

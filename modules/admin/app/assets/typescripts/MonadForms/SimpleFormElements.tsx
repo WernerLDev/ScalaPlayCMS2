@@ -77,21 +77,78 @@ export function NumberInput(
 
 export function DateInput(
     label:string,
-    value:number,
-    onChange:(v:number) => void,
+    value:Date,
+    onChange:(v:Date) => void,
     tabIndex:number
 ) {
     return (
         <DatePickerInput
             style={{background: "none"}}
             onChange={(date) => {
-                onChange(date.getTime())
+                onChange(date)
             }}
-            value={moment(new Date(value))}
-            displayFormat="MMMM Do YYYY, HH:MM"
+            value={moment(value)}
+            displayFormat="MMMM Do YYYY"
             showOnInputClick
         />
     );
+}
+
+export function TimeInput(
+    label:string,
+    v:Date,
+    onChange:(v:Date) => void,
+    tabIndex: number
+) {
+    return (
+        <div>
+            <Dropdown 
+                tabIndex={tabIndex}
+                compact
+                placeholder={"Hours"} 
+                value={v.getHours()} 
+                selection 
+                onChange={(e, {value}) => {
+                    let newDate = v;
+                    newDate.setHours(value as number);
+                    onChange(newDate);
+                }}
+                options={[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23].map(x => {
+                    return { value: x, text: x > 9 ? x.toString() : "0" + x.toString() }
+                })} 
+            />
+           <Dropdown 
+                tabIndex={tabIndex}
+                compact
+                placeholder={"Minutes"} 
+                value={v.getMinutes()} 
+                selection 
+                onChange={(e, {value}) => {
+                    let newDate = v;
+                    newDate.setMinutes(value as number);
+                    onChange(newDate);
+                }}
+                options={[0,5,10,15,20,25,30,35,40,45,50,55].map(x => {
+                    return { value: x, text: x > 9 ? x.toString() : "0" + x.toString() }
+                })} 
+            />
+        </div>
+    )
+}
+
+
+export function DateTimeInput(
+    label:string,
+    v:Date,
+    onChange:(v:Date) => void,
+    tabIndex: number
+) {
+    return (
+        <div>
+            {DateInput(label, v, onChange, tabIndex)}
+            {TimeInput(label, v, onChange, tabIndex + 1)}
+        </div>
+    )
 }
 
 

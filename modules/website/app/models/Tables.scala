@@ -13,22 +13,49 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.SqlType
 import models.website._
 
-case class Author (id:Long, name:String, email:String) 
+case class Authorproject (source_id:Long, target_id:Long) 
+
+class AuthorprojectTableDef(tag:Tag) extends Table[Authorproject](tag, "authorprojects") {
+  
+  def source_id = column[Long]("source_id")
+  def target_id = column[Long]("target_id")
+
+  override def * = (source_id, target_id) <>(Authorproject.tupled, Authorproject.unapply)
+}
+
+
+trait TAuthorprojects extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val authorprojects = TableQuery[AuthorprojectTableDef]
+
+  def link(authorproject:Authorproject) = dbConfig.db.run(authorprojects += authorproject)
+  
+  def unlink(authorproject:Authorproject) = dbConfig.db.run {
+    authorprojects.filter(x => x.source_id === authorproject.source_id && x.target_id === authorproject.target_id).delete
+  }
+
+  def getBySourceId(id:Long) = dbConfig.db.run {
+    authorprojects.filter(_.source_id === id).result
+  }
+
+}
+case class Author (id:Long, name:String, email:String, dateofbirth:Timestamp) 
 
 class AuthorTableDef(tag:Tag) extends Table[Author](tag, "authors") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def name = column[String]("name")
   def email = column[String]("email")
+  def dateofbirth = column[Timestamp]("dateofbirth")
 
-  override def * = (id, name, email) <>(Author.tupled, Author.unapply)
+  override def * = (id, name, email, dateofbirth) <>(Author.tupled, Author.unapply)
 }
 
 
 trait TAuthors extends HasDatabaseConfigProvider[JdbcProfile] {
 
   val authors = TableQuery[AuthorTableDef]
-   
+  val projects = TableQuery[ProjectTableDef] 
   val insertQuery = authors returning authors.map(_.id) into ((author, id) => author.copy(id = id))
 
   def insert(author:Author) = dbConfig.db.run(insertQuery += author)

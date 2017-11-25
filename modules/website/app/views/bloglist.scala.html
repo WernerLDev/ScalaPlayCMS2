@@ -1,0 +1,20 @@
+@import _root_.models.admin.Document
+@import _root_.models.website._
+@import _root_.utils.admin._
+@import _root_.views.html.editables._
+@(document:Document, posts:List[Post])(implicit request:PageRequest[AnyContent])
+
+@webmain(document.name) {
+<div class="row section-rowww">
+    <div class="col-md-6">
+        <h1>@document.name</h1>
+        @for(post <- posts) {
+            <a href="/blogs/@post.id">@post.title</a><br />
+        }
+    </div>
+    
+</div>
+
+}{
+    @defaultheader()
+}

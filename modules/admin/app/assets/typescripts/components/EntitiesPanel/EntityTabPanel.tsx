@@ -2,6 +2,8 @@ import * as React from 'react';
 import { 
     TextInput, 
     DateInput, 
+    TimeInput,
+    DateTimeInput,
     NumberInput, 
     TextareaInput, 
     DropdownInput, 
@@ -142,12 +144,12 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             )
         } else if(f.type == "datetime") {
             return(
-               FormInput(DateInput, index.toString(), this.bgcolor(isEven))(
+               FormInput(DateTimeInput, index.toString(), this.bgcolor(isEven))(
                         f.name,
-                        f.value,
+                        new Date(f.value),
                         (v) => {
                             let oldFields = this.state.fields;
-                            oldFields[index].value = v;
+                            oldFields[index].value = v.getTime();
                             this.setState({...this.state, fields: oldFields });
                         },
                         index

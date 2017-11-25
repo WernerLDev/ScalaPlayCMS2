@@ -37,7 +37,7 @@ class GeneratedAuthorsController @Inject() (
     implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
     implicit val AuthorWrites = Json.writes[Author]
     implicit val AuthorReads = Json.reads[Author]
-
+    implicit val projectWrites = Json.writes[Project]
 
     def getAll(request:AuthRequest[AnyContent]) = {
         authors.getAll.map(x => Ok(Json.toJson(x)))
@@ -65,7 +65,7 @@ class GeneratedAuthorsController @Inject() (
 
     def createNew(request:AuthRequest[AnyContent]) = {
         authors.insert(Author(
-           0, "", "" 
+           0, "", "", new Timestamp(new java.util.Date().getTime()) 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -77,10 +77,11 @@ class GeneratedAuthorsController @Inject() (
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
                            Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
-                           Map("name" -> JsString("email"),  "type" -> JsString("text"), "value" -> JsString(p.email))
+                           Map("name" -> JsString("email"),  "type" -> JsString("text"), "value" -> JsString(p.email)),
+                           Map("name" -> JsString("dateofbirth"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.dateofbirth.getTime()))
                        ),
                        "relations" -> List(
-
+                           Map("relationname" -> JsString("authorproject"), "relation" -> JsString("project"))
                        )
                     )
                 ))
@@ -360,6 +361,36 @@ trait TGenRelationController {
 }
 
 @Singleton
+class GeneratedAuthorprojectsController @Inject() (
+    WithAuthAction:AuthAction,
+    authorprojects:Authorprojects
+    ) extends Controller with TGenRelationController {
+    
+    implicit val AuthorprojectWrites = Json.writes[Authorproject]
+
+    def link(source_id:Long, target_id:Long) = {
+        authorprojects.link(Authorproject(source_id, target_id)).map(x => {
+            Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+    }
+
+    def unlink(source_id:Long, target_id:Long) = {
+        authorprojects.unlink(Authorproject(source_id, target_id)).map(x => {
+            Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+    }
+
+    def getBySourceId(source_id:Long) = {
+        authorprojects.getBySourceId(source_id).map(x => {
+            Ok(Json.toJson(x))
+        })
+    }
+
+}
+
+
+
+@Singleton
 class GeneratedPostcommentsController @Inject() (
     WithAuthAction:AuthAction,
     postcomments:Postcomments
@@ -456,6 +487,7 @@ class GeneratedController @Inject() (
     categories:GeneratedCategoriesController,
     comments:GeneratedCommentsController,
     projects:GeneratedProjectsController,
+    authorprojects:GeneratedAuthorprojectsController,
     postcomments:GeneratedPostcommentsController,
     postprojects:GeneratedPostprojectsController,
     projectcategories:GeneratedProjectcategoriesController
@@ -479,6 +511,7 @@ class GeneratedController @Inject() (
     )
 
     val relations = Map(
+        "authorproject" -> authorprojects,
         "postcomment" -> postcomments,
         "postproject" -> postprojects,
         "projectcategory" -> projectcategories

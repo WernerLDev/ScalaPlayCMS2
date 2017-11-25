@@ -1,7 +1,7 @@
 {
     "packageName" : "models.website",
     "modelFolder" : "modules/website/app/models",
-    "migrationFile" : "modules/admin/conf/evolutions/default/13.sql",
+    "migrationFile" : "modules/admin/conf/evolutions/default/14.sql",
     "controllerPackage" : "controllers.website",
     "controllerFile" : "modules/website/app/controllers/GeneratedControllers.scala",
     "entities" : [
@@ -10,9 +10,12 @@
             "plural": "authors",
             "attributes": [
                 { "name": "name", "atype": "string" },
-                { "name": "email", "atype": "string" }
+                { "name": "email", "atype": "string" },
+                { "name": "dateofbirth", "atype": "timestamp" }
             ],
-            "relations": []
+            "relations": [
+                { "has": "many", "of": "project" }
+            ]
         },
         {
             "name" : "post",

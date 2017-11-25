@@ -6,6 +6,7 @@ import play.api.mvc._
 import views.html._
 import utils.admin._
 import models.admin._
+import models.website._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -15,7 +16,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class HomeController @Inject()(
   PageAction:PageAction,
-  documents:Documents
+  documents:Documents,
+  posts:Posts
 ) extends Controller {
 
   /**
@@ -39,6 +41,12 @@ class HomeController @Inject()(
   def product(p:Document) = PageAction.async { implicit request =>
     documents.getByParentId(p.id) map (childPages => {
       Ok(views.html.product(p, childPages.toList))
+    })
+  }
+
+  def bloglist(p:Document) = PageAction.async { implicit request =>
+    posts.getAll map (result => {
+      Ok(views.html.bloglist(p, result.toList))
     })
   }
 
