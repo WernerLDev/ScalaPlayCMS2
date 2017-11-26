@@ -4,9 +4,11 @@ import { DropdownInput, multipleSelectInput } from '../../MonadForms/SimpleFormE
 import { Segment, Icon, Dimmer, Loader, Button, List, Header } from 'semantic-ui-react'
 import * as Immutable  from 'immutable'
 
+
 export interface EntityRelationProps {
     relationname:string,
     relation:string,
+    isUnique:boolean,
     entityid:number,
     tabIndex:number,
     colorIndex:number
@@ -16,6 +18,7 @@ export interface EntityRelationState {
     entities:{value:string, text:string}[]
     relations:string[]
     loading:boolean
+    allRelations:Api.EntityRelation[]
 }
 
 type Color = "green" | "olive" | "orange" | "pink" | "purple" | "red"
@@ -26,7 +29,36 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
     
     constructor(props:EntityRelationProps, context:any) {
         super(props, context);
-        this.state = { entities: [], relations: [],loading: true }   
+        this.state = { entities: [], relations: [], allRelations: [], loading: true }   
+    }
+
+    componentWillMount() {
+        
+        Api.getRelations(this.props.relationname, this.props.entityid).then(relations => {
+            Api.getAllRelations(this.props.relationname).then(allRelations => {
+                Api.getEntitiesByType(this.props.relation).then(entities => {
+                    this.setState({
+                        ...this.state, 
+                        entities: entities.map(x => {
+                            return {
+                                value: x.object_id.toString(),
+                                text: x.name
+                            }
+                        }).filter(entity => {
+                            let isUnused = allRelations.find(x => {
+                                return x.target_id.toString() == entity.value 
+                                       && x.source_id != this.props.entityid
+                            }) == undefined;
+                            
+                            return this.props.isUnique == false || isUnused;
+                        }),
+                        allRelations: allRelations,
+                        relations: relations.map(x => x.target_id.toString()),
+                        loading: false
+                    })
+                })
+            })
+        })
     }
 
     getColor():Color {
@@ -53,24 +85,6 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
                 return Promise.resolve({});
             }
         }
-    }
-
-    componentWillMount() {
-        Api.getRelations(this.props.relationname, this.props.entityid).then(relations => {
-            Api.getEntitiesByType(this.props.relation).then(entities => {
-                this.setState({
-                    ...this.state, 
-                    entities: entities.map(x => {
-                        return {
-                            value: x.object_id.toString(),
-                            text: x.name
-                        }
-                    }),
-                    relations: relations.map(x => x.target_id.toString()),
-                    loading: false
-                })
-            })
-        })
     }
 
     renderSingleRelation(relation:string) {

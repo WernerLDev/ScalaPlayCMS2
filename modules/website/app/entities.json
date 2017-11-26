@@ -57,7 +57,7 @@
                 { "name" : "ProjectDate", "atype" : "timestamp"}
             ],
             "relations": [
-                { "has": "many", "of": "category", "unique": false }
+                { "has": "many", "of": "category", "unique": true }
             ]
         }
     ]

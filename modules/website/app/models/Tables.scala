@@ -38,6 +38,10 @@ trait TAuthorprojects extends HasDatabaseConfigProvider[JdbcProfile] {
     authorprojects.filter(_.source_id === id).result
   }
 
+  def getAll = dbConfig.db.run {  
+    authorprojects.result
+  }
+
 }
 case class Author (id:Long, name:String, email:String, dateofbirth:Timestamp) 
 
@@ -102,6 +106,10 @@ trait TPostcomments extends HasDatabaseConfigProvider[JdbcProfile] {
     postcomments.filter(_.source_id === id).result
   }
 
+  def getAll = dbConfig.db.run {  
+    postcomments.result
+  }
+
 }
 case class Postproject (source_id:Long, target_id:Long) 
 
@@ -126,6 +134,10 @@ trait TPostprojects extends HasDatabaseConfigProvider[JdbcProfile] {
 
   def getBySourceId(id:Long) = dbConfig.db.run {
     postprojects.filter(_.source_id === id).result
+  }
+
+  def getAll = dbConfig.db.run {  
+    postprojects.result
   }
 
 }
@@ -267,6 +279,10 @@ trait TProjectcategories extends HasDatabaseConfigProvider[JdbcProfile] {
 
   def getBySourceId(id:Long) = dbConfig.db.run {
     projectcategories.filter(_.source_id === id).result
+  }
+
+  def getAll = dbConfig.db.run {  
+    projectcategories.result
   }
 
 }

@@ -7,6 +7,11 @@ export interface EntityType {
     plural:string
 }
 
+export interface EntityRelation {
+    source_id:number,
+    target_id:number
+}
+
 export interface Entity {
     id : number,
     parent_id : number,
@@ -113,11 +118,10 @@ export function unlinkEntities(relation:string, source_id:number, target_id:numb
     return ApiCall("/api/v1/entities/unlink/" + relation + "/" + source_id + "/" + target_id, "DELETE")
 }
 
-
-type EntityRelation = {
-    source_id:number,
-    target_id:number
+export function getAllRelations(relation:string):Promise<EntityRelation[]> {
+    return ApiCall("/api/v1/entities/relations/" + relation, "GET").then(x => x as EntityRelation[]);
 }
+
 export function getRelations(relation:string, source_id:number):Promise<EntityRelation[]> {
     return ApiCall("/api/v1/entities/relations/" + relation + "/" + source_id, "GET")
 }

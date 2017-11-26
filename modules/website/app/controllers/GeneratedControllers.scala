@@ -343,7 +343,7 @@ class GeneratedProjectsController @Inject() (
                            Map("name" -> JsString("ProjectDate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
                        ),
                        "relations" -> List(
-                           Map("relationname" -> JsString("projectcategory"), "relation" -> JsString("category"), "unique" -> JsBoolean(false))
+                           Map("relationname" -> JsString("projectcategory"), "relation" -> JsString("category"), "unique" -> JsBoolean(true))
                        )
                     )
                 ))
@@ -358,6 +358,7 @@ trait TGenRelationController {
     def link(source_id:Long, target_id:Long):Future[Result]
     def unlink(source_id:Long, target_id:Long):Future[Result]
     def getBySourceId(id:Long):Future[Result]
+    def getAll:Future[Result]
 }
 
 @Singleton
@@ -384,6 +385,12 @@ class GeneratedAuthorprojectsController @Inject() (
         authorprojects.getBySourceId(source_id).map(x => {
             Ok(Json.toJson(x))
         })
+    }
+
+    def getAll = {
+      authorprojects.getAll.map(x => {
+        Ok(Json.toJson(x))
+      })
     }
 
 }
@@ -416,6 +423,12 @@ class GeneratedPostcommentsController @Inject() (
         })
     }
 
+    def getAll = {
+      postcomments.getAll.map(x => {
+        Ok(Json.toJson(x))
+      })
+    }
+
 }
 
 
@@ -446,6 +459,12 @@ class GeneratedPostprojectsController @Inject() (
         })
     }
 
+    def getAll = {
+      postprojects.getAll.map(x => {
+        Ok(Json.toJson(x))
+      })
+    }
+
 }
 
 
@@ -474,6 +493,12 @@ class GeneratedProjectcategoriesController @Inject() (
         projectcategories.getBySourceId(source_id).map(x => {
             Ok(Json.toJson(x))
         })
+    }
+
+    def getAll = {
+      projectcategories.getAll.map(x => {
+        Ok(Json.toJson(x))
+      })
     }
 
 }
@@ -585,6 +610,13 @@ class GeneratedController @Inject() (
             case Some(x) => x.getBySourceId(source_id)
             case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
         }    
+    }
+
+    def getAllRelations(name:String) = WithAuthAction.async { request => 
+      relations.get(name) match {
+        case Some(x) => x.getAll
+        case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
+      }
     }
 
 

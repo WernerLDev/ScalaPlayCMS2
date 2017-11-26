@@ -74,7 +74,7 @@ export interface EntityTabPanelProps {
 export interface EntityTabPanelState {
     fields:EntityField[],
     objects:EntityObject[],
-    relations:{relationname:string, relation:string}[],
+    relations:{relationname:string, relation:string, unique:boolean}[],
     working:boolean,
     saving:boolean
 }
@@ -322,6 +322,7 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                             {this.state.relations.map((x, index) => 
                                 <EntityRelation
                                     key={x.relationname}
+                                    isUnique={x.unique}
                                     colorIndex={index}
                                     entityid={this.props.item.object_id}
                                     relation={x.relation}
