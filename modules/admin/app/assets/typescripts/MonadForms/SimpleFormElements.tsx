@@ -88,7 +88,7 @@ export function DateInput(
                 onChange(date)
             }}
             value={moment(value)}
-            displayFormat="MMMM Do YYYY"
+            displayFormat="MMMM Do YYYY H:mm"
             showOnInputClick
         />
     );
@@ -103,11 +103,10 @@ export function TimeInput(
     let minutes = v.getMinutes() % 5 == 0 ? v.getMinutes() : 0;
     return (
         <div>
-            <Dropdown 
+            <Dropdown
                 tabIndex={tabIndex}
                 compact
-                placeholder={"Hours"} 
-                value={v.getHours()} 
+                value={v.getHours().toString()} 
                 selection 
                 onChange={(e, {value}) => {
                     let newDate = v;
@@ -115,14 +114,14 @@ export function TimeInput(
                     onChange(newDate);
                 }}
                 options={[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23].map(x => {
-                    return { value: x, text: x > 9 ? x.toString() : "0" + x.toString() }
-                })} 
+                    return { value: x.toString(), text: x > 9 ? x.toString() : "0" + x.toString() }
+                })}
             />
            <Dropdown 
                 tabIndex={tabIndex}
                 compact
-                placeholder={"Minutes"} 
-                value={minutes} 
+
+                value={minutes.toString()} 
                 selection 
                 onChange={(e, {value}) => {
                     let newDate = v;
@@ -130,7 +129,7 @@ export function TimeInput(
                     onChange(newDate);
                 }}
                 options={[0,5,10,15,20,25,30,35,40,45,50,55].map(x => {
-                    return { value: x, text: x > 9 ? x.toString() : "0" + x.toString() }
+                    return { value: x.toString(), text: x > 9 ? x.toString() : "0" + x.toString() }
                 })} 
             />
         </div>
@@ -175,7 +174,8 @@ export function DropdownInput(
                 search
                 placeholder={"Select " + label} 
                 value={value} 
-                fluid selection 
+                fluid selection
+                defaultOpen={false} 
                 onChange={(e, {value}) => {
                     onChange(value as string)
                 }}

@@ -1,10 +1,8 @@
 {
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
-    "@types/react": "^16.0.0",
-    "@types/react-dom": "^16.0.0",
+    "@types/react": "^15.6.7",
     "@types/react-split-pane": "^0.1.10",
-    "@types/semantic-ui": "^2.2.6",
     "babel-core": "^6.4.5",
     "babel-loader": "^6.2.1",
     "babel-plugin-react-require": "^3.0.0",
@@ -30,8 +28,8 @@
     "immutable": "^3.8.2",
     "moment": "^2.19.2",
     "rc-datepicker": "^5.0.10",
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "react-mce": "^0.6.1",
     "react-split-pane": "^0.1.71",
     "react-tap-event-plugin": "^2.0.1",
