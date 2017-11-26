@@ -81,7 +81,8 @@ export interface ApiErrorInfo {
 
 export default function ApiError(info:ApiErrorInfo) {
     let onClose = function() {
-        document.getElementById("errordiv").innerHTML = "";
+        //document.getElementById("errordiv").innerHTML = "";
+        ReactDOM.unmountComponentAtNode(document.getElementById("errordiv"));
     }
     ReactDOM.render(
         <ApiErrorView info={info} onClose={onClose} />,

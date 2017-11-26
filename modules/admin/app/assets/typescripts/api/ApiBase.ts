@@ -12,7 +12,7 @@ type ApiHeader = {
 type ApiParams = {
     method: string,
     credentials : RequestCredentials,
-    headers: ApiHeader,
+    headers: Headers,
     body?:any 
 }
 
@@ -41,7 +41,7 @@ export default function ApiCall(call:string, method:RequestMethod, body?:string,
     var params:ApiParams = {
         method: method,
         credentials : "include",
-        headers: headers 
+        headers: new Headers(headers) 
     }
 
     if( (method != "GET" && method != "HEAD") && body != null) {
@@ -60,7 +60,7 @@ export default function ApiCall(call:string, method:RequestMethod, body?:string,
                     url : call
                 }
                 ApiError(info);
-                return response;
+                return {};
             });
         } else {
             if(contenttype == "text/plain") {
