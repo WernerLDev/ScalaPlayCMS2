@@ -35,7 +35,7 @@
     "react-mce": "^0.6.1",
     "react-split-pane": "^0.1.71",
     "react-tap-event-plugin": "^2.0.1",
-    "semantic-ui-react": "^0.68.3",
+    "semantic-ui-react": "^0.77.0",
     "tinymce": "^4.7.3"
   },
   "scripts": {
