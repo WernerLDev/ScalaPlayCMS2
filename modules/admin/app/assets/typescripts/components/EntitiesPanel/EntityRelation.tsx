@@ -34,7 +34,7 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
         return colors[this.props.colorIndex]
     }
 
-    add_or_delete_relation(relations:string[]){
+    addOrDeleteRelation(relations:string[]){
         if(relations.length > this.state.relations.length) {
             //new item added
             let newVal = relations.filter(x => this.state.relations.find(y => y == x) == undefined);
@@ -103,7 +103,7 @@ export default class EntityDropdownComp extends React.Component<EntityRelationPr
                     this.props.relation,
                     this.state.relations,
                     (v) => {
-                        this.add_or_delete_relation(v).then(x => {
+                        this.addOrDeleteRelation(v).then(x => {
                             this.setState({...this.state, relations: v})
                         })
                     },

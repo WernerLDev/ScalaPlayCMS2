@@ -14,7 +14,7 @@ import {
 } from '../../MonadForms/SimpleFormElements'
 import * as Api from '../../api/Api'
 import { Menu, Dropdown, Segment, Icon, Dimmer, Loader, Button, List, Grid } from 'semantic-ui-react'
-import { EntityDropDown } from './EntityDropdown'
+import { EntityDropDown, EntityObject } from './EntityDropdown'
 import EntityRelation from './EntityRelation'
 
 interface MyType {
@@ -63,6 +63,7 @@ export type EntityField = {
     name: string,
     relation: string,
     value: number,
+    unique:boolean,
     type: "relation"
 }
 
@@ -72,6 +73,7 @@ export interface EntityTabPanelProps {
 
 export interface EntityTabPanelState {
     fields:EntityField[],
+    objects:EntityObject[],
     relations:{relationname:string, relation:string}[],
     working:boolean,
     saving:boolean
@@ -81,12 +83,19 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
     
     constructor(props:EntityTabPanelProps, context:any) {
         super(props, context);
-        this.state = { fields: [], relations: [], working: true, saving: false }
+        this.state = { fields: [], objects: [], relations: [], working: true, saving: false }
     }
 
     componentWillMount() {
         Api.getEntityForm(this.props.item).then(fields => {
-            this.setState({ fields: fields.attributes, relations: fields.relations, working: false });
+            Api.getEntityObjects(this.props.item.discriminator).then(objects => {
+                this.setState({ 
+                    fields: fields.attributes, 
+                    objects: objects,
+                    relations: fields.relations, 
+                    working: false 
+                });
+            })
         })
     }
 
@@ -233,7 +242,12 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
             );
         } else if(f.type == "relation") {
             return (
-                FormInput(EntityDropDown(f.relation), index.toString())(
+                FormInput(EntityDropDown(
+                    f.relation, 
+                    this.props.item.object_id, 
+                    this.state.objects, 
+                    f.unique
+                ), index.toString())(
                     f.relation,
                     f.value,
                     (v) => {

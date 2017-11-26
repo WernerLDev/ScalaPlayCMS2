@@ -81,7 +81,7 @@ class GeneratedAuthorsController @Inject() (
                            Map("name" -> JsString("dateofbirth"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.dateofbirth.getTime()))
                        ),
                        "relations" -> List(
-                           Map("relationname" -> JsString("authorproject"), "relation" -> JsString("project"))
+                           Map("relationname" -> JsString("authorproject"), "relation" -> JsString("project"), "unique" -> JsBoolean(false))
                        )
                     )
                 ))
@@ -146,12 +146,12 @@ class GeneratedPostsController @Inject() (
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
                            Map("name" -> JsString("title"),  "type" -> JsString("text"), "value" -> JsString(p.title)),
                            Map("name" -> JsString("content"),  "type" -> JsString("textarea"), "value" -> JsString(p.content)),
-                           Map("name" -> JsString("category_id"), "relation" -> JsString("category"), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id)),
-                           Map("name" -> JsString("author_id"), "relation" -> JsString("author"), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
+                           Map("name" -> JsString("category_id"), "relation" -> JsString("category"),"unique" -> JsBoolean(false), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id)),
+                           Map("name" -> JsString("author_id"), "relation" -> JsString("author"),"unique" -> JsBoolean(false), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
                        ),
                        "relations" -> List(
-                           Map("relationname" -> JsString("postcomment"), "relation" -> JsString("comment")),
-                           Map("relationname" -> JsString("postproject"), "relation" -> JsString("project"))
+                           Map("relationname" -> JsString("postcomment"), "relation" -> JsString("comment"), "unique" -> JsBoolean(false)),
+                           Map("relationname" -> JsString("postproject"), "relation" -> JsString("project"), "unique" -> JsBoolean(false))
                        )
                     )
                 ))
@@ -275,7 +275,7 @@ class GeneratedCommentsController @Inject() (
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
                            Map("name" -> JsString("message"),  "type" -> JsString("textarea"), "value" -> JsString(p.message)),
-                           Map("name" -> JsString("author_id"), "relation" -> JsString("author"), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
+                           Map("name" -> JsString("author_id"), "relation" -> JsString("author"),"unique" -> JsBoolean(true), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
                        ),
                        "relations" -> List(
 
@@ -343,7 +343,7 @@ class GeneratedProjectsController @Inject() (
                            Map("name" -> JsString("ProjectDate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
                        ),
                        "relations" -> List(
-                           Map("relationname" -> JsString("projectcategory"), "relation" -> JsString("category"))
+                           Map("relationname" -> JsString("projectcategory"), "relation" -> JsString("category"), "unique" -> JsBoolean(false))
                        )
                     )
                 ))

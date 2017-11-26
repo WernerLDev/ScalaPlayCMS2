@@ -100,6 +100,7 @@ export function TimeInput(
     onChange:(v:Date) => void,
     tabIndex: number
 ) {
+    let minutes = v.getMinutes() % 5 == 0 ? v.getMinutes() : 0;
     return (
         <div>
             <Dropdown 
@@ -121,7 +122,7 @@ export function TimeInput(
                 tabIndex={tabIndex}
                 compact
                 placeholder={"Minutes"} 
-                value={v.getMinutes()} 
+                value={minutes} 
                 selection 
                 onChange={(e, {value}) => {
                     let newDate = v;
@@ -144,10 +145,16 @@ export function DateTimeInput(
     tabIndex: number
 ) {
     return (
-        <div>
-            {DateInput(label, v, onChange, tabIndex)}
-            {TimeInput(label, v, onChange, tabIndex + 1)}
-        </div>
+        <Grid >
+            <Grid.Row  columns={2}>
+                <Grid.Column width={10}>
+                    {DateInput(label, v, onChange, tabIndex)}
+                </Grid.Column>
+                <Grid.Column width={6}>
+                    {TimeInput(label, v, onChange, tabIndex + 1)}
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
     )
 }
 

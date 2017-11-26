@@ -14,7 +14,7 @@
                 { "name": "dateofbirth", "atype": "timestamp" }
             ],
             "relations": [
-                { "has": "many", "of": "project" }
+                { "has": "many", "of": "project", "unique": false }
             ]
         },
         {
@@ -25,10 +25,10 @@
                 { "name" : "content", "atype" : "text" }
             ],
             "relations" : [
-                { "has" : "one", "of" : "category" },
-                { "has" : "one", "of": "author" },
-                { "has": "many", "of": "comment" },
-                { "has": "many", "of": "project" }
+                { "has" : "one", "of" : "category", "unique": false },
+                { "has" : "one", "of": "author", "unique": false },
+                { "has": "many", "of": "comment", "unique": false },
+                { "has": "many", "of": "project", "unique": false }
             ]
         }, {
             "name" : "Category",
@@ -45,7 +45,7 @@
                 { "name": "message", "atype": "text" }
             ],
             "relations": [
-                { "has": "one", "of" : "author" }
+                { "has": "one", "of" : "author", "unique": true }
             ]
         },
         {
@@ -57,7 +57,7 @@
                 { "name" : "ProjectDate", "atype" : "timestamp"}
             ],
             "relations": [
-                { "has": "many", "of": "category" }
+                { "has": "many", "of": "category", "unique": false }
             ]
         }
     ]

@@ -71,10 +71,10 @@ CREATE TABLE `projectcategories` (
 
 
 
-ALTER TABLE `posts` ADD INDEX (category_id);
-ALTER TABLE `posts` ADD INDEX (author_id);
+ALTER TABLE `posts` ADD  INDEX (category_id);
+ALTER TABLE `posts` ADD  INDEX (author_id);
 
-ALTER TABLE `comments` ADD INDEX (author_id);
+ALTER TABLE `comments` ADD UNIQUE INDEX (author_id);
 
 
 

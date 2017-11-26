@@ -1,6 +1,6 @@
 import ApiCall from './ApiBase.js';
 import { EntityField } from '../components/EntitiesPanel/EntityTabPanel'
-
+import {EntityObject} from '../components/EntitiesPanel/EntityDropdown'
 
 export interface EntityType {
     name:string
@@ -31,7 +31,8 @@ export interface EntityForm  {
     attributes: EntityField[],
     relations: {
         relationname:string,
-        relation:string
+        relation:string,
+        unique:boolean
     }[]
 }
 
@@ -90,6 +91,10 @@ export function getEntityForm(entity:Entity):Promise<EntityForm> {
 
 export function getEntitiesByType(type:string):Promise<Entity[]> {
     return ApiCall("/admin/api/v1/entities/type/" + type, "GET").then(x => x as Entity[]);
+}
+
+export function getEntityObjects(type:string):Promise<EntityObject[]> {
+    return ApiCall("/api/v1/entities/" + type, "GET");
 }
 
 export function getEntityById(id:number):Promise<Entity> {
