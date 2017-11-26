@@ -88,7 +88,7 @@ export function DateInput(
                 onChange(date)
             }}
             value={moment(value)}
-            displayFormat="MMMM Do YYYY H:mm"
+            displayFormat="MMMM Do YYYY"
             showOnInputClick
         />
     );

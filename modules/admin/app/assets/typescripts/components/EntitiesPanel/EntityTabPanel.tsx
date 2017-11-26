@@ -40,6 +40,10 @@ export type EntityField = {
 } | {
     name:string,
     value:number,
+    type: "date"
+} | {
+    name:string,
+    value:number,
     type:"number"
 } | {
     name:string,
@@ -164,6 +168,19 @@ export default class EntityTabPanel extends React.Component<EntityTabPanelProps,
                         index
                     )
             );
+        } else if(f.type == "date") {
+            return(
+                FormInput(DateInput, index.toString(), this.bgcolor(isEven))(
+                    f.name,
+                    new Date(f.value),
+                    (v) => {
+                        let oldFields = this.state.fields;
+                        oldFields[index].value = v.getTime();
+                        this.setState({...this.state, fields: oldFields });
+                    },
+                    index
+                )
+            )
         } else if(f.type == "number") {
             return(
                 FormInput(NumberInput, index.toString(), this.bgcolor(isEven))(

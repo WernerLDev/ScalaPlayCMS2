@@ -11,7 +11,7 @@
             "attributes": [
                 { "name": "name", "atype": "string" },
                 { "name": "email", "atype": "string" },
-                { "name": "dateofbirth", "atype": "timestamp" }
+                { "name": "dateofbirth", "atype": "date" }
             ],
             "relations": [
                 { "has": "many", "of": "project", "unique": false }
@@ -54,7 +54,7 @@
             "attributes" : [
                 { "name" : "Projectname", "atype" : "string"},
                 { "name" : "Description", "atype" : "text"},
-                { "name" : "ProjectDate", "atype" : "timestamp"}
+                { "name" : "ProjectDate", "atype" : "datetime"}
             ],
             "relations": [
                 { "has": "many", "of": "category", "unique": true }

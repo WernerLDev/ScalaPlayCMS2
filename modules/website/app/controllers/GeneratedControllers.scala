@@ -78,7 +78,7 @@ class GeneratedAuthorsController @Inject() (
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
                            Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
                            Map("name" -> JsString("email"),  "type" -> JsString("text"), "value" -> JsString(p.email)),
-                           Map("name" -> JsString("dateofbirth"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.dateofbirth.getTime()))
+                           Map("name" -> JsString("dateofbirth"),  "type" -> JsString("date"), "value" -> JsNumber(p.dateofbirth.getTime()))
                        ),
                        "relations" -> List(
                            Map("relationname" -> JsString("authorproject"), "relation" -> JsString("project"), "unique" -> JsBoolean(false))
