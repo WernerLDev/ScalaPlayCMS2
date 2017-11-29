@@ -79,6 +79,14 @@ class EntitiesController @Inject()(
       }).getOrElse( Future(BadRequest("Error: missing parameter [name]")) )
     }
 
+    def updateParent(id:Long) = WithAuthAction.async(parse.json) { request =>
+        ((request.body \ "parent_id").asOpt[Long].map{ parent_id =>
+        entities.updateParent(id, parent_id) map { x =>
+            Ok(Json.toJson(Map("success" -> JsNumber(x))))
+        }
+        }).getOrElse( Future(BadRequest("Error: missing parameter [parent_id]")) )
+    }
+
 }
 
 

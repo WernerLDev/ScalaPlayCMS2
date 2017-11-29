@@ -125,3 +125,10 @@ export function getAllRelations(relation:string):Promise<EntityRelation[]> {
 export function getRelations(relation:string, source_id:number):Promise<EntityRelation[]> {
     return ApiCall("/api/v1/entities/relations/" + relation + "/" + source_id, "GET")
 }
+
+export function updateParentEntity(source_id:number, target_id:number) {
+    var body = JSON.stringify({
+        "parent_id": target_id
+    });
+    return ApiCall("/admin/api/v1/entities/" + source_id + "/updateparent", "PUT", body);
+}

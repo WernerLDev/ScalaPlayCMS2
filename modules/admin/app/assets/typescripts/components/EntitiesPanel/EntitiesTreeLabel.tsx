@@ -16,6 +16,7 @@ export interface EntitiesTreeLabelProps {
     onNewEntity: (parent_id:number, name:string, discriminator:Api.EntityType) => void 
     onDeleted: (entity:Api.Entity) => void
     onRenamed:(entity:Api.Entity) => void
+    onParentChanged:(source_id:number, target_id:number) => void
     emitter: fbemitter.EventEmitter
     entityTypes: Api.EntityType[]
 }
@@ -148,9 +149,6 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
         )
     }
 
-    onParentChanged() {
-
-    }
 
     getEntityIcon(discriminator:string) {
         switch(discriminator) {
@@ -184,7 +182,7 @@ class EntitiesTreeLabel extends React.Component<EntitiesTreeLabelProps, Entities
         return(
             <Draggable 
                 isDropTarget={discriminator == "folder" || discriminator == "home"}
-                onDrop={this.onParentChanged.bind(this)}
+                onDrop={(source, target) => this.props.onParentChanged(source, target)}
                 item={this.props.item}
                 className={"dragitem"} 
                 onContextMenu={this.toggleContextMenu.bind(this)}

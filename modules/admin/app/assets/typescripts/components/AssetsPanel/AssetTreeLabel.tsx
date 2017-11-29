@@ -123,7 +123,7 @@ class AssetTreeLabel extends React.Component<AssetTreeLabelProps, AssetTreeLabel
         return(
             <Draggable 
                 isDropTarget={mimetype == "folder" || mimetype == "home"}
-                onDrop={this.props.onParentChanged.bind(this)}
+                onDrop={(source, target) => this.props.onParentChanged(source, target)}
                 item={this.props.item}
                 className={this.state.deleted ? "deleted dragitem" : "dragitem"} 
                 onContextMenu={this.toggleContextMenu.bind(this)}>

@@ -21,11 +21,11 @@
             "name" : "post",
             "plural" : "posts",
             "attributes" : [
-                { "name" : "title", "atype" : "String"},
+                { "name" : "title", "atype" : "string"},
                 { "name" : "content", "atype" : "text" }
             ],
             "relations" : [
-                { "has" : "one", "of" : "category", "unique": false },
+                { "has" : "one", "of" : "category", "unique": true },
                 { "has" : "one", "of": "author", "unique": false },
                 { "has": "many", "of": "comment", "unique": false },
                 { "has": "many", "of": "project", "unique": false }
@@ -45,7 +45,7 @@
                 { "name": "message", "atype": "text" }
             ],
             "relations": [
-                { "has": "one", "of" : "author", "unique": true }
+                { "has": "one", "of" : "author", "unique": false }
             ]
         },
         {

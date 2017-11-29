@@ -94,4 +94,10 @@ class Entities @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     getAll.map(x => generateList(x.toList, 0))
   }
 
+  def updateParent(id:Long, parent_id:Long):Future[Int] = {
+        dbConfig.db.run {
+            entities.filter(_.id === id).map(_.parent_id).update(parent_id)
+        }
+    }
+
 }

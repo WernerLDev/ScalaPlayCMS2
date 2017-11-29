@@ -81,6 +81,13 @@ class EntitiesPanel extends React.Component<EntitiesPanelProps, EntitiesPanelSta
                         this.refresh();
                     });
                 }}
+                onParentChanged={(source, target) => {
+                    this.setState({...this.state, working: true}, () => {
+                        Api.updateParentEntity(source, target).then(x => {
+                            this.refresh();
+                        })
+                    })
+                }}
                 onNewEntity={(parent_id:number, name:string, discriminator:Api.EntityType) => {
                     this.setState({...this.state, working: true}, () => {
                         Api.addEntity(parent_id, name, discriminator).then(entity => {
