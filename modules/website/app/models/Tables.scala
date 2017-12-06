@@ -43,44 +43,7 @@ trait TAuthorprojects extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Author (id:Long, name:String, email:String, dateofbirth:Timestamp) 
 
-class AuthorTableDef(tag:Tag) extends Table[Author](tag, "authors") {
-  
-  def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
-  def name = column[String]("name")
-  def email = column[String]("email")
-  def dateofbirth = column[Timestamp]("dateofbirth")
-
-  override def * = (id, name, email, dateofbirth) <>(Author.tupled, Author.unapply)
-}
-
-
-trait TAuthors extends HasDatabaseConfigProvider[JdbcProfile] {
-
-  val authors = TableQuery[AuthorTableDef]
-  val projects = TableQuery[ProjectTableDef] 
-  val insertQuery = authors returning authors.map(_.id) into ((author, id) => author.copy(id = id))
-
-  def insert(author:Author) = dbConfig.db.run(insertQuery += author)
-    
-  def update(author:Author) = dbConfig.db.run {
-    authors.filter(_.id === author.id).update(author)
-  }
-
-  def delete(id:Long) = dbConfig.db.run {
-    authors.filter(_.id === id).delete
-  }
-
-  def getById(id:Long) = dbConfig.db.run {
-    authors.filter(_.id === id).result.headOption
-  }
-
-  def getAll = dbConfig.db.run {
-    authors.result
-  }
-
-}
 case class Postcomment (source_id:Long, target_id:Long) 
 
 class PostcommentTableDef(tag:Tag) extends Table[Postcomment](tag, "postcomments") {
@@ -111,6 +74,7 @@ trait TPostcomments extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
+
 case class Postproject (source_id:Long, target_id:Long) 
 
 class PostprojectTableDef(tag:Tag) extends Table[Postproject](tag, "postprojects") {
@@ -141,17 +105,89 @@ trait TPostprojects extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Post (id:Long, title:String, content:String, category_id:Long, author_id:Long) 
+
+case class Projectcategory (source_id:Long, target_id:Long) 
+
+class ProjectcategoryTableDef(tag:Tag) extends Table[Projectcategory](tag, "projectcategories") {
+  
+  def source_id = column[Long]("source_id")
+  def target_id = column[Long]("target_id")
+
+  override def * = (source_id, target_id) <>(Projectcategory.tupled, Projectcategory.unapply)
+}
+
+
+trait TProjectcategories extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val projectcategories = TableQuery[ProjectcategoryTableDef]
+
+  def link(projectcategory:Projectcategory) = dbConfig.db.run(projectcategories += projectcategory)
+  
+  def unlink(projectcategory:Projectcategory) = dbConfig.db.run {
+    projectcategories.filter(x => x.source_id === projectcategory.source_id && x.target_id === projectcategory.target_id).delete
+  }
+
+  def getBySourceId(id:Long) = dbConfig.db.run {
+    projectcategories.filter(_.source_id === id).result
+  }
+
+  def getAll = dbConfig.db.run {  
+    projectcategories.result
+  }
+
+}
+case class Author (id:Long, entity_id:Long, name:String, email:String, dateofbirth:Timestamp) 
+
+class AuthorTableDef(tag:Tag) extends Table[Author](tag, "authors") {
+  
+  def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+  def entity_id = column[Long]("entity_id")
+  def name = column[String]("name")
+  def email = column[String]("email")
+  def dateofbirth = column[Timestamp]("dateofbirth")
+
+  override def * = (id, entity_id, name, email, dateofbirth) <>(Author.tupled, Author.unapply)
+}
+
+
+trait TAuthors extends HasDatabaseConfigProvider[JdbcProfile] {
+
+  val authors = TableQuery[AuthorTableDef]
+  val projects = TableQuery[ProjectTableDef] 
+  val insertQuery = authors returning authors.map(_.id) into ((author, id) => author.copy(id = id))
+
+  def insert(author:Author) = dbConfig.db.run(insertQuery += author)
+    
+  def update(author:Author) = dbConfig.db.run {
+    authors.filter(_.id === author.id).update(author)
+  }
+
+  def delete(id:Long) = dbConfig.db.run {
+    authors.filter(_.id === id).delete
+  }
+
+  def getById(id:Long) = dbConfig.db.run {
+    authors.filter(_.id === id).result.headOption
+  }
+
+  def getAll = dbConfig.db.run {
+    authors.result
+  }
+
+}
+
+case class Post (id:Long, entity_id:Long, title:String, content:String, category_id:Long, author_id:Long) 
 
 class PostTableDef(tag:Tag) extends Table[Post](tag, "posts") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+  def entity_id = column[Long]("entity_id")
   def title = column[String]("title")
   def content = column[String]("content")
   def category_id = column[Long]("category_id")
   def author_id = column[Long]("author_id")
 
-  override def * = (id, title, content, category_id, author_id) <>(Post.tupled, Post.unapply)
+  override def * = (id, entity_id, title, content, category_id, author_id) <>(Post.tupled, Post.unapply)
 }
 
 
@@ -183,14 +219,16 @@ val projects = TableQuery[ProjectTableDef]
   }
 
 }
-case class Category (id:Long, categoryname:String) 
+
+case class Category (id:Long, entity_id:Long, categoryname:String) 
 
 class CategoryTableDef(tag:Tag) extends Table[Category](tag, "categories") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+  def entity_id = column[Long]("entity_id")
   def categoryname = column[String]("categoryname")
 
-  override def * = (id, categoryname) <>(Category.tupled, Category.unapply)
+  override def * = (id, entity_id, categoryname) <>(Category.tupled, Category.unapply)
 }
 
 
@@ -219,15 +257,17 @@ trait TCategories extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Comment (id:Long, message:String, author_id:Long) 
+
+case class Comment (id:Long, entity_id:Long, message:String, author_id:Long) 
 
 class CommentTableDef(tag:Tag) extends Table[Comment](tag, "comments") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+  def entity_id = column[Long]("entity_id")
   def message = column[String]("message")
   def author_id = column[Long]("author_id")
 
-  override def * = (id, message, author_id) <>(Comment.tupled, Comment.unapply)
+  override def * = (id, entity_id, message, author_id) <>(Comment.tupled, Comment.unapply)
 }
 
 
@@ -256,46 +296,18 @@ trait TComments extends HasDatabaseConfigProvider[JdbcProfile] {
   }
 
 }
-case class Projectcategory (source_id:Long, target_id:Long) 
 
-class ProjectcategoryTableDef(tag:Tag) extends Table[Projectcategory](tag, "projectcategories") {
-  
-  def source_id = column[Long]("source_id")
-  def target_id = column[Long]("target_id")
-
-  override def * = (source_id, target_id) <>(Projectcategory.tupled, Projectcategory.unapply)
-}
-
-
-trait TProjectcategories extends HasDatabaseConfigProvider[JdbcProfile] {
-
-  val projectcategories = TableQuery[ProjectcategoryTableDef]
-
-  def link(projectcategory:Projectcategory) = dbConfig.db.run(projectcategories += projectcategory)
-  
-  def unlink(projectcategory:Projectcategory) = dbConfig.db.run {
-    projectcategories.filter(x => x.source_id === projectcategory.source_id && x.target_id === projectcategory.target_id).delete
-  }
-
-  def getBySourceId(id:Long) = dbConfig.db.run {
-    projectcategories.filter(_.source_id === id).result
-  }
-
-  def getAll = dbConfig.db.run {  
-    projectcategories.result
-  }
-
-}
-case class Project (id:Long, Projectname:String, Description:String, ProjectDate:Timestamp) 
+case class Project (id:Long, entity_id:Long, projectname:String, description:String, projectdate:Timestamp) 
 
 class ProjectTableDef(tag:Tag) extends Table[Project](tag, "projects") {
   
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
-  def Projectname = column[String]("Projectname")
-  def Description = column[String]("Description")
-  def ProjectDate = column[Timestamp]("ProjectDate")
+  def entity_id = column[Long]("entity_id")
+  def projectname = column[String]("projectname")
+  def description = column[String]("description")
+  def projectdate = column[Timestamp]("projectdate")
 
-  override def * = (id, Projectname, Description, ProjectDate) <>(Project.tupled, Project.unapply)
+  override def * = (id, entity_id, projectname, description, projectdate) <>(Project.tupled, Project.unapply)
 }
 
 

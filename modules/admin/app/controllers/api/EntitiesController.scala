@@ -12,8 +12,6 @@ import play.api.libs.functional.syntax._
 import java.sql.Timestamp
 import java.util.Date
 import utils.admin._
-import scala.util.{Success, Failure}
-import java.io.File
 import models.admin._
 
 case class NewEntity(parent_id:Long, object_id:Long, name:String, discriminator:String)

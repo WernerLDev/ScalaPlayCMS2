@@ -70,11 +70,6 @@ class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
                         label : "Properties",
                         onClick: this.props.onProperties,
                         children: []
-                    },
-                    {
-                        label : "Open",
-                        onClick: this.handleItemClick.bind(this),
-                        children: []
                     }
                 ]}
                 onDismiss={this.props.onDismiss}

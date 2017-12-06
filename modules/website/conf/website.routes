@@ -7,7 +7,7 @@ GET     /api/v1/entities/:name          controllers.website.GeneratedController.
 GET     /api/v1/entities/:name/:id/form controllers.website.GeneratedController.getFormById(name:String, id:Long)
 POST     /api/v1/entities/:name         controllers.website.GeneratedController.insert(name:String)
 PUT     /api/v1/entities/:name           controllers.website.GeneratedController.update(name:String)
-POST      /api/v1/entities/:name/init   controllers.website.GeneratedController.createNew(name:String)
+POST      /api/v1/entities/:name/:entityid/init   controllers.website.GeneratedController.createNew(name:String, entityid:Long)
 DELETE   /api/v1/entities/:name/:id     controllers.website.GeneratedController.delete(name:String, id:Long)
 
 POST      /api/v1/entities/link/:name/:sourceid/:targetid    controllers.website.GeneratedController.link(name:String, sourceid:Long, targetid:Long)

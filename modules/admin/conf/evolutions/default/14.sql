@@ -5,45 +5,55 @@
 
 CREATE TABLE `authors` ( 
   `id` INT NOT NULL AUTO_INCREMENT,
+  `entity_id` INT NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `email` VARCHAR(255) NOT NULL,
   `dateofbirth` DATETIME NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  CONSTRAINT `authors_entity_id_FK` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `posts` ( 
   `id` INT NOT NULL AUTO_INCREMENT,
+  `entity_id` INT NOT NULL,
   `title` VARCHAR(255) NOT NULL,
   `content` TEXT NOT NULL,
   `category_id` INT NOT NULL,
   `author_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  CONSTRAINT `posts_entity_id_FK` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `categories` ( 
   `id` INT NOT NULL AUTO_INCREMENT,
+  `entity_id` INT NOT NULL,
   `categoryname` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  CONSTRAINT `categories_entity_id_FK` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `comments` ( 
   `id` INT NOT NULL AUTO_INCREMENT,
+  `entity_id` INT NOT NULL,
   `message` TEXT NOT NULL,
   `author_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  CONSTRAINT `comments_entity_id_FK` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `projects` ( 
   `id` INT NOT NULL AUTO_INCREMENT,
-  `Projectname` VARCHAR(255) NOT NULL,
-  `Description` TEXT NOT NULL,
-  `ProjectDate` DATETIME NOT NULL DEFAULT NOW(),
+  `entity_id` INT NOT NULL,
+  `projectname` VARCHAR(255) NOT NULL,
+  `description` TEXT NOT NULL,
+  `projectdate` DATETIME NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  CONSTRAINT `projects_entity_id_FK` FOREIGN KEY (`entity_id`) REFERENCES `entities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `authorprojects` (
@@ -87,10 +97,10 @@ CREATE TABLE `projectcategories` (
 
 
 
-ALTER TABLE `posts` ADD  INDEX (category_id);
+ALTER TABLE `posts` ADD UNIQUE INDEX (category_id);
 ALTER TABLE `posts` ADD  INDEX (author_id);
 
-ALTER TABLE `comments` ADD UNIQUE INDEX (author_id);
+ALTER TABLE `comments` ADD  INDEX (author_id);
 
 
 

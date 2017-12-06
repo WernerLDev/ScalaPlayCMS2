@@ -67,10 +67,15 @@ export function addEntity(parent_id:number, name:string, discriminator:EntityTyp
     if(discriminator.name == "folder") {
         return createEntity(0);
     } else {
-        return ApiCall("/api/v1/entities/" + discriminator.name.toLowerCase() + "/init", "POST", "{}").then(entity => {
-            let e = entity as BaseEntity;
-            return createEntity(e.id);
+        return createEntity(0).then(x => {
+
+            
+            return x;
         });
+        // return ApiCall("/api/v1/entities/" + discriminator.name.toLowerCase() + "/init", "POST", "{}").then(entity => {
+        //     let e = entity as BaseEntity;
+        //     return createEntity(e.id);
+        // });
     }
 }
 

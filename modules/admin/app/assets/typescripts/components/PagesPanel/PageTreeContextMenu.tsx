@@ -64,19 +64,8 @@ class PageTreeContextMenu extends React.Component<PageTreeContextMenuProps, any>
                         disabled: this.props.isRootNode
                     },
                     {
-                        label : "Dublicate",
-                        onClick: this.handleItemClick.bind(this),
-                        children: [],
-                        disabled: this.props.isRootNode
-                    },
-                    {
                         label : "Properties",
                         onClick: this.props.onProperties,
-                        children: []
-                    },
-                    {
-                        label : "Open",
-                        onClick: this.handleItemClick.bind(this),
                         children: []
                     }
                 ]}

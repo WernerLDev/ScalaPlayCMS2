@@ -82,11 +82,6 @@ class EntitiesContextMenu extends React.Component<EntitiesContextMenuProps, any>
                         label : "Properties",
                         onClick: this.props.onAction,
                         children: []
-                    },
-                    {
-                        label : "Open",
-                        onClick: this.handleItemClick.bind(this),
-                        children: []
                     }
                 ]}
                 onDismiss={this.props.onDismiss}

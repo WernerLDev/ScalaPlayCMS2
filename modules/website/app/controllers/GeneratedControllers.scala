@@ -63,9 +63,9 @@ class GeneratedAuthorsController @Inject() (
       authors.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
-    def createNew(request:AuthRequest[AnyContent]) = {
+    def createNew(request:AuthRequest[AnyContent], entityId:Long) = {
         authors.insert(Author(
-           0, "", "", new Timestamp(new java.util.Date().getTime()) 
+           0, entityId, "", "", new Timestamp(new java.util.Date().getTime()) 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -76,6 +76,7 @@ class GeneratedAuthorsController @Inject() (
                     Map(
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("entity_id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.entity_id)),
                            Map("name" -> JsString("name"),  "type" -> JsString("text"), "value" -> JsString(p.name)),
                            Map("name" -> JsString("email"),  "type" -> JsString("text"), "value" -> JsString(p.email)),
                            Map("name" -> JsString("dateofbirth"),  "type" -> JsString("date"), "value" -> JsNumber(p.dateofbirth.getTime()))
@@ -131,9 +132,9 @@ class GeneratedPostsController @Inject() (
       posts.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
-    def createNew(request:AuthRequest[AnyContent]) = {
+    def createNew(request:AuthRequest[AnyContent], entityId:Long) = {
         posts.insert(Post(
-           0, "", "", 0, 0 
+           0, entityId, "", "", 0, 0 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -144,9 +145,10 @@ class GeneratedPostsController @Inject() (
                     Map(
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("entity_id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.entity_id)),
                            Map("name" -> JsString("title"),  "type" -> JsString("text"), "value" -> JsString(p.title)),
                            Map("name" -> JsString("content"),  "type" -> JsString("textarea"), "value" -> JsString(p.content)),
-                           Map("name" -> JsString("category_id"), "relation" -> JsString("category"),"unique" -> JsBoolean(false), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id)),
+                           Map("name" -> JsString("category_id"), "relation" -> JsString("category"),"unique" -> JsBoolean(true), "type" -> JsString("relation"), "value" -> JsNumber(p.category_id)),
                            Map("name" -> JsString("author_id"), "relation" -> JsString("author"),"unique" -> JsBoolean(false), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
                        ),
                        "relations" -> List(
@@ -198,9 +200,9 @@ class GeneratedCategoriesController @Inject() (
       categories.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
-    def createNew(request:AuthRequest[AnyContent]) = {
+    def createNew(request:AuthRequest[AnyContent], entityId:Long) = {
         categories.insert(Category(
-           0, "" 
+           0, entityId, "" 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -211,6 +213,7 @@ class GeneratedCategoriesController @Inject() (
                     Map(
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("entity_id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.entity_id)),
                            Map("name" -> JsString("categoryname"),  "type" -> JsString("text"), "value" -> JsString(p.categoryname))
                        ),
                        "relations" -> List(
@@ -261,9 +264,9 @@ class GeneratedCommentsController @Inject() (
       comments.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
-    def createNew(request:AuthRequest[AnyContent]) = {
+    def createNew(request:AuthRequest[AnyContent], entityId:Long) = {
         comments.insert(Comment(
-           0, "", 0 
+           0, entityId, "", 0 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -274,8 +277,9 @@ class GeneratedCommentsController @Inject() (
                     Map(
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
+                           Map("name" -> JsString("entity_id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.entity_id)),
                            Map("name" -> JsString("message"),  "type" -> JsString("textarea"), "value" -> JsString(p.message)),
-                           Map("name" -> JsString("author_id"), "relation" -> JsString("author"),"unique" -> JsBoolean(true), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
+                           Map("name" -> JsString("author_id"), "relation" -> JsString("author"),"unique" -> JsBoolean(false), "type" -> JsString("relation"), "value" -> JsNumber(p.author_id))
                        ),
                        "relations" -> List(
 
@@ -325,9 +329,9 @@ class GeneratedProjectsController @Inject() (
       projects.delete(id).map(x => Ok(Json.toJson(Map("success" -> JsBoolean(true)))))
     }
 
-    def createNew(request:AuthRequest[AnyContent]) = {
+    def createNew(request:AuthRequest[AnyContent], entityId:Long) = {
         projects.insert(Project(
-           0, "", "", new Timestamp(new java.util.Date().getTime()) 
+           0, entityId, "", "", new Timestamp(new java.util.Date().getTime()) 
         )) map (x => Ok(Json.toJson(x)))
     }
 
@@ -338,9 +342,10 @@ class GeneratedProjectsController @Inject() (
                     Map(
                        "attributes" -> List(
                            Map("name" -> JsString("id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.id)),
-                           Map("name" -> JsString("Projectname"),  "type" -> JsString("text"), "value" -> JsString(p.Projectname)),
-                           Map("name" -> JsString("Description"),  "type" -> JsString("textarea"), "value" -> JsString(p.Description)),
-                           Map("name" -> JsString("ProjectDate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.ProjectDate.getTime()))
+                           Map("name" -> JsString("entity_id"),  "type" -> JsString("readonly"), "value" -> JsNumber(p.entity_id)),
+                           Map("name" -> JsString("projectname"),  "type" -> JsString("text"), "value" -> JsString(p.projectname)),
+                           Map("name" -> JsString("description"),  "type" -> JsString("textarea"), "value" -> JsString(p.description)),
+                           Map("name" -> JsString("projectdate"),  "type" -> JsString("datetime"), "value" -> JsNumber(p.projectdate.getTime()))
                        ),
                        "relations" -> List(
                            Map("relationname" -> JsString("projectcategory"), "relation" -> JsString("category"), "unique" -> JsBoolean(true))
@@ -570,9 +575,9 @@ class GeneratedController @Inject() (
         }
     }
 
-    def createNew(name:String) = WithAuthAction.async { request =>
+    def createNew(name:String, entityId:Long) = WithAuthAction.async { request =>
         controllers.get(name) match {
-            case Some(x) => x.createNew(request)
+            case Some(x) => x.createNew(request, entityId)
             case None => Future(BadRequest("Error: Entity with name " + name + " doesn't exist."))
         }
     }
