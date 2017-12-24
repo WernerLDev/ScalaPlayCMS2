@@ -68,14 +68,14 @@ export function addEntity(parent_id:number, name:string, discriminator:EntityTyp
         return createEntity(0);
     } else {
         return createEntity(0).then(x => {
-
-            
-            return x;
+            return ApiCall(
+                    `/api/v1/entities/${discriminator.name.toLowerCase()}/${x.id}/init`, 
+                    "POST", 
+                    "{}"
+                ).then(e => {
+                    return x
+                })
         });
-        // return ApiCall("/api/v1/entities/" + discriminator.name.toLowerCase() + "/init", "POST", "{}").then(entity => {
-        //     let e = entity as BaseEntity;
-        //     return createEntity(e.id);
-        // });
     }
 }
 
@@ -96,7 +96,7 @@ export function renameEntity(entity:Entity):Promise<Entity> {
 }
 
 export function getEntityForm(entity:Entity):Promise<EntityForm> {
-    return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.object_id + "/form", "GET").then(r => r as EntityForm);
+    return ApiCall("/api/v1/entities/" + entity.discriminator + "/" + entity.id + "/form", "GET").then(r => r as EntityForm);
 }
 
 export function getEntitiesByType(type:string):Promise<Entity[]> {

@@ -170,6 +170,10 @@ trait TAuthors extends HasDatabaseConfigProvider[JdbcProfile] {
     authors.filter(_.id === id).result.headOption
   }
 
+  def getByEntityId(id:Long) = dbConfig.db.run {
+    authors.filter(_.entity_id === id).result.headOption
+  }
+
   def getAll = dbConfig.db.run {
     authors.result
   }
@@ -214,6 +218,10 @@ val projects = TableQuery[ProjectTableDef]
     posts.filter(_.id === id).result.headOption
   }
 
+  def getByEntityId(id:Long) = dbConfig.db.run {
+    posts.filter(_.entity_id === id).result.headOption
+  }
+
   def getAll = dbConfig.db.run {
     posts.result
   }
@@ -250,6 +258,10 @@ trait TCategories extends HasDatabaseConfigProvider[JdbcProfile] {
 
   def getById(id:Long) = dbConfig.db.run {
     categories.filter(_.id === id).result.headOption
+  }
+
+  def getByEntityId(id:Long) = dbConfig.db.run {
+    categories.filter(_.entity_id === id).result.headOption
   }
 
   def getAll = dbConfig.db.run {
@@ -291,6 +303,10 @@ trait TComments extends HasDatabaseConfigProvider[JdbcProfile] {
     comments.filter(_.id === id).result.headOption
   }
 
+  def getByEntityId(id:Long) = dbConfig.db.run {
+    comments.filter(_.entity_id === id).result.headOption
+  }
+
   def getAll = dbConfig.db.run {
     comments.result
   }
@@ -329,6 +345,10 @@ trait TProjects extends HasDatabaseConfigProvider[JdbcProfile] {
 
   def getById(id:Long) = dbConfig.db.run {
     projects.filter(_.id === id).result.headOption
+  }
+
+  def getByEntityId(id:Long) = dbConfig.db.run {
+    projects.filter(_.entity_id === id).result.headOption
   }
 
   def getAll = dbConfig.db.run {

@@ -24,7 +24,7 @@ trait TGenController {
     def insert(request:AuthRequest[JsValue]):Future[Result]
     def update(request:AuthRequest[JsValue]):Future[Result]
     def delete(id:Long, request:AuthRequest[AnyContent]):Future[Result]
-    def createNew(request:AuthRequest[AnyContent]):Future[Result]
+    def createNew(request:AuthRequest[AnyContent], entityId:Long):Future[Result]
     def getFormById(id:Long, request:AuthRequest[AnyContent]):Future[Result]
 }
 
@@ -70,7 +70,7 @@ class GeneratedAuthorsController @Inject() (
     }
 
      def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
-        authors.getById(id).map(x => x match {
+        authors.getByEntityId(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
                     Map(
@@ -139,7 +139,7 @@ class GeneratedPostsController @Inject() (
     }
 
      def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
-        posts.getById(id).map(x => x match {
+        posts.getByEntityId(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
                     Map(
@@ -207,7 +207,7 @@ class GeneratedCategoriesController @Inject() (
     }
 
      def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
-        categories.getById(id).map(x => x match {
+        categories.getByEntityId(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
                     Map(
@@ -271,7 +271,7 @@ class GeneratedCommentsController @Inject() (
     }
 
      def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
-        comments.getById(id).map(x => x match {
+        comments.getByEntityId(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
                     Map(
@@ -336,7 +336,7 @@ class GeneratedProjectsController @Inject() (
     }
 
      def getFormById(id:Long, request:AuthRequest[AnyContent]) = {
-        projects.getById(id).map(x => x match {
+        projects.getByEntityId(id).map(x => x match {
             case Some(p) => {
                 Ok(Json.toJson(
                     Map(

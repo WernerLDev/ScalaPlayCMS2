@@ -14,7 +14,7 @@ module.exports = {
     library: 'App'
   },
 
-  devtool: 'source-map',
+  devtool: 'eval-source-map',
   module:  {
       loaders: [
           {
