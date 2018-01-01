@@ -137,3 +137,12 @@ export function updateParentEntity(source_id:number, target_id:number) {
     });
     return ApiCall("/admin/api/v1/entities/" + source_id + "/updateparent", "PUT", body);
 }
+
+export function updateBaseEntity(entity:Entity) {
+    var body = JSON.stringify(entity);
+    return ApiCall(
+        "/api/v1/entities/update",
+        "POST",
+        body
+    )
+}

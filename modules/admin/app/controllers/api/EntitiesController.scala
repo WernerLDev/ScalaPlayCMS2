@@ -47,7 +47,7 @@ class EntitiesController @Inject()(
 
     def addEntity = WithAuthAction.async(parse.json) { request =>
       {request.body \ "entity"}.asOpt[NewEntity].map(entity => {
-        val currentTime:Timestamp = new Timestamp((new Date).getTime());
+        val currentTime:Timestamp = new Timestamp((new Date).getTime())
         val newEntity = Entity(
           id = 0,
           name = entity.name,
@@ -62,6 +62,13 @@ class EntitiesController @Inject()(
       }).getOrElse(Future(BadRequest("Wrong parameter")))
     }
 
+    def updateEntity = WithAuthAction.async(parse.json) { request =>
+      (request.body \ "entity").asOpt[Entity].map(entity => {
+        entities.update(entity) map (x => {
+          Ok(Json.toJson(Map("success" -> JsBoolean(true))))
+        })
+      }).getOrElse(Future(BadRequest("Wrong parameter")))
+    }
 
     def deleteEntity(id:Long) = WithAuthAction.async { request =>
       entities.delete(id) map (x => {
