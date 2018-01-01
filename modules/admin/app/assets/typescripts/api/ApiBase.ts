@@ -27,9 +27,14 @@ type RequestMethod = "GET" | "POST" | "PUT" | "HEAD" | "PATCH" | "DELETE"
  * @param {RequestMethod} method 
  * @param {string} [body]  Use the result of JSON.stringify for the body.
  * @param {string} [contenttype] 
- * @returns {Promise<any>} 
+ * @returns {Promise<T>} 
  */
-export default function ApiCall(call:string, method:RequestMethod, body?:string, contenttype?:string):Promise<any> {
+export default function ApiCall<T>(
+    call:string, 
+    method:RequestMethod, 
+    body?:string, 
+    contenttype?:string
+):Promise<T> {
     var headers:ApiHeader = {
             "Csrf-Token": csrf
     }

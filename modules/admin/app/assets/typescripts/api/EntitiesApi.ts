@@ -67,13 +67,15 @@ export function addEntity(parent_id:number, name:string, discriminator:EntityTyp
     if(discriminator.name == "folder") {
         return createEntity(0);
     } else {
-        return createEntity(0).then(x => {
-            return ApiCall(
-                    `/api/v1/entities/${discriminator.name.toLowerCase()}/${x.id}/init`, 
+        return createEntity(0).then(entity => {
+            return ApiCall<BaseEntity>(
+                    `/api/v1/entities/${discriminator.name.toLowerCase()}/${entity.id}/init`, 
                     "POST", 
                     "{}"
                 ).then(e => {
-                    return x
+                    return updateBaseEntity({...entity, object_id: e.id}).then(x => {
+                        return entity;
+                    })
                 })
         });
     }

@@ -22,9 +22,11 @@ class EntitiesController @Inject()(
     WithAuthAction:AuthAction, 
     conf:Configuration) extends Controller {
 
+    implicit val tsreads: Reads[Timestamp] = Reads.of[Long] map (new Timestamp(_))
     implicit val entityWrites = Json.writes[Entity]
+    implicit val entityReads = Json.reads[Entity]
     implicit val entityTreeWrites = Json.writes[EntityTree]
-    implicit val entityReads = Json.reads[NewEntity]
+    implicit val newEntityReads = Json.reads[NewEntity]
 
     def getAll = WithAuthAction.async {
       entities.getTree map (x => {
