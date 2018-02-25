@@ -10,178 +10,178 @@ import DocumentEditMode from '../DocumentEditMode/DocumentEditMode'
 import * as fbemitter from 'fbemitter'
 
 export interface PagesPanelProps {
-    onOpenTab: (tab:Tabs.Tab) => void
-    emitter: fbemitter.EventEmitter
+  onOpenTab: (tab: Tabs.Tab) => void
+  emitter: fbemitter.EventEmitter
 }
 
 export interface PagesPanelState {
-    documents: Api.DocumentTree[],
-    treeItems : TreeTypes.TreeViewItem<Api.Document>[]
-    working : boolean
-    pagetypes : Api.PageType[]
-    selected: TreeTypes.TreeViewItem<Api.Document>
+  documents: Api.DocumentTree[],
+  treeItems: TreeTypes.TreeViewItem<Api.Document>[]
+  working: boolean
+  pagetypes: Api.PageType[]
+  selected: TreeTypes.TreeViewItem<Api.Document>
 }
 
 class PagesPanel extends React.Component<PagesPanelProps, PagesPanelState> {
-    
-    constructor(props:PagesPanelProps, context:any) {
-        super(props, context);
-        this.state = {
-            documents: [], treeItems: [], working: true, pagetypes: [], selected: null
+
+  constructor(props: PagesPanelProps, context: any) {
+    super(props, context);
+    this.state = {
+      documents: [], treeItems: [], working: true, pagetypes: [], selected: null
+    }
+  }
+
+  componentWillMount() {
+    this.props.emitter.addListener("documentChanged", this.refresh.bind(this));
+  }
+
+  toTreeItems(docs: Api.DocumentTree[]): TreeTypes.TreeViewItem<Api.Document>[] {
+    return docs.map(doc => {
+      return {
+        key: doc.document.id.toString(),
+        name: doc.document.name,
+        collapsed: doc.document.collapsed,
+        children: this.toTreeItems(doc.children),
+        item: doc.document
+      }
+    })
+  }
+
+  refresh() {
+    this.setState({ ...this.state, working: true }, () => {
+      Api.getDocuments().then(documents => {
+        var items = this.toTreeItems(documents);
+        this.setState({ documents: documents, treeItems: items, working: false });
+      });
+    })
+  }
+
+  componentDidMount() {
+    Api.getPageTypes().then(types => {
+      Api.getDocuments().then(documents => {
+        var items = this.toTreeItems(documents);
+        this.setState({ documents: documents, pagetypes: types, treeItems: items, working: false });
+      });
+    });
+
+    this.props.emitter.addListener("documentRemoved", (doc: Api.Document) => {
+      this.refresh();
+    })
+  }
+
+
+  onContextTriggered(n: TreeTypes.TreeViewItem<Api.DocumentTree>) {
+  }
+
+  onRenamed(doc: Api.Document) {
+    this.setState({ working: true }, () => {
+      Api.renameDocument(doc).then(x => {
+        this.props.emitter.emit("documentChanged", doc);
+      });
+    });
+  }
+
+  onAdded(parent_id: number, name: string, pagetype: string) {
+    this.setState({ working: true }, () => {
+      Api.addDocument(parent_id, name, pagetype).then(x => {
+        if (x == null) {
+          this.setState({ ...this.state, working: false });
+          return;
         }
-    }
-
-    componentWillMount() {
-        this.props.emitter.addListener("documentChanged", this.refresh.bind(this));
-    }
-
-    toTreeItems(docs:Api.DocumentTree[]):TreeTypes.TreeViewItem<Api.Document>[] {
-        return docs.map(doc => {
-            return {
-                key : doc.document.id.toString(),
-                name : doc.document.name,
-                collapsed : doc.document.collapsed,
-                children: this.toTreeItems(doc.children),
-                item: doc.document
-            }
-        })
-    }
-
-    refresh() {
-        this.setState({...this.state, working: true}, () => {
-            Api.getDocuments().then(documents => {
-                var items = this.toTreeItems(documents);
-                this.setState({ documents: documents, treeItems: items, working: false });
-            });
-        })
-    }
-
-    componentDidMount() {
-        Api.getPageTypes().then(types => {
-            Api.getDocuments().then(documents => {
-                var items = this.toTreeItems(documents);
-                this.setState({ documents: documents, pagetypes: types, treeItems: items, working: false });
-            });
+        Api.getDocuments().then(documents => {
+          var items = this.toTreeItems(documents);
+          var newSelection: TreeTypes.TreeViewItem<Api.Document> = {
+            key: x.id.toString(),
+            name: x.name,
+            collapsed: x.collapsed,
+            children: [],
+            item: null
+          }
+          this.setState({ documents: documents, treeItems: items, selected: newSelection, working: false });
         });
+      });
+    });
+  }
 
-        this.props.emitter.addListener("documentRemoved", (doc:Api.Document) => {
-            this.refresh();
-        })
-    }
+  onDeleted(doc: Api.Document) {
+    this.setState({ working: true }, () => {
+      Api.deleteDocument(doc).then(x => {
+        this.refresh();
+        this.props.emitter.emit("documentRemoved", doc);
+      });
+    });
+  }
 
+  onParentChanged(sourceid: number, targetid: number) {
+    this.setState({ working: true }, () => {
+      Api.updateParentDocument(sourceid, targetid).then(x => {
+        this.refresh();
+      });
+    });
+  }
 
-    onContextTriggered(n:TreeTypes.TreeViewItem<Api.DocumentTree>) {
-    }
+  renderLabel(n: TreeTypes.TreeViewItem<Api.Document>) {
+    return (
+      <PageTreeLabel
+        onRenamed={this.onRenamed.bind(this)}
+        onAdded={this.onAdded.bind(this)}
+        onDeleted={this.onDeleted.bind(this)}
+        onParentChanged={this.onParentChanged.bind(this)}
+        pagetypes={this.state.pagetypes}
+        item={n}
+        emitter={this.props.emitter}
+        onContextTriggered={this.onContextTriggered.bind(this)} />)
+  }
 
-    onRenamed(doc:Api.Document) {
-        this.setState({ working: true }, () => {
-            Api.renameDocument(doc).then(x => {
-                this.props.emitter.emit("documentChanged", doc);
-            });
-        });
-    }
+  handleItemClick() {
+    this.setState({ ...this.state, working: true }, () => {
+      setTimeout(x => {
+        this.refresh();
+      }, 500);
+    });
+  }
 
-    onAdded(parent_id:number, name:string, pagetype:string) {
-        this.setState({ working: true }, () => {
-            Api.addDocument(parent_id, name, pagetype).then(x => {
-                if(x == null) {
-                    this.setState({...this.state, working: false});
-                    return;
-                }
-                Api.getDocuments().then(documents => {
-                    var items = this.toTreeItems(documents);
-                    var newSelection:TreeTypes.TreeViewItem<Api.Document> = {
-                        key : x.id.toString(),
-                        name : x.name,
-                        collapsed : x.collapsed,
-                        children: [],
-                        item: null
-                    }
-                    this.setState({ documents: documents, treeItems: items, selected: newSelection, working: false });
-                });
-            });
-        });
-    }
+  render() {
+    if (this.state.treeItems.length == 0) {
+      return (<Menu className="smalltoolbar" icon>
 
-    onDeleted(doc:Api.Document) {
-         this.setState({ working: true }, () => {
-            Api.deleteDocument(doc).then(x => {
-                this.refresh();
-                this.props.emitter.emit("documentRemoved", doc);
-            });
-        });
+        <Menu.Item name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
+          <Icon name='refresh' />
+        </Menu.Item>
+        <Menu.Item position='right'>
+          <Loader active size="tiny" inline />
+        </Menu.Item>
+      </Menu>);
     }
+    return (
+      <div>
+        <Menu className="smalltoolbar" icon>
 
-    onParentChanged(sourceid:number, targetid:number) {
-        this.setState({ working: true }, () => {
-            Api.updateParentDocument(sourceid, targetid).then(x => {
-                this.refresh();
-            });
-        });
-    }
-
-    renderLabel(n:TreeTypes.TreeViewItem<Api.Document>) {
-        return( 
-            <PageTreeLabel 
-                onRenamed={this.onRenamed.bind(this)}  
-                onAdded={this.onAdded.bind(this)}
-                onDeleted={this.onDeleted.bind(this)}
-                onParentChanged={this.onParentChanged.bind(this)}
-                pagetypes={this.state.pagetypes}
-                item={n} 
-                emitter={this.props.emitter}
-                onContextTriggered={this.onContextTriggered.bind(this)} /> )
-    }
-    
-    handleItemClick() {
-        this.setState({...this.state, working: true}, () => {
-            setTimeout(x => {
-                this.refresh();
-            }, 500);
-        });
-    }
-
-    render() {
-        if(this.state.treeItems.length == 0) {
-            return(<Menu className="smalltoolbar" icon>
-                
-                <Menu.Item name='refresh' active={false} onClick={this.handleItemClick.bind(this)}>
-                    <Icon name='refresh' />
-                </Menu.Item>
-                <Menu.Item position='right'>
-                    <Loader active size="tiny" inline />
-                </Menu.Item>
-            </Menu>);
-        }
-        return (
-            <div>
-                <Menu className="smalltoolbar" icon>
-                    
-                    <Menu.Item name='refresh' position="right" active={false} onClick={this.handleItemClick.bind(this)}>
-                        {this.state.working ? <Loader active size="tiny" inline /> : <Icon name='refresh' /> }
-                    </Menu.Item>
-                </Menu>
-                <TreeView 
-                    items={this.state.treeItems} 
-                    selected={this.state.selected}
-                    onDoubleClick={(n:TreeTypes.TreeViewItem<Api.Document>) => {
-                        this.props.onOpenTab({
-                            key: n.item.id + "doc",
-                            title: n.item.name,
-                            content: () => (<DocumentEditMode emitter={this.props.emitter} document={n.item} />)
-                        })
-                    }}
-                    onClick={(n:TreeTypes.TreeViewItem<Api.Document>) => {
-                            this.setState({selected: n})
-                        }}
-                    onRenderLabel={this.renderLabel.bind(this)}
-                     onCollapse={(i:TreeTypes.TreeViewItem<Api.Document>, state:boolean) => {
-                        Api.collapseDocument(i.item.id, state);
-                    }}
-                />
-            </div>
-        );
-    }
+          <Menu.Item name='refresh' position="right" active={false} onClick={this.handleItemClick.bind(this)}>
+            {this.state.working ? <Loader active size="tiny" inline /> : <Icon name='refresh' />}
+          </Menu.Item>
+        </Menu>
+        <TreeView
+          items={this.state.treeItems}
+          selected={this.state.selected}
+          onDoubleClick={(n: TreeTypes.TreeViewItem<Api.Document>) => {
+            this.props.onOpenTab({
+              key: n.item.id + "doc",
+              title: n.item.name,
+              content: () => (<DocumentEditMode emitter={this.props.emitter} document={n.item} />)
+            })
+          }}
+          onClick={(n: TreeTypes.TreeViewItem<Api.Document>) => {
+            this.setState({ selected: n })
+          }}
+          onRenderLabel={this.renderLabel.bind(this)}
+          onCollapse={(i: TreeTypes.TreeViewItem<Api.Document>, state: boolean) => {
+            Api.collapseDocument(i.item.id, state);
+          }}
+        />
+      </div>
+    );
+  }
 }
 
 export default PagesPanel;

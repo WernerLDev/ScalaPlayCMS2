@@ -6,76 +6,76 @@ import ContextMenu from '../common/ContextMenu'
 import { ContextMenuItem } from '../common/ContextMenu'
 
 export interface AssetContextMenuProps {
-    onDismiss: () => void
-    onToggleEdit: () => void
-    onToggleDelete: () => void
-    onToggleAdd: () => void
-    onToggleUpload: () => void
-    onProperties: () => void
-    target: MouseEvent,
-    canCreate : boolean,
-    canDelete : boolean,
-    canRename : boolean
+  onDismiss: () => void
+  onToggleEdit: () => void
+  onToggleDelete: () => void
+  onToggleAdd: () => void
+  onToggleUpload: () => void
+  onProperties: () => void
+  target: MouseEvent,
+  canCreate: boolean,
+  canDelete: boolean,
+  canRename: boolean
 }
 
 class AssetContextMenu extends React.Component<AssetContextMenuProps, any> {
 
-    constructor(props:AssetContextMenuProps, context:any) {
-        super(props, context);
+  constructor(props: AssetContextMenuProps, context: any) {
+    super(props, context);
+  }
+
+  private handleItemClick() {
+
+  }
+
+  render() {
+    let target = {
+      x: this.props.target.clientX,
+      y: this.props.target.clientY
     }
 
-    private handleItemClick() {
+    return (
+      <ContextMenu
+        target={target}
+        items={[
+          {
+            icon: "plus",
+            label: "Create folder  ",
+            onClick: this.props.onToggleAdd,
+            children: [],
+            disabled: !this.props.canCreate
+          },
+          {
+            label: "Upload...",
+            onClick: this.props.onToggleUpload,
+            children: [],
+            disabled: !this.props.canCreate
 
-    }
-
-    render() {
-        let target = {
-            x : this.props.target.clientX,
-            y : this.props.target.clientY
-        }
-
-        return(
-            <ContextMenu
-                target={target}
-                items={[
-                    {
-                        icon : "plus",
-                        label : "Create folder  ",
-                        onClick: this.props.onToggleAdd,
-                        children: [],
-                        disabled: !this.props.canCreate
-                    },
-                    {
-                        label : "Upload...",
-                        onClick: this.props.onToggleUpload,
-                        children: [],
-                        disabled: !this.props.canCreate
-
-                    },
-                    {
-                        icon : "write",
-                        label : "Rename",
-                        onClick: this.props.onToggleEdit,
-                        children: [],
-                        disabled: !this.props.canRename
-                    },
-                    {
-                        icon : "trash",
-                        label : "Remove",
-                        onClick: this.props.onToggleDelete,
-                        children: [],
-                        disabled: !this.props.canDelete
-                    },
-                    {
-                        label : "Properties",
-                        onClick: this.props.onProperties,
-                        children: []
-                    }
-                ]}
-                onDismiss={this.props.onDismiss}
-            />
-        )
-    }
+          },
+          {
+            icon: "write",
+            label: "Rename",
+            onClick: this.props.onToggleEdit,
+            children: [],
+            disabled: !this.props.canRename
+          },
+          {
+            icon: "trash",
+            label: "Remove",
+            onClick: this.props.onToggleDelete,
+            children: [],
+            disabled: !this.props.canDelete
+          },
+          {
+            label: "Properties",
+            onClick: this.props.onProperties,
+            children: []
+          }
+        ]}
+        onDismiss={this.props.onDismiss}
+      />
+    )
+  }
 }
 
 export default AssetContextMenu;

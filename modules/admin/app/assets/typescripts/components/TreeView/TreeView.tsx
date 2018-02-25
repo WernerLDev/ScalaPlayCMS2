@@ -4,83 +4,83 @@ import * as TreeTypes from './TreeViewTypes'
 import SubTreeView from './SubTreeView'
 
 interface TreeViewState {
-    selected: TreeTypes.TreeViewItem<any>
-    lastClick: number
+  selected: TreeTypes.TreeViewItem<any>
+  lastClick: number
 }
 
 class TreeView extends React.Component<TreeTypes.TreeViewProps<any>, TreeViewState> {
-    
-    private _emptySelection:TreeTypes.TreeViewItem<any> = {
-        key: "",
-        name: "",
-        collapsed: false,
-        children: [],
-        item: {}
-    };
 
-    constructor(props:TreeTypes.TreeViewProps<any>, context:any) {
-        super(props, context);
-        if(this.props.selected) {
-            this.state = { selected: this.props.selected, lastClick: 0 }
-        } else {
-            this.state = { selected: this._emptySelection, lastClick: 0 }
-        }
-    }
+  private _emptySelection: TreeTypes.TreeViewItem<any> = {
+    key: "",
+    name: "",
+    collapsed: false,
+    children: [],
+    item: {}
+  };
 
-    componentWillReceiveProps(nextprops:TreeTypes.TreeViewProps<any>) {
-        let notNull = nextprops.selected != null && this.props.selected != null;
-        if(nextprops.selected != null && this.props.selected == null) {
-            this.setState({ selected: nextprops.selected });
-        } else if(notNull && nextprops.selected.key != this.props.selected.key) {
-            this.setState({ selected: nextprops.selected});
-        }
+  constructor(props: TreeTypes.TreeViewProps<any>, context: any) {
+    super(props, context);
+    if (this.props.selected) {
+      this.state = { selected: this.props.selected, lastClick: 0 }
+    } else {
+      this.state = { selected: this._emptySelection, lastClick: 0 }
     }
+  }
 
-    componentDidMount() {
-        document.addEventListener('mousedown', function(e:MouseEvent){
-            let treeNode = ReactDOM.findDOMNode(this.refs.tree);
-            let targetElement = e.target as Element;
-            let targetParent = targetElement.parentElement as Element;
-            
-            let clickedInTree = treeNode.contains(targetElement);
-            let isMenuItem = targetElement.classList.contains("item") || targetParent.classList.contains("item");
-            let isTreeAction = targetElement.classList.contains("treeaction") || targetParent.classList.contains("treeaction");
-            let contextOpen = treeNode.getElementsByClassName("contextmenu").length > 0;
+  componentWillReceiveProps(nextprops: TreeTypes.TreeViewProps<any>) {
+    let notNull = nextprops.selected != null && this.props.selected != null;
+    if (nextprops.selected != null && this.props.selected == null) {
+      this.setState({ selected: nextprops.selected });
+    } else if (notNull && nextprops.selected.key != this.props.selected.key) {
+      this.setState({ selected: nextprops.selected });
+    }
+  }
 
-            if(!isMenuItem && !clickedInTree && !contextOpen && !isTreeAction) {
-                this.setState({selected: this._emptySelection});
-            }
-        }.bind(this))
-    }
-  
-    onClick(n:TreeTypes.TreeViewItem<any>) {
-        let lastClick = (new Date()).getTime();
-        let difference = lastClick - this.state.lastClick;
-        let isSameNode = n.key == this.state.selected.key;
-        this.setState({ selected: n, lastClick: lastClick }, () => {
-            if(difference < 500 && isSameNode) {
-                this.props.onDoubleClick(n);
-            } else {
-                if(this.props.onClick) this.props.onClick(n);
-            }
-        });
-    }
+  componentDidMount() {
+    document.addEventListener('mousedown', function (e: MouseEvent) {
+      let treeNode = ReactDOM.findDOMNode(this.refs.tree);
+      let targetElement = e.target as Element;
+      let targetParent = targetElement.parentElement as Element;
 
-    render() {
-        return (
-        <div className="TreeContainer">
-            <nav ref="tree" role="navigation">
-                <SubTreeView 
-                    visible={true}
-                    items={this.props.items}
-                    onClick={this.onClick.bind(this)} 
-                    selected={this.state.selected} 
-                    onCollapse={this.props.onCollapse}
-                    onRenderLabel={this.props.onRenderLabel} />
-            </nav>
-        </div>
-        );
-    }
+      let clickedInTree = treeNode.contains(targetElement);
+      let isMenuItem = targetElement.classList.contains("item") || targetParent.classList.contains("item");
+      let isTreeAction = targetElement.classList.contains("treeaction") || targetParent.classList.contains("treeaction");
+      let contextOpen = treeNode.getElementsByClassName("contextmenu").length > 0;
+
+      if (!isMenuItem && !clickedInTree && !contextOpen && !isTreeAction) {
+        this.setState({ selected: this._emptySelection });
+      }
+    }.bind(this))
+  }
+
+  onClick(n: TreeTypes.TreeViewItem<any>) {
+    let lastClick = (new Date()).getTime();
+    let difference = lastClick - this.state.lastClick;
+    let isSameNode = n.key == this.state.selected.key;
+    this.setState({ selected: n, lastClick: lastClick }, () => {
+      if (difference < 500 && isSameNode) {
+        this.props.onDoubleClick(n);
+      } else {
+        if (this.props.onClick) this.props.onClick(n);
+      }
+    });
+  }
+
+  render() {
+    return (
+      <div className="TreeContainer">
+        <nav ref="tree" role="navigation">
+          <SubTreeView
+            visible={true}
+            items={this.props.items}
+            onClick={this.onClick.bind(this)}
+            selected={this.state.selected}
+            onCollapse={this.props.onCollapse}
+            onRenderLabel={this.props.onRenderLabel} />
+        </nav>
+      </div>
+    );
+  }
 }
 
 export default TreeView;
