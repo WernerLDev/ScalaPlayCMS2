@@ -22,7 +22,10 @@ class TextViewer extends React.Component<TextViewerProps, TextViewerState> {
 
   componentDidMount() {
     Api.getAssetContentAsText(this.props.asset).then(content => {
-      this.setState({ textContent: content, loading: false })
+      this.setState({ 
+        textContent: content, 
+        loading: false 
+      })
     })
   }
 

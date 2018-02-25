@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as SplitPane from 'react-split-pane'
+import * as SplitPane from 'react-split-pane';
 import LargeView from './LargeView'
 import { SideMenu, SideMenuItem } from './components/SideMenu/SideMenu'
 import TreeView from './components/TreeView/TreeView'
@@ -18,10 +18,8 @@ import * as fbemitter from 'fbemitter'
 import { Dropdown, Icon, Menu, Segment, LabelProps } from 'semantic-ui-react'
 
 export interface MainProps {
-}
-
-
-
+}  
+  
 export interface MainState {
   section: string,
   selected: string,
@@ -129,6 +127,12 @@ class Main extends React.Component<MainProps, MainState> {
     })
   }
 
+  componentDidCatch(error:any, info:any) { 
+    console.log("Catched error");
+    console.log(error);
+    console.log(info);
+  }
+
   render() {
     const friendOptions = [
       {
@@ -178,6 +182,7 @@ class Main extends React.Component<MainProps, MainState> {
           </li>
         </SideMenu>
         <div className="splitpane-container">
+         
           <SplitPane
             split="vertical"
             defaultSize={400}

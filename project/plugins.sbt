@@ -21,11 +21,11 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
 
 // addSbtPlugin("com.typesafe.sbt" % "sbt-mocha" % "1.1.0")
 
-addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.8")
+addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.12")
 
 // addSbtPlugin("com.arpnetworking" % "sbt-typescript" % "0.3.4")
 
-addSbtPlugin("name.de-vries" % "sbt-typescript" % "2.5.2")
+addSbtPlugin("name.de-vries" % "sbt-typescript" % "2.6.2")
 
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.2.2")
 
