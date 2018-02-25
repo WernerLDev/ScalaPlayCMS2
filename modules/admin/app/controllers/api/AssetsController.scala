@@ -108,7 +108,7 @@ class AssetsController @Inject()(assets:Assets, WithAuthAction:AuthAction, PageA
             val outputfile = new File(assetsdir + filename)
             asset.ref.moveTo(outputfile)
             
-            val filepath = filename
+            val filepath = uploaddir + filename
             Ok(Json.obj("success" -> true, "name" -> asset.filename, "contenttype" -> contentType, "server_path" -> filepath))
         }.getOrElse {
             Ok(Json.obj("success" -> false, "name" -> "", "path" -> ""))
